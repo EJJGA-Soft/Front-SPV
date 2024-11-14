@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import UserIcon from "../../assets/icons/IUser.svg";
+import ProfileModal from '../../modules/views/profile/detailsprofile';
 
 interface SubItem {
   label: string;
@@ -62,11 +63,21 @@ export default function Layout({ children }: LayoutProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSidebarFull, setIsSidebarFull] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+};
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+};
+
+  
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -210,14 +221,13 @@ export default function Layout({ children }: LayoutProps) {
                   </span>
                 </div>
                 <ul className="py-1">
-                  <li>
-                    <Link
-                      to="/perfil"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      Configurar perfil
-                    </Link>
-                  </li>
+                <li
+                onClick={handleOpenModal}
+                className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+              >
+                Configurar perfil
+              </li>
+              
                   <li>
                     <Link
                       to="/cerrar-sesion"
@@ -231,7 +241,7 @@ export default function Layout({ children }: LayoutProps) {
             )}
           </div>
         </nav>
-
+        {isModalOpen && <ProfileModal onClose={handleCloseModal} />}     
         <main className="flex-1 p-6 bg-gray-100">{children}</main>
       </div>
     </div>
