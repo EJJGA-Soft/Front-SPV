@@ -8,11 +8,7 @@ import {
   HiOutlineLogout,
 } from "react-icons/hi";
 import { FiMenu, FiX } from "react-icons/fi";
-import {
-  FaCashRegister,
-  FaFileInvoiceDollar,
-  FaClipboardList,
-} from "react-icons/fa";
+import { FaCashRegister, FaFileInvoiceDollar, FaClipboardList } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import UserIcon from "../../assets/icons/IUser.svg";
 
@@ -36,17 +32,9 @@ const menuItems: MenuItem[] = [
     icon: <HiOutlineShoppingCart />,
     link: "/abarrotes",
     subItems: [
-      {
-        label: "Registrar venta",
-        link: "/registro-venta",
-        icon: <FaClipboardList />,
-      },
+      { label: "Registrar venta", link: "/registro-venta", icon: <FaClipboardList /> },
       { label: "Corte de caja", link: "/corte-caja", icon: <FaCashRegister /> },
-      {
-        label: "Detalle de ventas",
-        link: "/detalle-ventas",
-        icon: <FaFileInvoiceDollar />,
-      },
+      { label: "Detalle de ventas", link: "/detalle-ventas", icon: <FaFileInvoiceDollar /> },
     ],
   },
   { label: "Usuarios", icon: <HiOutlineUserGroup />, link: "/usuarios" },
@@ -70,10 +58,7 @@ export default function Layout({ children }: LayoutProps) {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
     };
@@ -94,7 +79,7 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="relative flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* Backdrop para móvil */}
       {isMobileMenuOpen && (
         <div
@@ -109,7 +94,7 @@ export default function Layout({ children }: LayoutProps) {
           isMobileMenuOpen ? "translate-x-0 w-64" : "-translate-x-full"
         } lg:translate-x-0 lg:${isSidebarFull ? "w-64" : "w-16"}`}
       >
-        <div className="h-full px-4 py-6 bg-white">
+        <div className="h-full flex flex-col justify-between px-4 py-6 bg-white">
           <div className="flex mb-6 lg:hidden">
             <button
               type="button"
@@ -133,7 +118,7 @@ export default function Layout({ children }: LayoutProps) {
             </button>
           </div>
 
-          <ul className="space-y-4">
+          <ul className="space-y-4 flex-grow">
             {menuItems.map((item, index) => (
               <li key={index}>
                 <Link
@@ -151,7 +136,7 @@ export default function Layout({ children }: LayoutProps) {
             ))}
           </ul>
 
-          <div className="mt-3">
+          <div className="mb-4">
             <Link
               to="/cerrar-sesion"
               className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
@@ -168,11 +153,8 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Contenido principal */}
-      <div
-        className={`flex-1 transition-all duration-300 ${
-          isMobileMenuOpen ? "ml-0" : `lg:${isSidebarFull ? "ml-64" : "ml-16"}`
-        } flex flex-col`}
-      >
+      <div className={`flex-1 overflow-y-auto ${ isMobileMenuOpen ? "ml-0" : "lg:ml-16" } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${ isSidebarFull ? "ml-44" : "" }`} style={{ marginLeft: isSidebarFull ? "11rem" : "", }} >
+
         <nav className="bg-white border-b border-gray-300 p-4 flex items-center justify-between">
           {/* Botón de menú para dispositivos móviles */}
           <button onClick={toggleMobileMenu} className="text-2xl lg:hidden">
@@ -192,37 +174,23 @@ export default function Layout({ children }: LayoutProps) {
               aria-label="Abrir perfil"
               title="Abrir perfil"
             >
-              <img
-                className="w-8 h-8 rounded-full"
-                src={UserIcon}
-                alt="User Icon"
-              />
+              <img className="w-8 h-8 rounded-full" src={UserIcon} alt="User Icon" />
             </button>
 
             {isDropdownOpen && (
               <div className="absolute right-0 top-10 w-48 z-50 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                 <div className="px-4 py-2 border-b border-gray-200">
-                  <span className="block text-sm font-semibold">
-                    Bonnie Green
-                  </span>
-                  <span className="block text-sm text-gray-500">
-                    Administrador
-                  </span>
+                  <span className="block text-sm font-semibold">Bonnie Green</span>
+                  <span className="block text-sm text-gray-500">Administrador</span>
                 </div>
                 <ul className="py-1">
                   <li>
-                    <Link
-                      to="/perfil"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100"
-                    >
+                    <Link to="/perfil" className="block px-4 py-2 text-sm hover:bg-gray-100">
                       Configurar perfil
                     </Link>
                   </li>
                   <li>
-                    <Link
-                      to="/cerrar-sesion"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100"
-                    >
+                    <Link to="/cerrar-sesion" className="block px-4 py-2 text-sm hover:bg-gray-100">
                       Cerrar sesión
                     </Link>
                   </li>
@@ -232,7 +200,7 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </nav>
 
-        <main className="flex-1 p-6 bg-gray-100">{children}</main>
+        <main className="p-3 bg-gray-100">{children}</main>
       </div>
     </div>
   );
