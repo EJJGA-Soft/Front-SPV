@@ -4,6 +4,7 @@ import Dashboard from "../../components/dashboard";
 import AbarrotesHome from "../../modules/views/abarrotes/abarrotes";
 import Compras from "../../components/abarrotes/compras";
 import Productos from "../../components/Inventario/Productos";
+import Usuarios from "../../components/usuarios/usuarios";
 
 export default function routes() {
     return (
@@ -15,7 +16,7 @@ export default function routes() {
           <Route path="/abarrotes" element={<AbarrotesHome />} />
           <Route path="/registro-venta" element={<Compras/>} />
           <Route path="/inventario" element={<Productos />} />
-          
+          <Route path="/usuarios" element={<Usuarios />}/>
         </Routes>
       </BrowserRouter>
     )
