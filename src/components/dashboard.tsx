@@ -130,7 +130,9 @@ const Dashboard: React.FC = () => {
         {/* Ventas del día */}
         <div className="bg-white rounded-lg p-4 shadow-md h-80">
           <h2 className="text-lg font-semibold mb-2">Ventas del día</h2>
+          <div className="p-4 h-64">
           <Bar data={data} options={options} />
+          </div>
         </div>
       </div>
 
@@ -150,7 +152,7 @@ const Dashboard: React.FC = () => {
       </div>
       
 
-        <div className="bg-white rounded-lg p-4 shadow-md h-1/2 flex flex-col">
+        <div className="bg-white rounded-lg p-4 shadow-md h-[298px] flex flex-col">
           <h2 className="text-lg font-semibold mb-2">Productos por agotarse</h2>
                 <ul>
         {[
