@@ -69,14 +69,14 @@ export default function Layout({ children }: LayoutProps) {
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
-  
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
-};
+  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-};
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -179,7 +179,7 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Contenido principal */}
       <div
-        className={`flex-1 overflow-y-auto ${
+        className={`flex-1 ${
           isMobileMenuOpen ? "ml-0" : "lg:ml-16"
         } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${
           isSidebarFull ? "ml-44" : ""
@@ -198,6 +198,7 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Icono de usuario y dropdown para todas las pantallas */}
           <div className="relative flex items-center ml-auto" ref={dropdownRef}>
+          <p className="mr-4">¡Bienvenid@ usuario!</p>
             <button
               type="button"
               className="flex items-center text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300"
@@ -244,7 +245,12 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </nav>
         {isModalOpen && <ProfileModal onClose={handleCloseModal} />}
-        <main className="flex-1 p-6 bg-gray-100">{children}</main>
+        <main className="bg-gray-100 w-full sm:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-2xl p-4 sm:p-10 mx-auto h-full overflow-y-auto custom-scrollbar">
+    {children}
+</main>
+
+
+
       </div>
     </div>
   );
