@@ -1,174 +1,78 @@
 import { useState } from "react";
 import AccountService from "../services/login/account_services";
-import { INewAccount } from "../../interfaces/newAccount._interface";
 import { useNavigate } from "react-router-dom";
-import { StatusUser } from "../../enum/enum";
 
 const accountService = new AccountService();
 
 export default function Login() {
-  const [isRegister, setIsRegister] = useState(false);
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-  const toggleView = () => {
-    setIsRegister(!isRegister);
-  };
-
-  async function RegisterUserAccount() {
-    if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden");
-      return;
-    }
-
-    const newAccount: INewAccount = {
-      name,
-      email,
-      password,
-      confirmPassword,
-      rol: "Usuario",
-      estatusUsuario: StatusUser.ACTIVO,
-    };
-
-    const response = await accountService.registerAccount(newAccount);
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const response = await accountService.loginAccount({ email, password });
 
     if (response.success) {
-      alert("Registro exitoso");
+      alert("Inicio de sesión exitoso");
       navigate("/inicio");
     } else {
-      alert("Ocurrió un error: " + response.message);
+      alert("Error al iniciar sesión: " + response.message);
     }
-  }
-
-  const handleRegisterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    RegisterUserAccount();
   };
 
   return (
     <div
-      className="relative flex items-center justify-center min-h-screen bg-cover bg-center p-4"
+      className="relative flex items-center justify-center min-h-screen p-4"
       style={{
-        backgroundImage: "url('/src/assets/images/login/background-login.jpg')",
+        backgroundImage:
+          "linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/src/assets/images/login/background.svg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-      <div
-        className="bg-white/90 p-8 rounded-lg shadow-lg max-w-sm w-full transform transition-transform duration-700"
-        style={{
-          transform: isRegister ? "rotateY(180deg)" : "rotateY(0deg)",
-          perspective: "1000px",
-          transformStyle: "preserve-3d",
-        }}
-      >
-        {/* Vista de Iniciar Sesión */}
-        {!isRegister && (
-          <div className="w-full" style={{ backfaceVisibility: "hidden" }}>
-            <h2 className="text-2xl font-bold text-center mb-6">Iniciar Sesión</h2>
-            <form className="space-y-4">
-              <div>
-                <input
-                  type="email"
-                  placeholder="Correo Electrónico"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <input
-                  type="password"
-                  placeholder="Contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Entrar
-              </button>
-            </form>
-            <div className="mt-4 w-full text-center font-bold py-2">
-              <span className="text-black">No tienes cuenta? </span>
-              <button
-                onClick={toggleView}
-                className="text-blue-600 hover:underline"
-              >
-                Regístrate
-              </button>
-            </div>
-          </div>
-        )}
+      <div className="bg-white/90 rounded-[30px] shadow-lg w-full max-w-[95%] sm:max-w-[400px] md:max-w-[500px] min-h-[500px] flex flex-col justify-center p-6 sm:p-8 md:p-10">
+        <img
+          className="mx-auto w-20 h-auto sm:w-24 mb-6 sm:mb-10"
+          src="/src/assets/images/LOGO.svg"
+          alt="LOGO"
+        />
 
-        {/* Vista de Registrarse */}
-        {isRegister && (
-          <div className="w-full" style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-            <h2 className="text-2xl font-bold text-center mb-6">Registrarse</h2>
-            <form onSubmit={handleRegisterSubmit} className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Nombre"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <input
-                  type="email"
-                  placeholder="Correo Electrónico"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <input
-                  type="password"
-                  placeholder="Contraseña"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <input
-                  type="password"
-                  placeholder="Confirmar Contraseña"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Registrarse
-              </button>
-            </form>
-            <button
-              onClick={toggleView}
-              className="mt-4 w-full text-green-600 font-bold py-2 rounded-lg"
-            >
-              Volver a Iniciar Sesión
-            </button>
+        <h2 className="text-xl sm:text-2xl font-bold text-center mb-3">
+          Inicia sesión con tu cuenta
+        </h2>
+        <p className="text-center mb-4 text-gray-600">
+          Bienvenido al sistema de abarrotes
+        </p>
+
+        <form onSubmit={handleLoginSubmit} className="space-y-4 pb-[60px] sm:pb-[80px]">
+          <div>
+            <input
+              type="email"
+              placeholder="Ingresar correo electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
           </div>
-        )}
+          <div>
+            <input
+              type="password"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors mb-6 sm:mb-[30px]"
+          >
+            Iniciar Sesión
+          </button>
+        </form>
       </div>
     </div>
   );
