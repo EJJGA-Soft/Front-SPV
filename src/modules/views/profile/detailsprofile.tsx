@@ -6,7 +6,7 @@ interface ProfileModalProps {
     onClose: () => void;
 }
 
-const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
+const ProfileModal: React.FC<ProfileModalProps> = ({onClose }) => {
     const [name, setName] = useState<string>("");
     const [correo, setCorreo] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -30,7 +30,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
 
     return (
         <div id="profile-modal" tabIndex={-1} aria-hidden="true"
-            class="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-gray-500 bg-opacity-50"
+            className="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-gray-500 bg-opacity-50"
         >
       
 

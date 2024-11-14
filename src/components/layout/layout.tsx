@@ -15,7 +15,7 @@ import {
 } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import UserIcon from "../../assets/icons/IUser.svg";
-import ProfileModal from '../../modules/views/profile/detailsprofile';
+import ProfileModal from "../../modules/views/profile/detailsprofile";
 
 interface SubItem {
   label: string;
@@ -69,6 +69,7 @@ export default function Layout({ children }: LayoutProps) {
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
+  
   const handleOpenModal = () => {
     setIsModalOpen(true);
 };
@@ -76,8 +77,6 @@ export default function Layout({ children }: LayoutProps) {
   const handleCloseModal = () => {
     setIsModalOpen(false);
 };
-
-  
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -105,7 +104,7 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="relative flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* Backdrop para móvil */}
       {isMobileMenuOpen && (
         <div
@@ -120,7 +119,7 @@ export default function Layout({ children }: LayoutProps) {
           isMobileMenuOpen ? "translate-x-0 w-64" : "-translate-x-full"
         } lg:translate-x-0 lg:${isSidebarFull ? "w-64" : "w-16"}`}
       >
-        <div className="h-full px-4 py-6 bg-white">
+        <div className="h-full flex flex-col justify-between px-4 py-6 bg-white">
           <div className="flex mb-6 lg:hidden">
             <button
               type="button"
@@ -144,7 +143,7 @@ export default function Layout({ children }: LayoutProps) {
             </button>
           </div>
 
-          <ul className="space-y-4">
+          <ul className="space-y-4 flex-grow">
             {menuItems.map((item, index) => (
               <li key={index}>
                 <Link
@@ -162,7 +161,7 @@ export default function Layout({ children }: LayoutProps) {
             ))}
           </ul>
 
-          <div className="mt-3">
+          <div className="mb-4">
             <Link
               to="/cerrar-sesion"
               className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
@@ -180,9 +179,12 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Contenido principal */}
       <div
-        className={`flex-1 transition-all duration-300 ${
-          isMobileMenuOpen ? "ml-0" : `lg:${isSidebarFull ? "ml-64" : "ml-16"}`
-        } flex flex-col`}
+        className={`flex-1 overflow-y-auto ${
+          isMobileMenuOpen ? "ml-0" : "lg:ml-16"
+        } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${
+          isSidebarFull ? "ml-44" : ""
+        }`}
+        style={{ marginLeft: isSidebarFull ? "11rem" : "" }}
       >
         <nav className="bg-white border-b border-gray-300 p-4 flex items-center justify-between">
           {/* Botón de menú para dispositivos móviles */}
@@ -221,13 +223,13 @@ export default function Layout({ children }: LayoutProps) {
                   </span>
                 </div>
                 <ul className="py-1">
-                <li
-                onClick={handleOpenModal}
-                className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-              >
-                Configurar perfil
-              </li>
-              
+                  <li
+                    onClick={handleOpenModal}
+                    className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                  >
+                    Configurar perfil
+                  </li>
+
                   <li>
                     <Link
                       to="/cerrar-sesion"
@@ -241,7 +243,7 @@ export default function Layout({ children }: LayoutProps) {
             )}
           </div>
         </nav>
-        {isModalOpen && <ProfileModal onClose={handleCloseModal} />}     
+        {isModalOpen && <ProfileModal onClose={handleCloseModal} />}
         <main className="flex-1 p-6 bg-gray-100">{children}</main>
       </div>
     </div>
