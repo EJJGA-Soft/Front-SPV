@@ -22,7 +22,7 @@ const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose }) => {
   };
 
   const handlePaymentTypeChange = (type: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que el clic se propague y cierre el modal
+    e.stopPropagation();
     setPaymentType(type);
   };
 
