@@ -15,7 +15,7 @@ import {
 } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import UserIcon from "../../assets/icons/IUser.svg";
-import ProfileModal from "../../modules/views/profile/detailsprofile";
+import ProfileModal from "../profile/detailsprofile";
 
 interface SubItem {
   label: string;

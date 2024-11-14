@@ -1,8 +1,8 @@
 import React from 'react';
-import Layout from '../layout/layout';
-import Logotipo from '../../assets/images/LOGO.svg'
+import Layout from '../../../components/layout/layout';
+import Logotipo from '../../../assets/images/LOGO.svg'
 import { Link } from 'react-router-dom';
-const CardComponent: React.FC = () => {
+const AbarrotesHome: React.FC = () => {
   return (
     <>
     <Layout>
@@ -27,9 +27,11 @@ const CardComponent: React.FC = () => {
         </div>
 
         <div className="flex justify-center">
-          <div className="w-64 p-6 border-4 border-purple-500 rounded-lg shadow-lg text-center">
+        <Link to="/historialventas">
+          <div className="w-64 p-6 border-4 border-purple-500 rounded-lg shadow-lg text-center cursor-pointer hover:bg-purple-50">
             <h3 className="text-xl font-semibold text-purple-500 mb-4">Detalle de Ventas</h3>
           </div>
+        </Link>
         </div>
       </div>
     </div>
@@ -38,4 +40,4 @@ const CardComponent: React.FC = () => {
   );
 };
 
-export default CardComponent;
+export default AbarrotesHome;

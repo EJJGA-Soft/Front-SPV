@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { evaluatePassword } from "../../services/profile/password_evaluate";
+import { evaluatePassword } from "../../modules/services/profile/password_evaluate";
 
 interface ProfileModalProps {
     isOpen: boolean;
