@@ -10,7 +10,7 @@ export default function routes() {
       <BrowserRouter>
         <Routes>
           {/*<Route path="*"  element={<Page404/>}/> */}
-          <Route path="/inicio" element={<Dashboard/>}/>
+          <Route path="/inicio" index element={<Dashboard/>}/>
           <Route path="/login" element={<Login/>}/>
           <Route path="/abarrotes" element={<CardComponent />} />
           <Route path="/registro-venta" element={<Compras/>} />
