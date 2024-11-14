@@ -8,9 +8,14 @@ import {
   HiOutlineLogout,
 } from "react-icons/hi";
 import { FiMenu, FiX } from "react-icons/fi";
-import { FaCashRegister, FaFileInvoiceDollar, FaClipboardList } from "react-icons/fa";
+import {
+  FaCashRegister,
+  FaFileInvoiceDollar,
+  FaClipboardList,
+} from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import UserIcon from "../../assets/icons/IUser.svg";
+import ProfileModal from "../../modules/views/profile/detailsprofile";
 
 interface SubItem {
   label: string;
@@ -32,9 +37,17 @@ const menuItems: MenuItem[] = [
     icon: <HiOutlineShoppingCart />,
     link: "/abarrotes",
     subItems: [
-      { label: "Registrar venta", link: "/registro-venta", icon: <FaClipboardList /> },
+      {
+        label: "Registrar venta",
+        link: "/registro-venta",
+        icon: <FaClipboardList />,
+      },
       { label: "Corte de caja", link: "/corte-caja", icon: <FaCashRegister /> },
-      { label: "Detalle de ventas", link: "/detalle-ventas", icon: <FaFileInvoiceDollar /> },
+      {
+        label: "Detalle de ventas",
+        link: "/detalle-ventas",
+        icon: <FaFileInvoiceDollar />,
+      },
     ],
   },
   { label: "Usuarios", icon: <HiOutlineUserGroup />, link: "/usuarios" },
@@ -50,15 +63,27 @@ export default function Layout({ children }: LayoutProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSidebarFull, setIsSidebarFull] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
+  
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+};
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+};
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -153,8 +178,14 @@ export default function Layout({ children }: LayoutProps) {
       </aside>
 
       {/* Contenido principal */}
-      <div className={`flex-1 overflow-y-auto ${ isMobileMenuOpen ? "ml-0" : "lg:ml-16" } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${ isSidebarFull ? "ml-44" : "" }`} style={{ marginLeft: isSidebarFull ? "11rem" : "", }} >
-
+      <div
+        className={`flex-1 overflow-y-auto ${
+          isMobileMenuOpen ? "ml-0" : "lg:ml-16"
+        } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${
+          isSidebarFull ? "ml-44" : ""
+        }`}
+        style={{ marginLeft: isSidebarFull ? "11rem" : "" }}
+      >
         <nav className="bg-white border-b border-gray-300 p-4 flex items-center justify-between">
           {/* Botón de menú para dispositivos móviles */}
           <button onClick={toggleMobileMenu} className="text-2xl lg:hidden">
@@ -174,23 +205,36 @@ export default function Layout({ children }: LayoutProps) {
               aria-label="Abrir perfil"
               title="Abrir perfil"
             >
-              <img className="w-8 h-8 rounded-full" src={UserIcon} alt="User Icon" />
+              <img
+                className="w-8 h-8 rounded-full"
+                src={UserIcon}
+                alt="User Icon"
+              />
             </button>
 
             {isDropdownOpen && (
               <div className="absolute right-0 top-10 w-48 z-50 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                 <div className="px-4 py-2 border-b border-gray-200">
-                  <span className="block text-sm font-semibold">Bonnie Green</span>
-                  <span className="block text-sm text-gray-500">Administrador</span>
+                  <span className="block text-sm font-semibold">
+                    Bonnie Green
+                  </span>
+                  <span className="block text-sm text-gray-500">
+                    Administrador
+                  </span>
                 </div>
                 <ul className="py-1">
-                  <li>
-                    <Link to="/perfil" className="block px-4 py-2 text-sm hover:bg-gray-100">
-                      Configurar perfil
-                    </Link>
+                  <li
+                    onClick={handleOpenModal}
+                    className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                  >
+                    Configurar perfil
                   </li>
+
                   <li>
-                    <Link to="/cerrar-sesion" className="block px-4 py-2 text-sm hover:bg-gray-100">
+                    <Link
+                      to="/cerrar-sesion"
+                      className="block px-4 py-2 text-sm hover:bg-gray-100"
+                    >
                       Cerrar sesión
                     </Link>
                   </li>
@@ -199,8 +243,8 @@ export default function Layout({ children }: LayoutProps) {
             )}
           </div>
         </nav>
-
-        <main className="p-3 bg-gray-100">{children}</main>
+        {isModalOpen && <ProfileModal onClose={handleCloseModal} />}
+        <main className="flex-1 p-6 bg-gray-100">{children}</main>
       </div>
     </div>
   );
