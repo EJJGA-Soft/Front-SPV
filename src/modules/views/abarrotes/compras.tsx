@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import CobroModal from "./cobromodal";
-import Layout from "../layout/layout";
+import CobroModal from "../../../components/abarrotes/ModalCobro";
+import Layout from "../../../components/layout/layout";
 
 const Compras: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

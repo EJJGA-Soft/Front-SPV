@@ -61,10 +61,46 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isSidebarFull, setIsSidebarFull] = useState(false);
+  const [isSidebarFull, setIsSidebarFull] = useState<boolean>(() => {
+    const savedState = localStorage.getItem("sidebar-state");
+    if (savedState === "true") {
+      return true;
+    } else if (savedState === "false") {
+      return false;
+    }
+  
+    return false;
+  });
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const Convert = (value: boolean): string => {
+    return value.toString();
+  };
+
+  useEffect(() => {
+    localStorage.setItem("sidebar-state", Convert(isSidebarFull));
+  }, [isSidebarFull]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setIsSidebarFull(false);
+      } else {
+        setIsSidebarFull(isSidebarFull);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -115,10 +151,11 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen transition-transform duration-300 border-r border-gray-300 bg-white shadow-lg ${
-          isMobileMenuOpen ? "translate-x-0 w-64" : "-translate-x-full"
-        } lg:translate-x-0 lg:${isSidebarFull ? "w-64" : "w-16"}`}
-      >
+      className={`fixed top-0 left-0 z-40 h-screen transition-transform duration-300 border-r border-gray-300 bg-white shadow-lg ${
+        isMobileMenuOpen ? "translate-x-0 w-48" : "-translate-x-full"
+      } lg:translate-x-0 lg:${isSidebarFull ? "w-48" : "w-14"}`}
+    >
+    
         <div className="h-full flex flex-col justify-between px-4 py-6 bg-white">
           <div className="flex mb-6 lg:hidden">
             <button
@@ -198,7 +235,7 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Icono de usuario y dropdown para todas las pantallas */}
           <div className="relative flex items-center ml-auto" ref={dropdownRef}>
-          <p className="mr-4">¡Bienvenid@ usuario!</p>
+            <p className="mr-4">¡Bienvenid@ usuario!</p>
             <button
               type="button"
               className="flex items-center text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300"
@@ -245,12 +282,9 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </nav>
         {isModalOpen && <ProfileModal onClose={handleCloseModal} />}
-        <main className="bg-gray-100 w-full sm:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-2xl p-4 sm:p-10     h-full overflow-y-auto custom-scrollbar">
-    {children}
-</main>
-
-
-
+        <main className="bg-gray-100 w-full max-w-full p-4 sm:p-10 pr-4 mx-auto h-auto overflow-y-auto custom-scrollbar sm:h-auto md:h-auto">
+          {children}
+        </main>
       </div>
     </div>
   );
