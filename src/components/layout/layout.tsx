@@ -63,11 +63,13 @@ export default function Layout({ children }: LayoutProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSidebarFull, setIsSidebarFull] = useState<boolean>(() => {
     const savedState = localStorage.getItem("sidebar-state");
-    try {
-      return savedState ? JSON.parse(savedState) : false;
-    } catch (error) {
-      return error;
+    if (savedState === "true") {
+      return true;
+    } else if (savedState === "false") {
+      return false;
     }
+  
+    return false;
   });
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -85,21 +87,16 @@ export default function Layout({ children }: LayoutProps) {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 768) {
-        // Si la pantalla es pequeña (versión móvil), cerramos el sidebar
         setIsSidebarFull(false);
       } else {
-        // Si la pantalla es grande, restauramos el estado del sidebar
-        setIsSidebarFull(true);
+        setIsSidebarFull(isSidebarFull);
       }
     };
 
-    // Agregar el listener para el cambio de tamaño de la ventana
     window.addEventListener("resize", handleResize);
 
-    // Llamamos a handleResize al cargar la página para ajustarse al tamaño inicial
     handleResize();
 
-    // Limpiamos el listener cuando el componente se desmonte
     return () => {
       window.removeEventListener("resize", handleResize);
     };
