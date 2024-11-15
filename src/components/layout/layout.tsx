@@ -245,7 +245,7 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </nav>
         {isModalOpen && <ProfileModal onClose={handleCloseModal} />}
-        <main className="bg-gray-100 w-full sm:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-2xl p-4 sm:p-10 mx-auto h-full overflow-y-auto custom-scrollbar">
+        <main className="bg-gray-100 w-full sm:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-2xl p-4 sm:p-10     h-full overflow-y-auto custom-scrollbar">
     {children}
 </main>
 

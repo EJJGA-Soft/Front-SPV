@@ -4,6 +4,7 @@ import './style/global/tailwindcss.css'
 import Routes from './routes/global/Routes.tsx'
 
 createRoot(document.getElementById('root')!).render(
+  
   <StrictMode>
     <Routes />
   </StrictMode>,

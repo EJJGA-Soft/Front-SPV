@@ -1,6 +1,14 @@
+@import 'typeface-montserrat'; 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+* {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+}
 
 /* Estilos del scrollbar personalizados para navegadores WebKit */
 .custom-scrollbar::-webkit-scrollbar {
@@ -19,4 +27,3 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: #777f8a; /* Color de la barra al pasar el mouse */
 }
-

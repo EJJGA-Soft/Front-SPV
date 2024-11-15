@@ -38,9 +38,9 @@ const VentasHome: React.FC = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto mt-10 min-h-screen flex flex-col">
+      <div className="container mx-auto min-h-screen flex flex-col">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Detalle de ventas</h1>
+          <h1 className="text-2xl font-semibold">Detalle de ventas</h1>
           <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
             Exportar PDF
           </button>
