@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <> 
-    <Layout>
+    <Layout enableScroll={true}>
 
     <div className="p-4 grid grid-cols-1 md:grid-cols-5 gap-4 h-screen">
       {/* Columna Izquierda (60% de ancho) */}
