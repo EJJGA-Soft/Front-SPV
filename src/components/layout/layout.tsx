@@ -61,10 +61,49 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isSidebarFull, setIsSidebarFull] = useState(false);
+  const [isSidebarFull, setIsSidebarFull] = useState<boolean>(() => {
+    const savedState = localStorage.getItem("sidebar-state");
+    try {
+      return savedState ? JSON.parse(savedState) : false;
+    } catch (error) {
+      return error;
+    }
+  });
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const Convert = (value: boolean): string => {
+    return value.toString();
+  };
+
+  useEffect(() => {
+    localStorage.setItem("sidebar-state", Convert(isSidebarFull));
+  }, [isSidebarFull]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        // Si la pantalla es pequeña (versión móvil), cerramos el sidebar
+        setIsSidebarFull(false);
+      } else {
+        // Si la pantalla es grande, restauramos el estado del sidebar
+        setIsSidebarFull(true);
+      }
+    };
+
+    // Agregar el listener para el cambio de tamaño de la ventana
+    window.addEventListener("resize", handleResize);
+
+    // Llamamos a handleResize al cargar la página para ajustarse al tamaño inicial
+    handleResize();
+
+    // Limpiamos el listener cuando el componente se desmonte
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -198,7 +237,7 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Icono de usuario y dropdown para todas las pantallas */}
           <div className="relative flex items-center ml-auto" ref={dropdownRef}>
-          <p className="mr-4">¡Bienvenid@ usuario!</p>
+            <p className="mr-4">¡Bienvenid@ usuario!</p>
             <button
               type="button"
               className="flex items-center text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300"
@@ -245,12 +284,9 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </nav>
         {isModalOpen && <ProfileModal onClose={handleCloseModal} />}
-        <main className="bg-gray-100 w-full sm:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-2xl p-4 sm:p-10     h-full overflow-y-auto custom-scrollbar">
-    {children}
-</main>
-
-
-
+        <main className="bg-gray-100 w-full max-w-full p-4 sm:p-10 pr-4 mx-auto h-auto overflow-y-auto custom-scrollbar sm:h-auto md:h-auto">
+          {children}
+        </main>
       </div>
     </div>
   );
