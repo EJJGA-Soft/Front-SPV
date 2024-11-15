@@ -68,7 +68,7 @@ export default function Layout({ children }: LayoutProps) {
     } else if (savedState === "false") {
       return false;
     }
-  
+
     return false;
   });
 
@@ -151,11 +151,10 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Sidebar */}
       <aside
-      className={`fixed top-0 left-0 z-40 h-screen transition-transform duration-300 border-r border-gray-300 bg-white shadow-lg ${
-        isMobileMenuOpen ? "translate-x-0 w-48" : "-translate-x-full"
-      } lg:translate-x-0 lg:${isSidebarFull ? "w-48" : "w-14"}`}
-    >
-    
+        className={`fixed top-0 left-0 z-40 h-screen transition-transform duration-300 border-r border-gray-300 bg-white shadow-lg ${
+          isMobileMenuOpen ? "translate-x-0 w-48" : "-translate-x-full"
+        } lg:translate-x-0 lg:${isSidebarFull ? "w-64" : "w-14"}`}
+      >
         <div className="h-full flex flex-col justify-between px-4 py-6 bg-white">
           <div className="flex mb-6 lg:hidden">
             <button
@@ -176,27 +175,47 @@ export default function Layout({ children }: LayoutProps) {
               onClick={toggleSidebar}
               className="text-gray-700 text-2xl focus:outline-none"
             >
-              {isSidebarFull ? <FiX /> : <FiMenu className="mr-[10px]" />}
+              {isSidebarFull ? <FiX /> : <FiMenu className="mr-[17px]" />}
             </button>
           </div>
 
           <ul className="space-y-4 flex-grow">
-            {menuItems.map((item, index) => (
-              <li key={index}>
-                <Link
-                  to={item.link}
-                  className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
-                    isSidebarFull ? "justify-start" : "justify-center"
-                  }`}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  {(isSidebarFull || isMobileMenuOpen) && (
-                    <span className="ml-3">{item.label}</span>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
+  {menuItems.map((item, index) => (
+    <li key={index}>
+      <Link
+        to={item.link}
+        className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
+          isSidebarFull ? "justify-start" : "justify-center"
+        }`}
+      >
+        <span className="text-xl">{item.icon}</span>
+        {(isSidebarFull || isMobileMenuOpen) && (
+          <span className="ml-3">{item.label}</span>
+        )}
+      </Link>
+
+      {/* Mapeo de subitems */}
+      {item.subItems && item.subItems.length > 0 && (
+        <ul className="ml-6 space-y-2 mt-2">
+          {item.subItems.map((subItem, subIndex) => (
+            <li key={subIndex}>
+              <Link
+                to={subItem.link}
+                className="flex items-center w-full p-2 text-gray-600 rounded-lg hover:bg-gray-200"
+              >
+                <span className="text-xl">{subItem.icon}</span>
+                {(isSidebarFull || isMobileMenuOpen) && (
+                  <span className="ml-3">{subItem.label}</span>
+                )}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </li>
+  ))}
+</ul>
+
 
           <div className="mb-4">
             <Link
@@ -221,7 +240,7 @@ export default function Layout({ children }: LayoutProps) {
         } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${
           isSidebarFull ? "ml-44" : ""
         }`}
-        style={{ marginLeft: isSidebarFull ? "11rem" : "" }}
+        style={{ marginLeft: isSidebarFull ? "13rem" : "" }}
       >
         <nav className="bg-white border-b border-gray-300 p-4 flex items-center justify-between">
           {/* Botón de menú para dispositivos móviles */}
@@ -234,8 +253,13 @@ export default function Layout({ children }: LayoutProps) {
           </button>
 
           {/* Icono de usuario y dropdown para todas las pantallas */}
+          {/* Icono de usuario y dropdown para todas las pantallas */}
           <div className="relative flex items-center ml-auto" ref={dropdownRef}>
-            <p className="mr-4">¡Bienvenid@ usuario!</p>
+            {/* Título de bienvenida, con ajuste responsivo */}
+            <p className="mr-4 text-sm sm:text-base lg:text-lg">
+              ¡Bienvenid@ usuario!
+            </p>
+
             <button
               type="button"
               className="flex items-center text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300"
