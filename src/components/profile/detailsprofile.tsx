@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { evaluatePassword } from "../../modules/services/profile/password_evaluate";
 
 interface ProfileModalProps {
-    isOpen: boolean;
+    isOpen?: boolean;
     onClose: () => void;
 }
 
