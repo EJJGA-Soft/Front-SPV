@@ -115,10 +115,11 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen transition-transform duration-300 border-r border-gray-300 bg-white shadow-lg ${
-          isMobileMenuOpen ? "translate-x-0 w-64" : "-translate-x-full"
-        } lg:translate-x-0 lg:${isSidebarFull ? "w-64" : "w-16"}`}
-      >
+      className={`fixed top-0 left-0 z-40 h-screen transition-transform duration-300 border-r border-gray-300 bg-white shadow-lg ${
+        isMobileMenuOpen ? "translate-x-0 w-48" : "-translate-x-full"
+      } lg:translate-x-0 lg:${isSidebarFull ? "w-48" : "w-14"}`}
+    >
+    
         <div className="h-full flex flex-col justify-between px-4 py-6 bg-white">
           <div className="flex mb-6 lg:hidden">
             <button
