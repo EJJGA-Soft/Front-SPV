@@ -6,21 +6,85 @@ import Compras from "../../modules/views/abarrotes/compras";
 import Productos from "../../components/Inventario/Productos";
 import Usuarios from "../../components/usuarios/usuarios";
 import VentasHome from "../../modules/views/ventas/ventashome";
+import { UserStore } from "../../security/store/userStore";
+import ProtectedRoute from "../../security/strategy/ProtectedRoutes";
+import Page404 from "../../errors/views/page404";
 
-export default function routes() {
-    return (
-      <BrowserRouter>
-        <Routes>
-          {/*<Route path="*"  element={<Page404/>}/> */}
-          <Route path="/inicio" element={<Dashboard/>}/>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route index path="/login" element={<Login/>}/>
-          <Route path="/abarrotes" element={<AbarrotesHome />} />
-          <Route path="/registro-venta" element={<Compras/>} />
-          <Route path="/historialventas" element={<VentasHome/>} />
-          <Route path="/inventario" element={<Productos />} />
-          <Route path="/usuarios" element={<Usuarios />}/>
-        </Routes>
-      </BrowserRouter>
-    )
-  } 
+export default function AppRoutes() {
+  const status = UserStore((state) => state.status);
+  const isAuthenticated = status === "authenticated";
+
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        {/* Ruta para el error 404 */}
+        <Route path="*" element={<Page404 />} />
+
+        {/* Rutas públicas */}
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? <Navigate to="/inicio" replace /> : <Login />
+          }
+        />
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Navigate to="/inicio" replace /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Rutas protegidas */}
+        <Route
+          path="/inicio"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/abarrotes"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <AbarrotesHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/registro-venta"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Compras />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/historialventas"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <VentasHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inventario"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Productos />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Usuarios />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+}
