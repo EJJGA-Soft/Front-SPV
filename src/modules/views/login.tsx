@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AccountService from "../services/login/account_services";
 import { useNavigate } from "react-router-dom";
+import { ResponseHelper } from "../../interfaces/responseHelper_interface";
 
 const accountService = new AccountService();
 
@@ -11,13 +12,13 @@ export default function Login() {
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await accountService.loginAccount({ email, password });
 
-    if (response.success) {
-      alert("Inicio de sesión exitoso");
+    const response = await accountService.Login({ email, password });
+    const results = response as ResponseHelper;
+    if(results.success == true) {
       navigate("/inicio");
     } else {
-      alert("Error al iniciar sesión: " + response.message);
+      alert("El usuario no existe, o la contraseña es incorrecta. Comprueba tu cuenta.")
     }
   };
 
