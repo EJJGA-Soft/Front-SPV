@@ -6,7 +6,7 @@ const Productos = () => {
       <Layout>
 
         <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-          <div className="p-4">
+          <div className="p-4 h-screen">
             
             <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-4xl mx-auto">
               <h2 className="text-center text-xl font-semibold mb-4">
@@ -24,21 +24,21 @@ const Productos = () => {
                   <a href="#" className="text-orange-600 font-semibold">
                     Total de productos
                   </a>
-                  <p className="text-lg mt-2">350</p>
+                  <p className="text-lg mt-2 font-semibold">350</p>
                 </div>
                 <div className="border-l border-gray-300" />
                 <div className="text-center">
                   <a href="#" className="text-purple-600 font-semibold">
                     Los más vendidos
                   </a>
-                  <p className="text-lg mt-2">14</p>
+                  <p className="text-lg mt-2 font-semibold">14</p>
                 </div>
                 <div className="border-l border-gray-300" />
                 <div className="text-center">
                   <a href="#" className="text-red-600 font-semibold">
                     Productos por agotarse
                   </a>
-                  <p className="text-lg mt-2">14</p>
+                  <p className="text-lg mt-2 font-semibold">14</p>
                 </div>
               </div>
             </div>
@@ -51,7 +51,7 @@ const Productos = () => {
               </button>
             </div>
 
-            <div style={{ flexGrow: 1, overflowY: "auto" }}>
+            <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <thead>
                   <tr className="bg-gray-100 text-gray-700 uppercase text-sm leading-normal">
@@ -100,8 +100,6 @@ const Productos = () => {
                 </tbody>
               </table>
             </div>
-
-
 
             {/* Paginacion */}
             <div className="flex justify-between items-center py-8">
