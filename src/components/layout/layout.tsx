@@ -16,6 +16,7 @@ import {
 import { useState, useRef, useEffect } from "react";
 import UserIcon from "../../assets/icons/IUser.svg";
 import ProfileModal from "../profile/detailsprofile";
+import { UserStore } from "../../security/store/userStore";
 
 interface SubItem {
   label: string;
@@ -71,10 +72,13 @@ export default function Layout({ children }: LayoutProps) {
 
     return false;
   });
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  //Usuario Store.
+  const username = UserStore(state => state.name);
+  const role = UserStore(state => state.rol)
 
   const Convert = (value: boolean): string => {
     return value.toString();
@@ -180,42 +184,41 @@ export default function Layout({ children }: LayoutProps) {
           </div>
 
           <ul className="space-y-4 flex-grow">
-  {menuItems.map((item, index) => (
-    <li key={index}>
-      <Link
-        to={item.link}
-        className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
-          isSidebarFull ? "justify-start" : "justify-center"
-        }`}
-      >
-        <span className="text-xl">{item.icon}</span>
-        {(isSidebarFull || isMobileMenuOpen) && (
-          <span className="ml-3">{item.label}</span>
-        )}
-      </Link>
+            {menuItems.map((item, index) => (
+              <li key={index}>
+                <Link
+                  to={item.link}
+                  className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
+                    isSidebarFull ? "justify-start" : "justify-center"
+                  }`}
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  {(isSidebarFull || isMobileMenuOpen) && (
+                    <span className="ml-3">{item.label}</span>
+                  )}
+                </Link>
 
-      {/* Mapeo de subitems */}
-      {item.subItems && item.subItems.length > 0 && (
-        <ul className="ml-6 space-y-2 mt-2">
-          {item.subItems.map((subItem, subIndex) => (
-            <li key={subIndex}>
-              <Link
-                to={subItem.link}
-                className="flex items-center w-full p-2 text-gray-600 rounded-lg hover:bg-gray-200"
-              >
-                <span className="text-xl">{subItem.icon}</span>
-                {(isSidebarFull || isMobileMenuOpen) && (
-                  <span className="ml-3">{subItem.label}</span>
+                {/* Mapeo de subitems */}
+                {item.subItems && item.subItems.length > 0 && (
+                  <ul className="ml-6 space-y-2 mt-2">
+                    {item.subItems.map((subItem, subIndex) => (
+                      <li key={subIndex}>
+                        <Link
+                          to={subItem.link}
+                          className="flex items-center w-full p-2 text-gray-600 rounded-lg hover:bg-gray-200"
+                        >
+                          <span className="text-xl">{subItem.icon}</span>
+                          {(isSidebarFull || isMobileMenuOpen) && (
+                            <span className="ml-3">{subItem.label}</span>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 )}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </li>
-  ))}
-</ul>
-
+              </li>
+            ))}
+          </ul>
 
           <div className="mb-4">
             <Link
@@ -257,7 +260,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="relative flex items-center ml-auto" ref={dropdownRef}>
             {/* Título de bienvenida, con ajuste responsivo */}
             <p className="mr-4 text-sm sm:text-base lg:text-lg">
-              ¡Bienvenid@ usuario!
+              ¡Bienvenid@ {username}!
             </p>
 
             <button
@@ -278,10 +281,10 @@ export default function Layout({ children }: LayoutProps) {
               <div className="absolute right-0 top-10 w-48 z-50 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                 <div className="px-4 py-2 border-b border-gray-200">
                   <span className="block text-sm font-semibold">
-                    Bonnie Green
+                    {username}
                   </span>
                   <span className="block text-sm text-gray-500">
-                    Administrador
+                    {role}
                   </span>
                 </div>
                 <ul className="py-1">
@@ -306,7 +309,23 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </nav>
         {isModalOpen && <ProfileModal onClose={handleCloseModal} />}
-        <main className="bg-gray-100 w-full max-w-full p-4 sm:p-10 pr-4 mx-auto h-auto overflow-y-auto custom-scrollbar sm:h-auto md:h-auto">
+        <main
+          className="
+  bg-gray-100 
+  w-full 
+  max-w-full 
+  mx-auto 
+  p-4 
+  sm:p-10
+  md:p-8 
+  lg:p-10 
+  xl:p-12 
+  2xl:p-16 
+  h-auto 
+  overflow-y-auto 
+  custom-scrollbar
+"
+        >
           {children}
         </main>
       </div>
