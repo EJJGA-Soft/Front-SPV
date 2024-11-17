@@ -2,18 +2,17 @@ import React, { useState } from "react";
 import { ProveedoresTableProps } from "../../interfaces/ProveedoresTableProps";
 import ProveedoresModal from "./ModalProveedores";
 import { HiPencil, HiTrash } from 'react-icons/hi';
-
-interface Proveedor {
-  nombreEmpresa: string;
-  productoProveedor: string[];
-  numeroContacto: string;
-}
+import { Proveedores } from "../../interfaces/proveedores_interface";
+import ConfirmDeleteModal from "../ModalDelete";
 
 const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
   proveedores, currentPage, proveedoresPerPage, handleNextPage, handlePrevPage,
 }) => {
+
   const [isModalOpen, setModalOpen] = useState(false);
-  const [proveedorSeleccionado, setProveedorSeleccionado] = useState<Proveedor | null>(null);
+  const [proveedorSeleccionado, setProveedorSeleccionado] = useState<Proveedores | null>(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [proveedorAEliminar, setProveedorAEliminar] = useState<Proveedores | null>(null);
 
   const indexOfLastProveedor = currentPage * proveedoresPerPage;
   const indexOfFirstProveedor = indexOfLastProveedor - proveedoresPerPage;
@@ -21,7 +20,7 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
 
   const emptyRows = proveedoresPerPage - currentProveedores.length;
 
-  const handleOpenModal = (proveedor: Proveedor) => {
+  const handleOpenModal = (proveedor: Proveedores) => {
     setProveedorSeleccionado(proveedor);
     setModalOpen(true);
   };
@@ -29,6 +28,27 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
   const handleCloseModal = () => {
     setModalOpen(false);
     setProveedorSeleccionado(null);
+  };
+
+  const handleOpenDeleteModal = (proveedor: Proveedores) => {
+    setProveedorAEliminar(proveedor);
+    setDeleteModalOpen(true);
+  }
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setProveedorAEliminar(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (proveedorAEliminar && proveedorAEliminar.id) {
+      console.log("Proveedor eliminado:", proveedorAEliminar.id);
+      proveedores = proveedores.filter(p => p.id !== proveedorAEliminar.id);
+      setDeleteModalOpen(false);
+      setProveedorAEliminar(null);
+    } else {
+      console.error("Error: Proveedor no encontrado o no tiene un ID válido");
+    }
   };
 
   return (
@@ -58,7 +78,7 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
                 </button>
 
                 <button
-                  onClick={() => console.log("Eliminar proveedor", proveedor.id)}
+                  onClick={() => handleOpenDeleteModal(proveedor)}
                   className="text-red-500 hover:text-red-700"
                   aria-label="Eliminar proveedor"
                 >
@@ -98,13 +118,20 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
       </div>
 
       {proveedorSeleccionado && isModalOpen && (
-        <ProveedoresModal
+        <ProveedoresModal 
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           proveedor={proveedorSeleccionado}
-          onSave={(proveedor) => {
-            console.log("Proveedor actualizado:", proveedor);
-          }}
+        />
+      )}
+
+      {proveedorAEliminar && isDeleteModalOpen && (
+        <ConfirmDeleteModal 
+          isOpen={isDeleteModalOpen}
+          onClose={handleCloseDeleteModal}
+          onConfirmDelete={handleConfirmDelete}
+          entity="proveedor"
+          itemEntity={proveedorAEliminar.nombreEmpresa}
         />
       )}
     </div>
