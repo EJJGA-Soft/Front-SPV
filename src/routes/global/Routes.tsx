@@ -6,6 +6,7 @@ import Compras from "../../modules/views/abarrotes/compras";
 import Productos from "../../components/Inventario/Productos";
 import Usuarios from "../../components/usuarios/usuarios";
 import VentasHome from "../../modules/views/ventas/ventashome";
+import ProveedoresHome from "../../modules/views/proveedores/proveedoreshome";
 import { UserStore } from "../../security/store/userStore";
 import ProtectedRoute from "../../security/strategy/ProtectedRoutes";
 import Page404 from "../../errors/views/page404";
@@ -81,6 +82,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <Usuarios />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/proveedores"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProveedoresHome />
             </ProtectedRoute>
           }
         />
