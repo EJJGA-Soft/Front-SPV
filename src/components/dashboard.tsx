@@ -67,10 +67,8 @@ const Dashboard: React.FC = () => {
     <> 
     <Layout>
 
-    <div className="p-4 grid grid-cols-1 md:grid-cols-5 gap-4 h-screen">
-      {/* Columna Izquierda (60% de ancho) */}
+    <div className=" grid grid-cols-1 md:grid-cols-5 gap-3">
       <div className="md:col-span-3 space-y-4">
-        {/* Resumen de ventas */}
         <div className="bg-white rounded-lg p-4 shadow-md">
      <h2 className="text-lg font-semibold mb-2">Resumen de ventas</h2>
       <div className="flex justify-around items-center">
