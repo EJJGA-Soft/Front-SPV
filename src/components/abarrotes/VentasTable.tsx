@@ -24,7 +24,6 @@ const VentasTable: React.FC<VentasTableProps> = ({
   handleNextPage,
   handlePrevPage,
 }) => {
-  // Estados para controlar el modal y la venta seleccionada
   const [isModalOpen, setModalOpen] = useState(false);
   const [ventaSeleccionada, setVentaSeleccionada] = useState<Venta | null>(null);
 
@@ -34,13 +33,11 @@ const VentasTable: React.FC<VentasTableProps> = ({
 
   const emptyRows = ventasPerPage - currentVentas.length;
 
-  // Función para abrir el modal con la venta seleccionada
   const handleOpenModal = (venta: Venta) => {
     setVentaSeleccionada(venta);
     setModalOpen(true);
   };
 
-  // Función para cerrar el modal
   const handleCloseModal = () => {
     setModalOpen(false);
     setVentaSeleccionada(null);
