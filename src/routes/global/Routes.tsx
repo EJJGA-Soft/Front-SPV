@@ -3,7 +3,7 @@ import Login from "../../modules/views/login";
 import Dashboard from "../../components/dashboard";
 import AbarrotesHome from "../../modules/views/abarrotes/abarrotes";
 import Compras from "../../modules/views/abarrotes/compras";
-import Productos from "../../components/Inventario/Productos";
+import Productos from "../../components/Inventario/ProductsTable";
 import Usuarios from "../../components/usuarios/usuarios";
 import VentasHome from "../../modules/views/ventas/ventashome";
 import ProveedoresHome from "../../modules/views/proveedores/proveedoreshome";
@@ -69,14 +69,14 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/inventario"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <Productos />
             </ProtectedRoute>
           }
-        />
+        /> */}
         <Route
           path="/usuarios"
           element={
