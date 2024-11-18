@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { evaluatePassword } from "../../modules/services/profile/password_evaluate";
+import { IoMdClose } from 'react-icons/io';
+
 
 interface ProfileModalProps {
     isOpen?: boolean;
@@ -38,15 +40,13 @@ const ProfileModal: React.FC<ProfileModalProps> = ({onClose }) => {
                 <div className="flex items-center justify-between p-4 border-b rounded-t">
                     <h3 className="text-lg font-semibold text-gray-900">Editar Perfil</h3>
                     <button
-                        type="button"
-                        onClick={onClose}
-                        className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
-                    >
-                        <svg className="w-3 h-3" aria-hidden="true" fill="none" viewBox="0 0 14 14">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1l6 6m0 0l6 6M7 7L1 1m6 6l6-6" />
-                        </svg>
-                        <span className="sr-only">Close modal</span>
-                    </button>
+                    type="button"
+                    onClick={onClose}
+                    className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
+                >
+                    <IoMdClose className="w-3 h-3" />
+                    <span className="sr-only">Close modal</span>
+                </button>
                 </div>
                 <form className="p-4">
                     <div className="grid gap-4 mb-4">
