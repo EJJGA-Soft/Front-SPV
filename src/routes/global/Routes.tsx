@@ -62,7 +62,7 @@ export default function AppRoutes() {
           }
         />
         <Route
-          path="/historialventas"
+          path="/detalle-ventas"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <VentasHome />

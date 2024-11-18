@@ -47,17 +47,20 @@ const ProveedoresHome: React.FC = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto min-h-screen h-screen flex flex-col px-4">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold">Proveedores</h1>
+    <div className=" bg-gray-100 sm:py-10 px-4 sm:px-6 lg:px-8 pt-6 pb-[140px]">
+      <div className="flex justify-between items-center mb-4">
+      <h1 className="text-2xl sm:text-2xl  font-semibold">
+          Proveedores</h1>
           <button 
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
-            onClick={handleOpenModal} 
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-auto"
+          onClick={handleOpenModal} 
           >
             Agregar proveedor
           </button>
         </div>
         
+        <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
+
         <ProveedoresTable
           proveedores={proveedores}
           currentPage={currentPage}
@@ -65,6 +68,31 @@ const ProveedoresHome: React.FC = () => {
           handleNextPage={handleNextPage}
           handlePrevPage={handlePrevPage}
         />
+        </div>
+
+        <div className="flex justify-between items-center mt-4 flex-wrap">
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
+        >
+          Antes
+        </button>
+      
+        <span className="text-gray-700 text-xs sm:text-sm md:text-base my-2 sm:my-0">
+          Página {currentPage} de {Math.ceil(proveedores.length / proveedoresPerPage)}
+        </span>
+      
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage * proveedoresPerPage >= proveedores.length}
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
+        >
+          Siguiente
+        </button>
+      </div>
+      
+
         
         {isModalOpen && <ProveedoresModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveProveedor} />}
       </div>

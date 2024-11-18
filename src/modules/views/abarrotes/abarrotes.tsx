@@ -34,7 +34,7 @@ const AbarrotesHome: React.FC = () => {
             </div>
           </Link>
 
-          {/* Corte de Caja */}
+        
           <div
             className="flex flex-col items-center justify-center w-full h-40 bg-white border border-yellow-500 rounded-lg shadow-lg text-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-2xl hover:bg-yellow-100"
             onClick={openModal}
@@ -44,7 +44,7 @@ const AbarrotesHome: React.FC = () => {
           </div>
 
           {/* Detalle de Ventas */}
-          <Link to="/historialventas">
+          <Link to="/detalle-ventas">
             <div className="flex flex-col items-center justify-center w-full h-40 bg-white border border-purple-500 rounded-lg shadow-lg text-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-2xl hover:bg-purple-100">
               <AiOutlineLineChart className="text-3xl sm:text-4xl text-purple-500 mb-3" />
               <h3 className="text-lg sm:text-xl font-semibold text-purple-500">Detalle de Ventas</h3>
