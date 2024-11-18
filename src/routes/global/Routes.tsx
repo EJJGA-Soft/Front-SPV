@@ -3,13 +3,13 @@ import Login from "../../modules/views/login";
 import Dashboard from "../../components/dashboard";
 import AbarrotesHome from "../../modules/views/abarrotes/abarrotes";
 import Compras from "../../modules/views/abarrotes/compras";
-import Productos from "../../components/Inventario/ProductsTable";
 import Usuarios from "../../components/usuarios/usuarios";
 import VentasHome from "../../modules/views/ventas/ventashome";
 import ProveedoresHome from "../../modules/views/proveedores/proveedoreshome";
 import { UserStore } from "../../security/store/userStore";
 import ProtectedRoute from "../../security/strategy/ProtectedRoutes";
 import Page404 from "../../errors/views/page404";
+import Inventario from "../../modules/views/Inventario/Inventario";
 
 export default function AppRoutes() {
   const status = UserStore((state) => state.status);
@@ -69,14 +69,14 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        {/* <Route
+        <Route
           path="/inventario"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Productos />
+              <Inventario />
             </ProtectedRoute>
           }
-        /> */}
+        />
         <Route
           path="/usuarios"
           element={
