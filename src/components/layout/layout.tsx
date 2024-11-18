@@ -43,7 +43,7 @@ const menuItems: MenuItem[] = [
         link: "/registro-venta",
         icon: <FaClipboardList />,
       },
-      { label: "Corte de caja", link: "/corte-caja", icon: <FaCashRegister /> },
+      { label: "Corte de caja", link: "/abarrotes", icon: <FaCashRegister /> },
       {
         label: "Detalle de ventas",
         link: "/detalle-ventas",
@@ -293,7 +293,9 @@ export default function Layout({ children }: LayoutProps) {
         } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${
           isSidebarFull ? "ml-44" : ""
         }`}
-        style={{ marginLeft: isSidebarFull ? "13rem" : "" }}
+        style={{ marginLeft: isSidebarFull ? "13rem" : "", 
+                overflowX: "auto", overflowY: "hidden"
+              }}
       >
         <nav className="bg-white border-b border-gray-300 p-4 flex items-center justify-between">
           {/* Botón de menú para dispositivos móviles */}
@@ -361,19 +363,18 @@ export default function Layout({ children }: LayoutProps) {
         <div className="min-h-screen flex flex-col h-full">
           <Breadcrumb isSidebarFull={isSidebarFull} />
           <main
-            className="
-      bg-gray-100 
-      w-full 
-      mx-auto 
-      sm:p-10 
-      flex-grow 
-      lg:p-10 
-      xl:p-12 
-      2xl:p-16 
-      overflow-y-auto 
-      custom-scrollbar
-    "
-          >
+          className="
+           bg-gray-100 
+           w-full 
+           mx-auto 
+           sm:pb-20
+           flex-grow 
+           lg:p-10 
+           xl:p-12 
+           2xl:p-16 
+           overflow-y-auto 
+           custom-scrollbar 
+          " >
             {children}
           </main>
         </div>
