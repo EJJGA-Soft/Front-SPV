@@ -49,10 +49,10 @@ const ProveedoresHome: React.FC = () => {
     <Layout>
     <div className=" bg-gray-100 sm:py-10 px-4 sm:px-6 lg:px-8 pt-6 pb-[140px]">
       <div className="flex justify-between items-center mb-4">
-      <h1 className="text-2xl sm:text-2xl  font-semibold">
+      <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
           Proveedores</h1>
           <button 
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-auto"
+          className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
           onClick={handleOpenModal} 
           >
             Agregar proveedor
