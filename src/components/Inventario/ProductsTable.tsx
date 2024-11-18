@@ -50,6 +50,7 @@ const ProductsTable = () => {
 
             </tbody>
           </table>
+        </div>
 
           {/* Paginacion */}
           <div className="flex justify-between items-center mt-6">
@@ -65,7 +66,7 @@ const ProductsTable = () => {
               Siguiente
             </button>
           </div>
-        </div>
+        
 
     </>
   );
