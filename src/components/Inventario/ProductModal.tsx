@@ -12,16 +12,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                 aria-hidden="true"
                 className="fixed inset-0 z-50 flex justify-center items-center bg-gray-500 bg-opacity-50"
             >
-                <div className="relative p-4 w-full max-w-md bg-white rounded-lg shadow-lg">
-                    <div className="flex items-center justify-between p-4 border-b">
-                        <h3 className="text-lg font-semibold text-gray-900">Agregar producto</h3>
+                <div className="relative p-4 w-full max-w-xs sm:max-w-md bg-white rounded-lg shadow-lg">
+                    <div className="flex items-center justify-between p-3 border-b">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900">Agregar producto</h3>
                         <button
                             type="button"
                             onClick={onClose}
-                            className="text-gray-400 hover:bg-gray-200 rounded-lg w-8 h-8 flex items-center justify-center"
+                            className="text-gray-400 hover:bg-gray-200 rounded-lg w-6 h-6 flex items-center justify-center"
                         >
                             <svg
-                                className="w-5 h-5"
+                                className="w-4 h-4"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 aria-hidden="true"
@@ -38,18 +38,18 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                         </button>
                     </div>
 
-                    <form className="p-4 space-y-4">
+                    <form className="p-3 space-y-3">
 
-                        <div className="border-2 border-dashed rounded border-gray-300 p-6 text-center mb-4 relative">
+                        <div className="border-2 border-dashed rounded border-gray-300 p-4 text-center mb-3 relative">
                             <div className="flex justify-center my-2">
                                 <img
-                                    src="src/assets/icons/cloud-upload-svgrepo-com.png" 
+                                    src="src/assets/icons/cloud-upload-svgrepo-com.png"
                                     alt="Icono de subida"
-                                    className="w-12 h-12" 
+                                    className="w-10 h-10 sm:w-14 sm:h-14" // Imagen más pequeña en móvil
                                 />
                             </div>
-                            <p className="text-gray-600 font-semibold">Click para subir o arrastra y suelta</p>
-                            <p className="text-gray-600 font-semibold">PNG, JPG</p>
+                            <p className="text-gray-600 font-semibold text-xs sm:text-sm">Click para subir o arrastra y suelta</p>
+                            <p className="text-gray-600 font-semibold text-xs sm:text-sm">PNG, JPG</p>
                             <label htmlFor="file-upload" className="absolute inset-0 cursor-pointer">
                                 <input
                                     id="file-upload"
@@ -64,44 +64,44 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                         </div>
 
                         <div>
-                            <label className="block mb-2 text-sm font-medium text-gray-900">
+                            <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
                                 Stock
                             </label>
                             <input
-                                className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
+                                className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5"
                                 type="number"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block mb-2 text-sm font-medium text-gray-900">
+                            <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
                                 Nombre
                             </label>
                             <input
-                                className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
+                                className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block mb-2 text-sm font-medium text-gray-900">
+                            <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
                                 Precio
                             </label>
                             <input
-                                className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
+                                className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5"
                                 type="number"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block mb-2 text-sm font-medium text-gray-900">
+                            <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
                                 Categoría
                             </label>
                             <select
                                 name="rol"
-                                className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
+                                className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5 mb-6"
                             >
                                 <option value="">Selecciona una categoría</option>
                                 <option value="admin">Bebidas</option>
@@ -110,17 +110,17 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                             </select>
                         </div>
 
-                        <div className="flex justify-center space-x-2">
+                        <div className="flex justify-center space-x-4 mt-6">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="text-gray-600 font-semibold bg-gray-200 hover:bg-gray-300 rounded-lg px-5 py-2.5"
+                                className="text-gray-600 font-semibold bg-gray-200 hover:bg-gray-300 rounded-lg px-4 py-2 text-xs sm:text-sm"
                             >
                                 Cancelar
                             </button>
                             <button
                                 type="submit"
-                                className="text-white font-semibold bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2.5"
+                                className="text-white font-semibold bg-blue-700 hover:bg-blue-800 rounded-lg px-4 py-2 text-xs sm:text-sm"
                             >
                                 Guardar
                             </button>
