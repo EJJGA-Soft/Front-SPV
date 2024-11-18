@@ -52,8 +52,8 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
   };
 
   return (
-    <div className="overflow-x-auto max-h-[calc(100vh-200px)]">
-      <table className="min-w-full bg-white shadow-md rounded-lg">
+    <div className="h-auto">
+    <table className="min-w-full bg-white shadow-md rounded-lg">
         <thead>
           <tr className="bg-white text-gray-700 text-center">
             <th className="p-4 text-xs sm:text-base">Nombre de la Empresa</th>
@@ -99,23 +99,7 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
         </tbody>
       </table>
 
-      <div className="flex justify-between items-center mt-4">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-base"
-        >
-          Antes
-        </button>
-        <span className="text-gray-700 text-xs sm:text-base">Página {currentPage} de {Math.ceil(proveedores.length / proveedoresPerPage)}</span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage * proveedoresPerPage >= proveedores.length}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-base"
-        >
-          Siguiente
-        </button>
-      </div>
+    
 
       {proveedorSeleccionado && isModalOpen && (
         <ProveedoresModal 

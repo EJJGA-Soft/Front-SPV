@@ -9,6 +9,7 @@ import ProveedoresHome from "../../modules/views/proveedores/proveedoreshome";
 import { UserStore } from "../../security/store/userStore";
 import ProtectedRoute from "../../security/strategy/ProtectedRoutes";
 import Page404 from "../../errors/views/page404";
+import { ClearSession } from "../../components/log-out/log-out";
 import Inventario from "../../modules/views/Inventario/Inventario";
 
 export default function AppRoutes() {
@@ -62,7 +63,7 @@ export default function AppRoutes() {
           }
         />
         <Route
-          path="/historialventas"
+          path="/detalle-ventas"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <VentasHome />
@@ -93,6 +94,9 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+      <Route path="/cerrar-sesion" element={<ClearSession />} />
+
       </Routes>
     </BrowserRouter>
   );

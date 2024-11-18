@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   HiOutlineHome,
   HiOutlineShoppingCart,
@@ -43,7 +43,7 @@ const menuItems: MenuItem[] = [
         link: "/registro-venta",
         icon: <FaClipboardList />,
       },
-      { label: "Corte de caja", link: "/corte-caja", icon: <FaCashRegister /> },
+      { label: "Corte de caja", link: "/abarrotes", icon: <FaCashRegister /> },
       {
         label: "Detalle de ventas",
         link: "/detalle-ventas",
@@ -59,6 +59,48 @@ const menuItems: MenuItem[] = [
 interface LayoutProps {
   children: React.ReactNode;
 }
+
+const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
+  const location = useLocation();
+  const { pathname } = location;
+
+  const pathSegments = pathname.split("/").filter((segment) => segment);
+
+  const capitalize = (str: string) =>
+    str.charAt(0).toUpperCase() + str.slice(1).replace("-", " ");
+
+  return (
+    <nav
+      className={`flex items-center text-gray-600 text-sm sm:text-base lg:text-lg py-3 px-4 lg:px-6 xl:px-8 bg-gray-50 border-b border-gray-300 transition-all duration-300 shadow-lg ${
+        isSidebarFull ? "ml-10" : ""
+      }`}
+      aria-label="Breadcrumb"
+    >
+      <Link to="/inicio" className="hover:text-gray-800">
+        Inicio
+      </Link>
+
+      {pathSegments.map((segment, index) => {
+        const fullPath = `/${pathSegments.slice(0, index + 1).join("/")}`;
+        const isLast = index === pathSegments.length - 1;
+
+        return (
+          <div key={index} className="flex items-center">
+            <span className="mx-2 text-gray-400">/</span>
+            {isLast ? (
+              <span className="text-gray-500">{capitalize(segment)}</span>
+            ) : (
+              <Link to={fullPath} className="hover:text-gray-800">
+                {capitalize(segment)}
+              </Link>
+            )}
+          </div>
+        );
+      })}
+    </nav>
+  );
+};
+
 
 export default function Layout({ children }: LayoutProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -77,8 +119,8 @@ export default function Layout({ children }: LayoutProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   //Usuario Store.
-  const username = UserStore(state => state.name);
-  const role = UserStore(state => state.rol)
+  const username = UserStore((state) => state.name);
+  const role = UserStore((state) => state.rol);
 
   const Convert = (value: boolean): string => {
     return value.toString();
@@ -155,9 +197,15 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen transition-transform duration-300 border-r border-gray-300 bg-white shadow-lg ${
-          isMobileMenuOpen ? "translate-x-0 w-48" : "-translate-x-full"
-        } lg:translate-x-0 lg:${isSidebarFull ? "w-64" : "w-14"}`}
+        className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 shadow-lg ${
+          isMobileMenuOpen
+            ? "translate-x-0 w-48 bg-white lg:translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
+        } ${
+          isSidebarFull
+            ? "w-64 bg-white text-gray-800 border-gray-300 lg:w-64"
+            : "w-20 bg-white text-gray-800 border-gray-300 lg:w-16"
+        }`}
       >
         <div className="h-full flex flex-col justify-between px-4 py-6 bg-white">
           <div className="flex mb-6 lg:hidden">
@@ -199,23 +247,25 @@ export default function Layout({ children }: LayoutProps) {
                 </Link>
 
                 {/* Mapeo de subitems */}
-                {item.subItems && item.subItems.length > 0 && (
-                  <ul className="ml-6 space-y-2 mt-2">
-                    {item.subItems.map((subItem, subIndex) => (
-                      <li key={subIndex}>
-                        <Link
-                          to={subItem.link}
-                          className="flex items-center w-full p-2 text-gray-600 rounded-lg hover:bg-gray-200"
-                        >
-                          <span className="text-xl">{subItem.icon}</span>
-                          {(isSidebarFull || isMobileMenuOpen) && (
-                            <span className="ml-3">{subItem.label}</span>
-                          )}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                {(isSidebarFull || isMobileMenuOpen) &&
+                  item.subItems &&
+                  item.subItems.length > 0 && (
+                    <ul className="ml-6 space-y-2 mt-2">
+                      {item.subItems.map((subItem, subIndex) => (
+                        <li key={subIndex}>
+                          <Link
+                            to={subItem.link}
+                            className="flex items-center w-full p-2 text-gray-600 rounded-lg hover:bg-gray-200"
+                          >
+                            <span className="text-xl">{subItem.icon}</span>
+                            {(isSidebarFull || isMobileMenuOpen) && (
+                              <span className="ml-3">{subItem.label}</span>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
               </li>
             ))}
           </ul>
@@ -223,13 +273,13 @@ export default function Layout({ children }: LayoutProps) {
           <div className="mb-4">
             <Link
               to="/cerrar-sesion"
-              className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
+              className={`flex items-center w-full text-gray-700 rounded-lg hover:bg-gray-100 ${
                 isSidebarFull ? "justify-start" : "justify-center"
               }`}
             >
               <HiOutlineLogout className="text-xl" />
               {(isSidebarFull || isMobileMenuOpen) && (
-                <span className="ml-3">Cerrar sesión</span>
+                <span className="">Cerrar sesión</span>
               )}
             </Link>
           </div>
@@ -243,7 +293,9 @@ export default function Layout({ children }: LayoutProps) {
         } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${
           isSidebarFull ? "ml-44" : ""
         }`}
-        style={{ marginLeft: isSidebarFull ? "13rem" : "" }}
+        style={{ marginLeft: isSidebarFull ? "13rem" : "", 
+                overflowX: "auto", overflowY: "hidden"
+              }}
       >
         <nav className="bg-white border-b border-gray-300 p-4 flex items-center justify-between">
           {/* Botón de menú para dispositivos móviles */}
@@ -283,9 +335,7 @@ export default function Layout({ children }: LayoutProps) {
                   <span className="block text-sm font-semibold">
                     {username}
                   </span>
-                  <span className="block text-sm text-gray-500">
-                    {role}
-                  </span>
+                  <span className="block text-sm text-gray-500">{role}</span>
                 </div>
                 <ul className="py-1">
                   <li
@@ -308,26 +358,26 @@ export default function Layout({ children }: LayoutProps) {
             )}
           </div>
         </nav>
+
         {isModalOpen && <ProfileModal onClose={handleCloseModal} />}
-        <main
+        <div className="min-h-screen flex flex-col h-full">
+          <Breadcrumb isSidebarFull={isSidebarFull} />
+          <main
           className="
-  bg-gray-100 
-  w-full 
-  max-w-full 
-  mx-auto 
-  p-4 
-  sm:p-10
-  md:p-8 
-  lg:p-10 
-  xl:p-12 
-  2xl:p-16 
-  h-auto 
-  overflow-y-auto 
-  custom-scrollbar
-"
-        >
-          {children}
-        </main>
+           bg-gray-100 
+           w-full 
+           mx-auto 
+           sm:pb-20
+           flex-grow 
+           lg:p-10 
+           xl:p-12 
+           2xl:p-16 
+           overflow-y-auto 
+           custom-scrollbar 
+          " >
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );
