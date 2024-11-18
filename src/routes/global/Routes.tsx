@@ -10,6 +10,7 @@ import ProveedoresHome from "../../modules/views/proveedores/proveedoreshome";
 import { UserStore } from "../../security/store/userStore";
 import ProtectedRoute from "../../security/strategy/ProtectedRoutes";
 import Page404 from "../../errors/views/page404";
+import { ClearSession } from "../../components/log-out/log-out";
 
 export default function AppRoutes() {
   const status = UserStore((state) => state.status);
@@ -93,6 +94,9 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+
+      <Route path="/cerrar-sesion" element={<ClearSession />} />
+
       </Routes>
     </BrowserRouter>
   );

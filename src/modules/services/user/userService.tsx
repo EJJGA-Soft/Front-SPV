@@ -7,15 +7,15 @@ const url = `${Api_Connection()}Account/`;
 
 export default class UserService {
 
-    async GetUsers(): Promise<ResponseHelperModel<IUser>>{
+    async GetUsers(): Promise<ResponseHelperModel<IUser>> {
         try {
-            const response = await axios.get<ResponseHelperModel<IUser>>(`${url + 'GetUsers'}`);
+            const response = await axios.get(`${url}AllUsersWithRole`);
             return response.data as ResponseHelperModel<IUser>;
         } catch (error) {
             return {
                 success: false,
-                message: `Ocurrio un error: ${error}`,
-              };
+                message: `Ocurrió un error: ${error}`,
+            };
         }
     }
 

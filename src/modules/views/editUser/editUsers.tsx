@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { evaluatePassword } from "../../services/profile/password_evaluate";
+import { IUser } from "../../../interfaces/user_interface";
 
 interface ProfileModalProps {
     isOpen: boolean;
+    user: IUser;
     onClose: () => void;
+
 }
 
-const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
+const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose }) => {
     const [formData, setFormData] = useState({
-        name: "",
-        correo: "",
+        name: user.name,
+        correo: user.email,
         password: "",
         confirmPassword: "",
     });
@@ -103,7 +106,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                                 value={formData[field as keyof typeof formData]}
                                 onChange={handleChange}
                                 className="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
-                                required
                             />
                             {field === "password" && (
                                 <p className="mt-1 text-sm text-gray-600">

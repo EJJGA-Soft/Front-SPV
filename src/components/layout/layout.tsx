@@ -273,7 +273,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="mb-4">
             <Link
               to="/cerrar-sesion"
-              className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
+              className={`flex items-center w-full text-gray-700 rounded-lg hover:bg-gray-100 ${
                 isSidebarFull ? "justify-start" : "justify-center"
               }`}
             >
