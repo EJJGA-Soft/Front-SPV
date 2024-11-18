@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ProveedoresModalProps } from "../../interfaces/proveedoresModalProps";
 import { Proveedores } from "../../interfaces/proveedores_interface";
+import ProveedorService from "../../modules/services/proveedor/proveedores_service";
 
 const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
   isOpen,
@@ -11,29 +12,49 @@ const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
   const [nombreEmpresa, setNombreEmpresa] = useState("");
   const [productoProveedor, setProductoProveedor] = useState<string[]>([]);
   const [numeroContacto, setNumeroContacto] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (proveedor) {
       setNombreEmpresa(proveedor.nombreEmpresa);
-      setProductoProveedor(proveedor.productoProveedor || []);  // Asegúrate de que sea un array vacío si es null o undefined
+      setProductoProveedor(proveedor.productoProveedor || []); 
       setNumeroContacto(proveedor.numeroContacto);
     } else {
       setNombreEmpresa("");
-      setProductoProveedor([]);  // Valor predeterminado vacío
+      setProductoProveedor([]);  
       setNumeroContacto("");
     }
   }, [proveedor]);
 
   if (!isOpen) return null;
 
-  const handleGuardar = () => {
+  const handleGuardar = async () => {
+    setLoading(true);
+    setError(null);
+
     const newProveedor: Proveedores = {
       nombreEmpresa,
       productoProveedor,
       numeroContacto
     };
-    onSave(newProveedor);
-    onClose();
+
+    const proveedorService = new ProveedorService();
+
+    try {
+      const response = await proveedorService.AddProvService(newProveedor);
+      if(response.success){
+        onSave(newProveedor);
+        onClose();
+      } else {
+        setError(response.message);
+      } 
+    } catch (error) {
+      setError("Error al guardar proveedor");
+
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -123,9 +144,17 @@ const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
             <button
               type="button"
               onClick={handleGuardar}
-              className="ml-3 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
+              disabled={loading}
+              className={`ml-3 text-white ${
+                loading ? "bg-gray-400" : "bg-blue-700 hover:bg-blue-800"
+              } font-medium rounded-lg text-sm px-5 py-2.5`}
             >
-              {proveedor ? "Actualizar" : "Guardar"}
+              {loading
+                ? "Guardando..."
+                : proveedor
+                ?"Actualizar"
+                : "Guardar"
+              }
             </button>
           </div>
         </div>
