@@ -13,6 +13,8 @@ const ProductsTable: React.FC<ProductsTableProps> = ({ productos = [],
   const indexOfFirstProducto = indexOfLastProducto - productosPerPage;
   const currentProductos = productos.slice(indexOfFirstProducto, indexOfLastProducto);
 
+  // URL de la API
+  const url = `https://localhost:7041`;
 
   return (
     <>
@@ -31,39 +33,46 @@ const ProductsTable: React.FC<ProductsTableProps> = ({ productos = [],
           </thead>
 
           <tbody>
-          {currentProductos.map((producto, index) => (
-            <tr key={index} className="border-t border-gray-200 text-center text-sm">
-              <td className="p-4 break-all">{producto.stock}</td>
-              <td className="py-3 px-6 text-center">
-                <img
-                  alt={producto.nombre}
-                  height={50}
-                  src={producto.urlImagen}
-                  width={50}
-                  className="mx-auto"
-                />
-              </td>
-              <td className="p-4 break-all">{producto.nombre}</td>
-              <td className="p-4 break-all">{producto.precio.toFixed(2)}</td>
-              <td className="p-4 break-all">{producto.categoriaId}</td>
-              <td className="p-4 flex justify-center space-x-4">
-                <button
-                  className="text-blue-500 hover:text-blue-700"
-                  aria-label="Editar proveedor"
-                >
-                  <HiPencil className="w-5 h-5" />
-                </button>
+          {currentProductos.length === 0 ? (
+              <tr className='border-t border-gray-200 text-center text-sm'>
+                <td colSpan={6} className="text-center p-4 text-gray-500">
+                  No hay productos disponibles.
+                </td>
+              </tr>
+            ) : (
+              currentProductos.map((producto, index) => (
+                <tr key={index} className="border-t border-gray-200 text-center text-sm">
+                  <td className="p-4 break-all">{producto.stock}</td>
+                  <td className="py-3 px-6 text-center">
+                    <img
+                      alt={producto.nombre}
+                      height={50}
+                      src={`${url}${producto.urlImagen}`}
+                      width={50}
+                      className="mx-auto"
+                    />
+                  </td>
+                  <td className="p-4 break-all">{producto.nombre}</td>
+                  <td className="p-4 break-all">{producto.precio.toFixed(2)}</td>
+                  <td className="p-4 break-all">{producto.categoriaId}</td>
+                  <td className="p-4 flex justify-center space-x-4">
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      aria-label="Editar proveedor"
+                    >
+                      <HiPencil className="w-5 h-5" />
+                    </button>
 
-                <button
-                  className="text-red-500 hover:text-red-700"
-                  aria-label="Eliminar proveedor"
-                >
-                  <HiTrash className="w-5 h-5" />
-                </button>
-              </td>
-            </tr>
-          ))}
-
+                    <button
+                      className="text-red-500 hover:text-red-700"
+                      aria-label="Eliminar proveedor"
+                    >
+                      <HiTrash className="w-5 h-5" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
             
           </tbody>
         </table>

@@ -10,6 +10,7 @@ const Inventario = () => {
 
     // Estado para manejar la lista de productos
     const [productos, setProductos] = useState<Producto[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [currentPage, setCurrentPage] = useState(1);
     const productosPerPage = 10;
@@ -28,8 +29,9 @@ const Inventario = () => {
         setIsAddProductModalOpen(false);
     };
 
-    async function getProductos(): Promise<Producto[]> {
+    async function getProductos(): Promise<void> {
         setIsLoading(true);
+        setError(null);
 
         try {
             const response = await Productos.getProducts();
@@ -37,13 +39,14 @@ const Inventario = () => {
             if (response.success) {
                 const convert = response.data as Producto[];
                 setProductos(convert);
-                setIsLoading(false);
-                return convert;
+            } else {
+                setError('No se pudieron obtener los productos.');
             }
-            return [];
         } catch (error) {
             console.error("Error al obtener productos:", error);
-            throw error;
+            setError('Ha ocurrido un error al intentar obtener los productos.');
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -53,15 +56,15 @@ const Inventario = () => {
 
     const handleNextPage = () => {
         if (currentPage * productosPerPage < productos.length) {
-          setCurrentPage(currentPage + 1);
+            setCurrentPage(currentPage + 1);
         }
-      };
-    
-      const handlePrevPage = () => {
+    };
+
+    const handlePrevPage = () => {
         if (currentPage > 1) {
-          setCurrentPage(currentPage - 1);
+            setCurrentPage(currentPage - 1);
         }
-      };
+    };
 
 
     return (
@@ -135,8 +138,9 @@ const Inventario = () => {
 
                     {isLoading ? (
                         <LoadingView />
+                    ) : error ? (
+                        <div className="text-red-500 text-center">{error}</div>
                     ) : (
-
                         <ProductsTable
                             productos={productos}
                             currentPage={currentPage}
@@ -151,21 +155,22 @@ const Inventario = () => {
                         <button
                             onClick={handlePrevPage}
                             disabled={currentPage === 1}
-                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-base"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs sm:text-base"
                         >
                             Antes
                         </button>
 
-                        <span className="text-gray-700 text-xs sm:text-base">Página {currentPage} de  {Math.ceil(productos.length / productosPerPage)}</span>
+                        <span className="text-gray-900 text-xs sm:text-base font-semibold">Página {currentPage} de {Math.ceil(productos.length / productosPerPage)}</span>
 
                         <button
                             onClick={handleNextPage}
                             disabled={currentPage * productosPerPage >= productos.length}
-                            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-base"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs sm:text-base"
                         >
                             Siguiente
                         </button>
                     </div>
+
 
                 </div>
             </Layout>
