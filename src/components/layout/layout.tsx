@@ -5,6 +5,7 @@ import {
   HiOutlineShoppingBag,
   HiOutlineTruck,
   HiOutlineLogout,
+  HiOutlineCollection,
 } from "react-icons/hi";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { FiMenu, FiX } from "react-icons/fi";
@@ -54,6 +55,7 @@ const menuItems: MenuItem[] = [
   { label: "Usuarios", icon: <HiOutlineUserGroup />, link: "/usuarios" },
   { label: "Inventario", icon: <HiOutlineShoppingBag />, link: "/inventario" },
   { label: "Proveedores", icon: <HiOutlineTruck />, link: "/proveedores" },
+  { label: "Categorias", icon: <HiOutlineCollection />, link: "/categorias" },
 ];
 
 interface LayoutProps {
