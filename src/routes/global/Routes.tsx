@@ -3,7 +3,8 @@ import Login from "../../modules/views/login";
 import Dashboard from "../../components/dashboard";
 import AbarrotesHome from "../../modules/views/abarrotes/abarrotes";
 import Compras from "../../modules/views/abarrotes/compras";
-import Usuarios from "../../components/usuarios/usuarios";
+import Productos from "../../components/Inventario/Productos";
+import UsuariosHome from "../../modules/views/usuarios/usuarioshome";
 import VentasHome from "../../modules/views/ventas/ventashome";
 import ProveedoresHome from "../../modules/views/proveedores/proveedoreshome";
 import { UserStore } from "../../security/store/userStore";
@@ -82,7 +83,7 @@ export default function AppRoutes() {
           path="/usuarios"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Usuarios />
+            <UsuariosHome />
             </ProtectedRoute>
           }
         />
