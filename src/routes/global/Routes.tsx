@@ -28,19 +28,19 @@ export default function AppRoutes() {
         <Route
           path="/login"
           element={
-            isAuthenticated ? <Navigate to="/inicio" replace /> : <Login />
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
           }
         />
         <Route
           path="/"
           element={
-            isAuthenticated ? <Navigate to="/inicio" replace /> : <Navigate to="/login" replace />
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
           }
         />
 
         {/* Rutas protegidas */}
         <Route
-          path="/inicio"
+          path="/dashboard"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
               <Dashboard />
