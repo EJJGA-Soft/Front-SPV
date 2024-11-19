@@ -11,6 +11,7 @@ import { UserStore } from "../../security/store/userStore";
 import ProtectedRoute from "../../security/strategy/ProtectedRoutes";
 import Page404 from "../../errors/views/page404";
 import { ClearSession } from "../../components/log-out/log-out";
+import Inventario from "../../modules/views/Inventario/Inventario";
 
 export default function AppRoutes() {
   const status = UserStore((state) => state.status);
@@ -74,7 +75,7 @@ export default function AppRoutes() {
           path="/inventario"
           element={
             <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Productos />
+              <Inventario />
             </ProtectedRoute>
           }
         />
