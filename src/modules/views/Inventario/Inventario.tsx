@@ -17,7 +17,6 @@ const Inventario = () => {
         setIsAddProductModalOpen(false);
     };
 
-
     return (
         <>
             <Layout>
@@ -87,9 +86,8 @@ const Inventario = () => {
                         )}
                     </div>
 
-
-
-                    <ProductsTable/>
+                    {/* Componente Tabla */}
+                    <ProductsTable />
 
                 </div>
             </Layout>
