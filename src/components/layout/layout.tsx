@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  HiOutlineHome,
   HiOutlineShoppingCart,
   HiOutlineUserGroup,
   HiOutlineShoppingBag,
   HiOutlineTruck,
   HiOutlineLogout,
 } from "react-icons/hi";
+import { LuLayoutDashboard } from "react-icons/lu";
 import { FiMenu, FiX } from "react-icons/fi";
 import {
   FaCashRegister,
@@ -32,7 +32,7 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { label: "Inicio", icon: <HiOutlineHome />, link: "/inicio" },
+  { label: "Dashboard", icon: <LuLayoutDashboard />, link: "/dashboard" },
   {
     label: "Abarrotes",
     icon: <HiOutlineShoppingCart />,
@@ -76,8 +76,8 @@ const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
       }`}
       aria-label="Breadcrumb"
     >
-      <Link to="/inicio" className="hover:text-gray-800">
-        Inicio
+      <Link to="/dashboard" className="hover:text-gray-800">
+        Dashboard
       </Link>
 
       {pathSegments.map((segment, index) => {
@@ -220,16 +220,17 @@ export default function Layout({ children }: LayoutProps) {
             </button>
           </div>
 
-          <div className="flex items-center justify-between w-full mb-4 lg:flex hidden">
-            <span className="flex-1"></span>
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              className="text-gray-700 text-2xl focus:outline-none"
-            >
-              {isSidebarFull ? <FiX /> : <FiMenu className="mr-[17px]" />}
-            </button>
-          </div>
+          <div className="justify-between w-full lg:flex hidden">
+  <span className="flex-1"></span>
+  <button
+    type="button"
+    onClick={toggleSidebar}
+    className="flex items-center justify-center w-12 h-12 text-gray-700 text-2xl focus:outline-none"
+  >
+    {isSidebarFull ? <FiX /> : <FiMenu />}
+  </button>
+</div>
+
 
           <ul className="space-y-4 flex-grow">
             {menuItems.map((item, index) => (

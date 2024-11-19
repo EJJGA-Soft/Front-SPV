@@ -47,8 +47,7 @@ export default function User() {
 
   return (
     <Layout>
-      <div className="">
-        <div className="p-6">
+        <div className="pl-10 lg:mt-[-10px]">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold">Vista de Usuario</h1>
             <button
@@ -66,7 +65,7 @@ export default function User() {
           </div>
 
           {/* Tabla de Usuarios */}
-          <div className="w-full h-screen flex flex-col">
+          <div className="w-full flex flex-col">
             <div className="overflow-x-auto flex-grow">
               <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <thead>
@@ -141,7 +140,6 @@ export default function User() {
             </div>
           </div>
         </div>
-      </div>
     </Layout>
   );
 }
