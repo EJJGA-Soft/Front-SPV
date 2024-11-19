@@ -1,40 +1,24 @@
 import axios from "axios";
 import { Proveedores } from "../../../interfaces/proveedores_interface";
-import { ResponseHelper } from "../../../interfaces/responseHelper_interface";
 import { Api_Connection } from "../API/api_connection";
+import { IProveedores } from "../../../interfaces/proveedor_interface";
+import { ResponseHelperModel } from "../../../interfaces/responseHelper_T_interface";
 
 const url = `${Api_Connection()}Proveedor/`;
 
 export default class ProveedorService {
 
-  async getProveedores(): Promise<ResponseHelper>{
+  async getProveedores(): Promise<ResponseHelperModel<IProveedores>>{
     try {
         const response = await axios.get(`${url}`);
-        const data = response.data as ResponseHelper;
-
-        if(
-            data.message === "Proveedores no encontrados" ||
-            data.message === "Error en la consulta"
-        ) {
-            return {
-                success: false,
-                message: data.message,
-            };
-        }
-
-        return {
-            success: true,
-            message: "Proveedores obtenidos correctamente",
-            data: data.data,
-        };
-    } catch (error: any) {
-        return {
-            success: false,
-            message:
-            error.response?.data?.message || "Ocurrio un error al obtener los proveedores",
-        };
+        return response.data as ResponseHelperModel<IProveedores>;
+    } catch(error: unknown){
+      return {
+        success: false,
+        message: "Ha ocurrido un error",
+      }
     }
-  }  
+  }
 
   async AddProvService(proveedor: Proveedores): Promise<ResponseHelper> {
     try {

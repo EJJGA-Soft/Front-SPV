@@ -1,24 +1,45 @@
-import React, { useState } from "react";
-import { Proveedores } from "../../../interfaces/proveedores_interface";
+import React, { useEffect, useState } from "react";
 import Layout from "../../../components/layout/layout";
 import ProveedoresTable from "../../../components/proveedores/ProveedoresTable";
 import ProveedoresModal from "../../../components/proveedores/ModalProveedores";
+import ProveedorService from "../../services/proveedor/proveedores_service";
+import { IProveedores } from "../../../interfaces/proveedor_interface";
+import LoadingView from "../../../components/loading/loading";
+
+const Proveedores = new ProveedorService();
 
 const ProveedoresHome: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const proveedoresPerPage = 7;
+  const [proveedores, setProveedores] = useState<IProveedores[]>([]);
+  const [IsLoading, setIsLoading] = useState<boolean>(false);
 
-  const proveedores: Proveedores[] = [
-    { id: 1, nombreEmpresa: "Sabritas", productoProveedor: ["Sabritas", "Chetos", "Packetazos"], numeroContacto: "9983456780" },
-    { id: 2, nombreEmpresa: "Coca Cola", productoProveedor: ["Coca Cola", "Fanta", "Sprite"], numeroContacto: "9983456780" },
-    { id: 3, nombreEmpresa: "Bimbo", productoProveedor: ["Pan Bimbo", "Galletas Marinela", "Tortillas Milpa Real"], numeroContacto: "9983456780" },
-    { id: 4, nombreEmpresa: "Lala", productoProveedor: ["Leche Lala", "Yogurt Lala", "Queso Lala"], numeroContacto: "9983456780" },
-    { id: 5, nombreEmpresa: "Nestlé", productoProveedor: ["Nescafé", "Chocolates Nestlé", "Helados Nestlé"], numeroContacto: "9983456780" },
-    { id: 6, nombreEmpresa: "PepsiCo", productoProveedor: ["Pepsi", "Gatorade", "Quaker"], numeroContacto: "9983456780" },
-    { id: 7, nombreEmpresa: "Grupo Modelo", productoProveedor: ["Corona", "Modelo Especial", "Victoria"], numeroContacto: "9983456780" },
-    { id: 8, nombreEmpresa: "Danone", productoProveedor: ["Yogurt Danone", "Agua Bonafont", "Actimel"], numeroContacto: "9983456780" },
-  ];
+  async function GetProveedores(): Promise<IProveedores[]> {
+    setIsLoading(true);
+  
+    try {
+      const response = await Proveedores.getProveedores();
+
+      if(response.success){
+      const convert = response.data as IProveedores[];
+      setProveedores(convert);
+      setIsLoading(false);
+      return convert;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error al obtener proveedores:", error);
+      throw error;
+    }
+  }
+  
+
+  useEffect(() => {
+    GetProveedores()
+  }, [])
+
+
 
   const handleNextPage = () => {
     if (currentPage * proveedoresPerPage < proveedores.length) {
@@ -60,14 +81,17 @@ const ProveedoresHome: React.FC = () => {
         </div>
         
         <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
-
-        <ProveedoresTable
+      { IsLoading ? (
+          <LoadingView/>
+        ) : (
+          <ProveedoresTable
           proveedores={proveedores}
           currentPage={currentPage}
           proveedoresPerPage={proveedoresPerPage}
           handleNextPage={handleNextPage}
           handlePrevPage={handlePrevPage}
         />
+        )}
         </div>
 
         <div className="flex justify-between items-center mt-4 flex-wrap">
