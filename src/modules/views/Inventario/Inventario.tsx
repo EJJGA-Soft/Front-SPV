@@ -1,9 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductsTable from "../../../components/Inventario/ProductsTable";
 import Layout from "../../../components/layout/layout";
 import ProductModal from "../../../components/Inventario/ProductModal";
+import { Producto } from "../../../interfaces/Inventario/producto_interface";
+import inventoryService from "../../services/Inventario/InventoryService";
+import LoadingView from "../../../components/loading/loading";
 
 const Inventario = () => {
+
+    // Estado para manejar la lista de productos
+    const [productos, setProductos] = useState<Producto[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const productosPerPage = 10;
+
+    const Productos = new inventoryService();
 
     //Modal
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
@@ -15,6 +27,43 @@ const Inventario = () => {
 
     const handleCloseAddProductModal = () => {
         setIsAddProductModalOpen(false);
+    };
+
+    async function getProductos(): Promise<void> {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const response = await Productos.getProducts();
+
+            if (response.success) {
+                const convert = response.data as Producto[];
+                setProductos(convert);
+            } else {
+                setError('No se pudieron obtener los productos.');
+            }
+        } catch (error) {
+            console.error("Error al obtener productos:", error);
+            setError('Ha ocurrido un error al intentar obtener los productos.');
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        getProductos()
+    }, [])
+
+    const handleNextPage = () => {
+        if (currentPage * productosPerPage < productos.length) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePrevPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
     };
 
 
@@ -87,9 +136,41 @@ const Inventario = () => {
                         )}
                     </div>
 
+                    {isLoading ? (
+                        <LoadingView />
+                    ) : error ? (
+                        <div className="text-red-500 text-center">{error}</div>
+                    ) : (
+                        <ProductsTable
+                            productos={productos}
+                            currentPage={currentPage}
+                            productosPerPage={productosPerPage}
+                            handleNextPage={handleNextPage}
+                            handlePrevPage={handlePrevPage}
+                        />
+                    )}
 
+                    {/* Paginacion */}
+                    <div className="flex justify-between items-center mt-6 flex-wrap">
+                        <button
+                            onClick={handlePrevPage}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs sm:text-base"
+                        >
+                            Antes
+                        </button>
 
-                    <ProductsTable/>
+                        <span className="text-gray-900 text-xs sm:text-base font-semibold">Página {currentPage} de {Math.ceil(productos.length / productosPerPage)}</span>
+
+                        <button
+                            onClick={handleNextPage}
+                            disabled={currentPage * productosPerPage >= productos.length}
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs sm:text-base"
+                        >
+                            Siguiente
+                        </button>
+                    </div>
+
 
                 </div>
             </Layout>
