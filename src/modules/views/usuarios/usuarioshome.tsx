@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/layout/layout";
-import { IUser } from "../../interfaces/user_interface";
+import { IUser } from "../../../interfaces/user_interface";
 import UserService from "../../services/user/userService";
 import { ResponseHelperModel } from "../../../interfaces/responseHelper_T_interface";
 import UsersTable from "../../../components/usuarios/UsuariosTable";
 import UsuarioModal from '../../../components/usuarios/UsuariosModal';
+import LoadingView from "../../../components/loading/loading";
 
 const userService = new UserService();
 
 export default function UsuariosHome() {
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState<IUser[]>([]);
-  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [usersPerPage] = useState(7);
   const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
 
   const handleOpenModal = () => {
@@ -45,9 +45,14 @@ export default function UsuariosHome() {
 
   async function GetUsers() {
     try {
+      setIsLoading(true);
       const response = await userService.GetUsers();
+
+      if(response.success){
+      setIsLoading(false);
       setUsers(response.data as IUser[]);
       return response as ResponseHelperModel<IUser>;
+      }
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
     }
@@ -59,7 +64,7 @@ export default function UsuariosHome() {
 
   return (
     <Layout>
-      <div className="bg-gray-100 p-4">
+      <div className="bg-gray-100 p-4 lg:mt-[-50px] md:mb-[80px]">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl sm:text-2xl font-semibold">Usuarios</h1>
           <button
@@ -70,7 +75,11 @@ export default function UsuariosHome() {
           </button>
         </div>
 
-        <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
+        
+        <div className="max-h-[500px] sm:max-h-full">
+        {isLoading ? (
+          <LoadingView />
+        ) : (
           <UsersTable
             users={users}
             currentPage={currentPage}
@@ -78,8 +87,8 @@ export default function UsuariosHome() {
             handleNextPage={handleNextPage}
             handlePrevPage={handlePrevPage}
           />
+        )}
         </div>
-
         <div className="flex justify-between items-center mt-4 flex-wrap">
           <button
             onClick={handlePrevPage}
