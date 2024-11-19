@@ -3,7 +3,7 @@ import ProductsTable from "../../../components/Inventario/ProductsTable";
 import Layout from "../../../components/layout/layout";
 import ProductModal from "../../../components/Inventario/ProductModal";
 import { Producto } from "../../../interfaces/Inventario/producto_interface";
-import inventoryService from "../../services/Inventario/inventoryService";
+import inventoryService from "../../services/Inventario/InventoryService";
 import LoadingView from "../../../components/loading/loading";
 
 const Inventario = () => {
