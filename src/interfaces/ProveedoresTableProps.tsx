@@ -1,7 +1,7 @@
-import { Proveedores } from "./proveedores_interface";
+import { IProveedores } from "./proveedor_interface";
 
 export interface ProveedoresTableProps{
-    proveedores: Proveedores[];
+    proveedores: IProveedores[];
     currentPage: number;
     proveedoresPerPage: number;
     handleNextPage: () => void;

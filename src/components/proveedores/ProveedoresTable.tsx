@@ -2,17 +2,17 @@ import React, { useState } from "react";
 import { ProveedoresTableProps } from "../../interfaces/ProveedoresTableProps";
 import ProveedoresModal from "./ModalProveedores";
 import { HiPencil, HiTrash } from 'react-icons/hi';
-import { Proveedores } from "../../interfaces/proveedores_interface";
 import ConfirmDeleteModal from "../ModalDelete";
+import { IProveedores } from '../../interfaces/proveedor_interface';
 
 const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
   proveedores, currentPage, proveedoresPerPage, handleNextPage, handlePrevPage,
 }) => {
 
   const [isModalOpen, setModalOpen] = useState(false);
-  const [proveedorSeleccionado, setProveedorSeleccionado] = useState<Proveedores | null>(null);
+  const [proveedorSeleccionado, setProveedorSeleccionado] = useState<IProveedores | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [proveedorAEliminar, setProveedorAEliminar] = useState<Proveedores | null>(null);
+  const [proveedorAEliminar, setProveedorAEliminar] = useState<IProveedores | null>(null);
 
   const indexOfLastProveedor = currentPage * proveedoresPerPage;
   const indexOfFirstProveedor = indexOfLastProveedor - proveedoresPerPage;
@@ -20,7 +20,7 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
 
   const emptyRows = proveedoresPerPage - currentProveedores.length;
 
-  const handleOpenModal = (proveedor: Proveedores) => {
+  const handleOpenModal = (proveedor: IProveedores) => {
     setProveedorSeleccionado(proveedor);
     setModalOpen(true);
   };
@@ -30,7 +30,7 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
     setProveedorSeleccionado(null);
   };
 
-  const handleOpenDeleteModal = (proveedor: Proveedores) => {
+  const handleOpenDeleteModal = (proveedor: IProveedores) => {
     setProveedorAEliminar(proveedor);
     setDeleteModalOpen(true);
   }
@@ -66,7 +66,7 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
           {currentProveedores.map((proveedor, index) => (
             <tr key={index} className="border-t border-gray-200 text-center text-sm">
               <td className="p-4 break-all">{proveedor.nombreEmpresa}</td>
-              <td className="p-4 break-all">{proveedor.productoProveedor.join(", ")}</td>
+              <td className="p-4 break-all">{}</td>
               <td className="p-4 break-all">{proveedor.numeroContacto}</td>
               <td className="p-4 flex justify-center space-x-4">
                 <button
