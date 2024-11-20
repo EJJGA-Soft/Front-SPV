@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { HiPencil, HiTrash } from 'react-icons/hi';
 import { Producto } from "../../interfaces/Inventario/producto_interface";
 import inventoryService from "../../modules/services/Inventario/InventoryService";
-import LoadingView from "../loading/loading";
 import { Api_Connection } from "../../modules/services/API/api_connection";
+import LoadingTables from "../loading/loadingtables";
 
 const ProductsTable = () => {
   // Estado para manejar la lista de productos
@@ -68,7 +68,7 @@ const ProductsTable = () => {
       {/* TABLA */}
       <div className="overflow-x-auto max-h-[calc(100vh-200px)]">
         {isLoading ? (
-          <LoadingView />
+          <LoadingTables />
         ) : error ? (
           <div className="text-red-500 text-center font-semibold">{error}</div>
         ) : (
@@ -105,7 +105,7 @@ const ProductsTable = () => {
                       />
                     </td>
                     <td className="p-4 break-all">{producto.nombre}</td>
-                    <td className="p-4 break-all">{producto.precio.toFixed(2)}</td>
+                    <td className="p-4 break-all">$ {producto.precio.toFixed(2)}</td>
                     <td className="p-4 break-all">{producto.categoriaId}</td>
                     <td className="p-4 flex justify-center space-x-4">
                       <button

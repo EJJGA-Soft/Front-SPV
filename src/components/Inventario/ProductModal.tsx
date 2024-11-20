@@ -1,5 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
+import { ICategoria } from "../../interfaces/Inventario/categoria_interface";
+import { IProveedores } from "../../interfaces/proveedor_interface";
+import BaseService from "../../modules/services/base_service";
+import { Producto } from "../../interfaces/Inventario/producto_interface";
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -8,12 +12,29 @@ interface ProductModalProps {
 
 const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
     const [preview, setPreview] = useState<string | null>(null);
+    const [categories, setCategories] = useState<ICategoria[]>([]);
+    const [providers, setProviders] = useState<IProveedores[]>([]);
+    const [producto, setProducto] = useState<Producto>({
+        id: 0,
+        nombre: '',
+        precio: 0,
+        stock: 0,
+        urlImagen: '',
+        categoriaId: 0,
+        proveedorId: 0,
+        esBorrado: false,
+    });
+    
+    // Instancia de BaseService
+    const baseService = new BaseService();
 
+    // Función para la imagen previa
     const onDrop = (acceptedFiles: File[]) => {
         if (acceptedFiles.length > 0) {
             const file = acceptedFiles[0];
             const objectUrl = URL.createObjectURL(file);
             setPreview(objectUrl);
+            setProducto({ ...producto, urlImagen: objectUrl });
         }
     };
 
@@ -21,6 +42,63 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
         onDrop,
         accept: { "image/*": [".png", ".jpg", ".jpeg"] },
     });
+
+    // Función para obtener categorías
+    const getCategories = async () => {
+        try {
+            const response = await baseService.Get<ICategoria>("/Categorias"); // Cambia el endpoint según tu API
+            if (response.success) {
+                console.log('Categorias:', response);
+                setCategories(response.data as ICategoria[]);
+            }
+        } catch (error) {
+            console.error("Error al obtener categorías:", error);
+        }
+    };
+
+    // Función para obtener proveedores
+    const getProviders = async () => {
+        try {
+            const response = await baseService.Get<IProveedores>("/Proveedor"); 
+            if (response.success) {
+                setProviders(response.data as IProveedores[]);
+            }
+        } catch (error) {
+            console.error("Error al obtener proveedores:", error);
+        }
+    };
+
+    useEffect(() => {
+        getCategories();
+      }, []);
+
+      useEffect(() => {
+        getProviders();
+      }, []);
+
+    // Función para crear el producto
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setProducto({
+            ...producto,
+            [name]: name === 'precio' || name === 'stock' ? (value === '' ? '' : Number(value)) : value,
+        });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const response = await baseService.Post<Producto>('/Productos', producto);
+            if (response.success) {
+                console.log('Producto creado:', response.data);
+                onClose(); // Cierra el modal
+            } else {
+                console.error('Error al crear el producto:', response.message);
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+        }
+    };
 
     return (
         <>
@@ -56,14 +134,15 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                     </div>
 
                     <div className="max-h-[80vh] overflow-y-auto">
-                        <form className="p-3 space-y-3">
+                        <form className="p-3 space-y-3" onSubmit={handleSubmit}>
                             {/* Sección de Dropzone */}
                             <div
                                 {...getRootProps()}
                                 className={`border-2 border-dashed rounded p-4 text-center relative cursor-pointer h-40 ${isDragActive ? "bg-blue-100 border-blue-400" : "border-gray-300"
                                     }`}
                             >
-                                <input {...getInputProps()} />
+                                <input {...getInputProps()} 
+                                />
                                 {preview ? (
                                     <img
                                         src={preview}
@@ -95,7 +174,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                                 </label>
                                 <input
                                     className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5"
+                                    name="stock"
                                     type="number"
+                                    value={producto.stock}
+                                    onChange={handleChange}
                                     required
                                 />
                             </div>
@@ -106,6 +188,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                                 </label>
                                 <input
                                     className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5"
+                                    name="nombre"
+                                    value={producto.nombre}
+                                    onChange={handleChange}
                                     required
                                 />
                             </div>
@@ -116,7 +201,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                                 </label>
                                 <input
                                     className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5"
+                                    name="precio"
                                     type="number"
+                                    value={producto.precio}
+                                    onChange={handleChange}
                                     required
                                 />
                             </div>
@@ -126,13 +214,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                                     Categoría
                                 </label>
                                 <select
-                                    name="rol"
+                                    name="categoriaId"
+                                    onChange={handleChange}
                                     className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5 mb-6"
                                 >
                                     <option value="">Selecciona una categoría</option>
-                                    <option value="admin">Bebidas</option>
-                                    <option value="user">Frutas y verduras</option>
-                                    <option value="user">Leguminosas</option>
+                                    {categories.map((categoria) => (
+                                        <option key={categoria.id} value={categoria.id}>
+                                            {categoria.nombre}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
@@ -141,13 +232,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                                     Proveedor
                                 </label>
                                 <select
-                                    name="rol"
+                                    name="proveedorId"
+                                    onChange={handleChange}
                                     className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5 mb-6"
                                 >
                                     <option value="">Selecciona un proveedor</option>
-                                    <option value="admin">Bimbo</option>
-                                    <option value="user">Coca-Cola</option>
-                                    <option value="user">Marinela</option>
+                                    {providers.map((proveedor) => (
+                                        <option key={proveedor.id} value={proveedor.id}>
+                                            {proveedor.nombreEmpresa}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
