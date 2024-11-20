@@ -78,17 +78,16 @@ export default function UsuariosHome() {
 
         
         <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
-        {isLoading ? (
-          <LoadingView />
-        ) : (
+       
           <UsersTable
             users={users}
             currentPage={currentPage}
             usersPerPage={usersPerPage}
             handleNextPage={handleNextPage}
             handlePrevPage={handlePrevPage}
+            isLoading={isLoading}
           />
-        )}
+        
         </div>
         <div className="flex justify-between items-center mt-4 flex-wrap">
           <button

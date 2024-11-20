@@ -4,6 +4,7 @@ import UsuarioModal from "./UsuariosModal";
 import { HiPencil, HiTrash } from "react-icons/hi";
 import { IUser } from "../../interfaces/user_interface";
 import ConfirmDeleteModal from "../ModalDelete";
+import LoadingTables from "../loading/loadingtables";
 
 const UserTable: React.FC<UsersTableProps> = ({
   users,
@@ -11,6 +12,7 @@ const UserTable: React.FC<UsersTableProps> = ({
   usersPerPage,
   handleNextPage,
   handlePrevPage,
+  isLoading
 }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<IUser | null>(
@@ -18,6 +20,7 @@ const UserTable: React.FC<UsersTableProps> = ({
   );
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [usuarioAEliminar, setUsuarioAEliminar] = useState<IUser | null>(null);
+  
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -58,6 +61,9 @@ const UserTable: React.FC<UsersTableProps> = ({
   return (
     <div className="w-full h-auto">
       <div className="overflow-x-auto">
+      {isLoading ? (
+        <LoadingTables /> 
+      ) : (
         <table className="min-w-full bg-white shadow-md rounded-lg">
           <thead>
             <tr className="bg-white-100 text-gray-700 text-center">
@@ -121,6 +127,8 @@ const UserTable: React.FC<UsersTableProps> = ({
               ))}
           </tbody>
         </table>
+      )}
+
       </div>
 
       {usuarioSeleccionado && isModalOpen && (
