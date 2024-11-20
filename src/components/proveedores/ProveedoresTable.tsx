@@ -1,0 +1,125 @@
+import React, { useState } from "react";
+import { ProveedoresTableProps } from "../../interfaces/ProveedoresTableProps";
+import ProveedoresModal from "./ModalProveedores";
+import { HiPencil, HiTrash } from 'react-icons/hi';
+import ConfirmDeleteModal from "../ModalDelete";
+import { IProveedores } from '../../interfaces/proveedor_interface';
+
+const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
+  proveedores, currentPage, proveedoresPerPage, handleNextPage, handlePrevPage,
+}) => {
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [proveedorSeleccionado, setProveedorSeleccionado] = useState<IProveedores | null>(null);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [proveedorAEliminar, setProveedorAEliminar] = useState<IProveedores | null>(null);
+
+  const indexOfLastProveedor = currentPage * proveedoresPerPage;
+  const indexOfFirstProveedor = indexOfLastProveedor - proveedoresPerPage;
+  const currentProveedores = proveedores.slice(indexOfFirstProveedor, indexOfLastProveedor);
+
+  const emptyRows = proveedoresPerPage - currentProveedores.length;
+
+  const handleOpenModal = (proveedor: IProveedores) => {
+    setProveedorSeleccionado(proveedor);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setProveedorSeleccionado(null);
+  };
+
+  const handleOpenDeleteModal = (proveedor: IProveedores) => {
+    setProveedorAEliminar(proveedor);
+    setDeleteModalOpen(true);
+  }
+
+  const handleCloseDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setProveedorAEliminar(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (proveedorAEliminar && proveedorAEliminar.id) {
+      console.log("Proveedor eliminado:", proveedorAEliminar.id);
+      proveedores = proveedores.filter(p => p.id !== proveedorAEliminar.id);
+      setDeleteModalOpen(false);
+      setProveedorAEliminar(null);
+    } else {
+      console.error("Error: Proveedor no encontrado o no tiene un ID válido");
+    }
+  };
+
+  return (
+    <div className="h-auto">
+    <table className="min-w-full bg-white shadow-md rounded-lg">
+        <thead>
+          <tr className="bg-white text-gray-700 text-center">
+            <th className="p-4 text-xs sm:text-base">Nombre de la Empresa</th>
+            <th className="p-4 text-xs sm:text-base">Productos del proveedor</th>
+            <th className="p-4 text-xs sm:text-base">Número de Contacto</th>
+            <th className="p-4 text-xs sm:text-base">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentProveedores.map((proveedor, index) => (
+            <tr key={index} className="border-t border-gray-200 text-center text-sm">
+              <td className="p-4 break-all">{proveedor.nombreEmpresa}</td>
+              <td className="p-4 break-all">{}</td>
+              <td className="p-4 break-all">{proveedor.numeroContacto}</td>
+              <td className="p-4 flex justify-center space-x-4">
+                <button
+                  onClick={() => handleOpenModal(proveedor)}
+                  className="text-blue-500 hover:text-blue-700"
+                  aria-label="Editar proveedor"
+                >
+                  <HiPencil className="w-5 h-5" />
+                </button>
+
+                <button
+                  onClick={() => handleOpenDeleteModal(proveedor)}
+                  className="text-red-500 hover:text-red-700"
+                  aria-label="Eliminar proveedor"
+                >
+                  <HiTrash className="w-5 h-5" />
+                </button>
+              </td>
+            </tr>
+          ))}
+
+          {emptyRows > 0 && Array.from({ length: emptyRows }).map((_, index) => (
+            <tr key={`empty-${index}`} className="border-t border-gray-200 text-center">
+              <td className="p-4">&nbsp;</td>
+              <td className="p-4">&nbsp;</td>
+              <td className="p-4">&nbsp;</td>
+              <td className="p-4">&nbsp;</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+    
+
+      {proveedorSeleccionado && isModalOpen && (
+        <ProveedoresModal 
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          proveedor={proveedorSeleccionado}
+        />
+      )}
+
+      {proveedorAEliminar && isDeleteModalOpen && (
+        <ConfirmDeleteModal 
+          isOpen={isDeleteModalOpen}
+          onClose={handleCloseDeleteModal}
+          onConfirmDelete={handleConfirmDelete}
+          entity="proveedor"
+          itemEntity={proveedorAEliminar.nombreEmpresa}
+        />
+      )}
+    </div>
+  );
+};
+
+export default ProveedoresTable;

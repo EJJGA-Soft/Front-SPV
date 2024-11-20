@@ -1,21 +1,113 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../../modules/views/login";
 import Dashboard from "../../components/dashboard";
-import CardComponent from "../../components/abarrotes/abarrotes";
-import Compras from "../../components/abarrotes/compras";
+import AbarrotesHome from "../../modules/views/abarrotes/abarrotes";
+import Compras from "../../modules/views/abarrotes/compras";
+import Productos from "../../components/Inventario/Productos";
+import UsuariosHome from "../../modules/views/usuarios/usuarioshome";
+import VentasHome from "../../modules/views/ventas/ventashome";
+import ProveedoresHome from "../../modules/views/proveedores/proveedoreshome";
+import { UserStore } from "../../security/store/userStore";
+import ProtectedRoute from "../../security/strategy/ProtectedRoutes";
+import Page404 from "../../errors/views/page404";
+import { ClearSession } from "../../components/log-out/log-out";
+import Inventario from "../../modules/views/Inventario/Inventario";
+import Categorias from "../../modules/views/categorias/categorias";
 
-export default function routes() {
-    return (
-      <BrowserRouter>
-        <Routes>
-          {/*<Route path="*"  element={<Page404/>}/> */}
-          <Route path="/inicio" index element={<Dashboard/>}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/abarrotes" element={<CardComponent />} />
-          <Route path="/registro-venta" element={<Compras/>} />
+export default function AppRoutes() {
+  const status = UserStore((state) => state.status);
+  const isAuthenticated = status === "authenticated";
 
-          
-        </Routes>
-      </BrowserRouter>
-    )
-  } 
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        {/* Ruta para el error 404 */}
+        <Route path="*" element={<Page404 />} />
+
+        {/* Rutas públicas */}
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+          }
+        />
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* Rutas protegidas */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/abarrotes"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <AbarrotesHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/registro-venta"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Compras />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/detalle-ventas"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <VentasHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/inventario"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Inventario />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <UsuariosHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/proveedores"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <ProveedoresHome />
+            </ProtectedRoute>
+          }
+        />
+                <Route
+          path="/categorias"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated}>
+              <Categorias />
+            </ProtectedRoute>
+          }
+        />
+
+      <Route path="/cerrar-sesion" element={<ClearSession />} />
+
+      </Routes>
+    </BrowserRouter>
+  );
+}

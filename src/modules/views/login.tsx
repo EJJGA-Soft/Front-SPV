@@ -1,24 +1,34 @@
 import { useState } from "react";
 import AccountService from "../services/login/account_services";
 import { useNavigate } from "react-router-dom";
+import { ResponseHelper } from "../../interfaces/responseHelper_interface";
+import LoadingView from "../../components/loading/loading";
 
 const accountService = new AccountService();
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const response = await accountService.loginAccount({ email, password });
+    setIsLoading(true); 
 
-    if (response.success) {
-      alert("Inicio de sesión exitoso");
-      navigate("/inicio");
-    } else {
-      alert("Error al iniciar sesión: " + response.message);
-    }
+      try {
+        const response = await accountService.Login({ email, password });
+        const results = response as ResponseHelper;
+        if (results.success) {
+          navigate("/dashboard");
+        } else {
+          alert("El usuario no existe, o la contraseña es incorrecta. Comprueba tu cuenta.");
+        }
+      } catch (error) {
+        alert("Ocurrió un error al procesar tu solicitud. Inténtalo de nuevo más tarde.");
+      } finally {
+        setIsLoading(false);
+      }
   };
 
   return (
@@ -31,6 +41,10 @@ export default function Login() {
         backgroundPosition: "center",
       }}
     >
+      {isLoading && (
+        <LoadingView/>
+      )}
+
       <div className="bg-white/90 rounded-[30px] shadow-lg w-full max-w-[95%] sm:max-w-[400px] md:max-w-[500px] min-h-[500px] flex flex-col justify-center p-6 sm:p-8 md:p-10">
         <img
           className="mx-auto w-20 h-auto sm:w-24 mb-6 sm:mb-10"
@@ -69,8 +83,9 @@ export default function Login() {
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors mb-6 sm:mb-[30px]"
+            disabled={isLoading}
           >
-            Iniciar Sesión
+            {isLoading ? "Cargando..." : "Iniciar Sesión"}
           </button>
         </form>
       </div>

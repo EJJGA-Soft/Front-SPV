@@ -1,12 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
-  HiOutlineHome,
   HiOutlineShoppingCart,
   HiOutlineUserGroup,
   HiOutlineShoppingBag,
   HiOutlineTruck,
   HiOutlineLogout,
+  HiOutlineCollection,
 } from "react-icons/hi";
+import { LuLayoutDashboard } from "react-icons/lu";
 import { FiMenu, FiX } from "react-icons/fi";
 import {
   FaCashRegister,
@@ -15,6 +16,8 @@ import {
 } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import UserIcon from "../../assets/icons/IUser.svg";
+import ProfileModal from "../profile/detailsprofile";
+import { UserStore } from "../../security/store/userStore";
 
 interface SubItem {
   label: string;
@@ -30,7 +33,7 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { label: "Inicio", icon: <HiOutlineHome />, link: "/inicio" },
+  { label: "Dashboard", icon: <LuLayoutDashboard />, link: "/dashboard" },
   {
     label: "Abarrotes",
     icon: <HiOutlineShoppingCart />,
@@ -41,7 +44,7 @@ const menuItems: MenuItem[] = [
         link: "/registro-venta",
         icon: <FaClipboardList />,
       },
-      { label: "Corte de caja", link: "/corte-caja", icon: <FaCashRegister /> },
+      { label: "Corte de caja", link: "/abarrotes", icon: <FaCashRegister /> },
       {
         label: "Detalle de ventas",
         link: "/detalle-ventas",
@@ -52,20 +55,111 @@ const menuItems: MenuItem[] = [
   { label: "Usuarios", icon: <HiOutlineUserGroup />, link: "/usuarios" },
   { label: "Inventario", icon: <HiOutlineShoppingBag />, link: "/inventario" },
   { label: "Proveedores", icon: <HiOutlineTruck />, link: "/proveedores" },
+  { label: "Categorias", icon: <HiOutlineCollection />, link: "/categorias" },
 ];
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
+const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
+  const location = useLocation();
+  const { pathname } = location;
+
+  const pathSegments = pathname.split("/").filter((segment) => segment);
+
+  const capitalize = (str: string) =>
+    str.charAt(0).toUpperCase() + str.slice(1).replace("-", " ");
+
+  return (
+    <nav
+      className={`flex items-center text-gray-600 text-sm sm:text-base lg:text-lg py-3 px-4 lg:px-6 xl:px-8 bg-gray-50 border-b border-gray-300 transition-all duration-300 shadow-lg ${
+        isSidebarFull ? "ml-10" : ""
+      }`}
+      aria-label="Breadcrumb"
+    >
+      <Link to="/dashboard" className="hover:text-gray-800">
+        Dashboard
+      </Link>
+
+      {pathSegments.map((segment, index) => {
+        const fullPath = `/${pathSegments.slice(0, index + 1).join("/")}`;
+        const isLast = index === pathSegments.length - 1;
+
+        return (
+          <div key={index} className="flex items-center">
+            <span className="mx-2 text-gray-400">/</span>
+            {isLast ? (
+              <span className="text-gray-500">{capitalize(segment)}</span>
+            ) : (
+              <Link to={fullPath} className="hover:text-gray-800">
+                {capitalize(segment)}
+              </Link>
+            )}
+          </div>
+        );
+      })}
+    </nav>
+  );
+};
+
+
 export default function Layout({ children }: LayoutProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isSidebarFull, setIsSidebarFull] = useState(false);
+  const [isSidebarFull, setIsSidebarFull] = useState<boolean>(() => {
+    const savedState = localStorage.getItem("sidebar-state");
+    if (savedState === "true") {
+      return true;
+    } else if (savedState === "false") {
+      return false;
+    }
+
+    return false;
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  //Usuario Store.
+  const username = UserStore((state) => state.name);
+  const role = UserStore((state) => state.rol);
+
+  const Convert = (value: boolean): string => {
+    return value.toString();
+  };
+
+  useEffect(() => {
+    localStorage.setItem("sidebar-state", Convert(isSidebarFull));
+  }, [isSidebarFull]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setIsSidebarFull(false);
+      } else {
+        setIsSidebarFull(isSidebarFull);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   useEffect(() => {
@@ -94,7 +188,7 @@ export default function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="relative flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* Backdrop para móvil */}
       {isMobileMenuOpen && (
         <div
@@ -105,11 +199,17 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen transition-transform duration-300 border-r border-gray-300 bg-white shadow-lg ${
-          isMobileMenuOpen ? "translate-x-0 w-64" : "-translate-x-full"
-        } lg:translate-x-0 lg:${isSidebarFull ? "w-64" : "w-16"}`}
+        className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 shadow-lg ${
+          isMobileMenuOpen
+            ? "translate-x-0 w-48 bg-white lg:translate-x-0"
+            : "-translate-x-full lg:translate-x-0"
+        } ${
+          isSidebarFull
+            ? "w-64 bg-white text-gray-800 border-gray-300 lg:w-64"
+            : "w-20 bg-white text-gray-800 border-gray-300 lg:w-16"
+        }`}
       >
-        <div className="h-full px-4 py-6 bg-white">
+        <div className="h-full flex flex-col justify-between px-4 py-6 bg-white">
           <div className="flex mb-6 lg:hidden">
             <button
               type="button"
@@ -122,18 +222,19 @@ export default function Layout({ children }: LayoutProps) {
             </button>
           </div>
 
-          <div className="flex items-center justify-between w-full mb-4 lg:flex hidden">
-            <span className="flex-1"></span>
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              className="text-gray-700 text-2xl focus:outline-none"
-            >
-              {isSidebarFull ? <FiX /> : <FiMenu className="mr-[10px]" />}
-            </button>
-          </div>
+          <div className="justify-between w-full lg:flex hidden">
+  <span className="flex-1"></span>
+  <button
+    type="button"
+    onClick={toggleSidebar}
+    className="flex items-center justify-center w-12 h-12 text-gray-700 text-2xl focus:outline-none"
+  >
+    {isSidebarFull ? <FiX /> : <FiMenu />}
+  </button>
+</div>
 
-          <ul className="space-y-4">
+
+          <ul className="space-y-4 flex-grow">
             {menuItems.map((item, index) => (
               <li key={index}>
                 <Link
@@ -147,20 +248,41 @@ export default function Layout({ children }: LayoutProps) {
                     <span className="ml-3">{item.label}</span>
                   )}
                 </Link>
+
+                {/* Mapeo de subitems */}
+                {(isSidebarFull || isMobileMenuOpen) &&
+                  item.subItems &&
+                  item.subItems.length > 0 && (
+                    <ul className="ml-6 space-y-2 mt-2">
+                      {item.subItems.map((subItem, subIndex) => (
+                        <li key={subIndex}>
+                          <Link
+                            to={subItem.link}
+                            className="flex items-center w-full p-2 text-gray-600 rounded-lg hover:bg-gray-200"
+                          >
+                            <span className="text-xl">{subItem.icon}</span>
+                            {(isSidebarFull || isMobileMenuOpen) && (
+                              <span className="ml-3">{subItem.label}</span>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
               </li>
             ))}
           </ul>
 
-          <div className="mt-3">
+          <div className="mb-4">
             <Link
               to="/cerrar-sesion"
-              className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
+              className={`flex items-center w-full text-gray-700 rounded-lg hover:bg-gray-100 ${
                 isSidebarFull ? "justify-start" : "justify-center"
               }`}
             >
               <HiOutlineLogout className="text-xl" />
               {(isSidebarFull || isMobileMenuOpen) && (
-                <span className="ml-3">Cerrar sesión</span>
+                <span className="">Cerrar sesión</span>
               )}
             </Link>
           </div>
@@ -169,9 +291,14 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Contenido principal */}
       <div
-        className={`flex-1 transition-all duration-300 ${
-          isMobileMenuOpen ? "ml-0" : `lg:${isSidebarFull ? "ml-64" : "ml-16"}`
-        } flex flex-col`}
+        className={`flex-1 ${
+          isMobileMenuOpen ? "ml-0" : "lg:ml-16"
+        } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${
+          isSidebarFull ? "ml-44" : ""
+        }`}
+        style={{ marginLeft: isSidebarFull ? "13rem" : "", 
+                overflowX: "auto", overflowY: "hidden"
+              }}
       >
         <nav className="bg-white border-b border-gray-300 p-4 flex items-center justify-between">
           {/* Botón de menú para dispositivos móviles */}
@@ -184,7 +311,13 @@ export default function Layout({ children }: LayoutProps) {
           </button>
 
           {/* Icono de usuario y dropdown para todas las pantallas */}
+          {/* Icono de usuario y dropdown para todas las pantallas */}
           <div className="relative flex items-center ml-auto" ref={dropdownRef}>
+            {/* Título de bienvenida, con ajuste responsivo */}
+            <p className="mr-4 text-sm sm:text-base lg:text-lg">
+              ¡Bienvenid@ {username}!
+            </p>
+
             <button
               type="button"
               className="flex items-center text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300"
@@ -203,21 +336,18 @@ export default function Layout({ children }: LayoutProps) {
               <div className="absolute right-0 top-10 w-48 z-50 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                 <div className="px-4 py-2 border-b border-gray-200">
                   <span className="block text-sm font-semibold">
-                    Bonnie Green
+                    {username}
                   </span>
-                  <span className="block text-sm text-gray-500">
-                    Administrador
-                  </span>
+                  <span className="block text-sm text-gray-500">{role}</span>
                 </div>
                 <ul className="py-1">
-                  <li>
-                    <Link
-                      to="/perfil"
-                      className="block px-4 py-2 text-sm hover:bg-gray-100"
-                    >
-                      Configurar perfil
-                    </Link>
+                  <li
+                    onClick={handleOpenModal}
+                    className="block px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                  >
+                    Configurar perfil
                   </li>
+
                   <li>
                     <Link
                       to="/cerrar-sesion"
@@ -232,7 +362,25 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </nav>
 
-        <main className="flex-1 p-6 bg-gray-100">{children}</main>
+        {isModalOpen && <ProfileModal onClose={handleCloseModal} />}
+        <div className="min-h-screen flex flex-col h-full">
+          <Breadcrumb isSidebarFull={isSidebarFull} />
+          <main
+          className="
+           bg-gray-100 
+           w-full 
+           mx-auto 
+           sm:pb-20
+           flex-grow 
+           lg:p-10 
+           xl:p-12 
+           2xl:p-16 
+           overflow-y-auto 
+           custom-scrollbar 
+          " >
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   );

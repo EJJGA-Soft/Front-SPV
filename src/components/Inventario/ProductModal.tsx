@@ -1,0 +1,154 @@
+import React, { useState } from "react";
+import { useDropzone } from "react-dropzone";
+
+interface ProductModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const onDrop = (acceptedFiles: File[]) => {
+        if (acceptedFiles.length > 0) {
+            const file = acceptedFiles[0];
+            const objectUrl = URL.createObjectURL(file);
+            setPreview(objectUrl);
+        }
+    };
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: { "image/*": [".png", ".jpg", ".jpeg"] },
+    });
+
+    return (
+        <>
+            <div
+                tabIndex={-1}
+                aria-hidden="true"
+                className="fixed inset-0 z-50 flex justify-center items-center bg-gray-500 bg-opacity-50"
+            >
+                <div className="relative p-4 w-full max-w-xs sm:max-w-md bg-white rounded-lg shadow-lg">
+                    <div className="flex items-center justify-between p-3 border-b">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900">Agregar producto</h3>
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="text-gray-400 hover:bg-gray-200 rounded-lg w-6 h-6 flex items-center justify-center"
+                        >
+                            <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    stroke="currentColor"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                            <span className="sr-only">Cerrar modal</span>
+                        </button>
+                    </div>
+
+                    <form className="p-3 space-y-3">
+                        {/* Sección de Dropzone */}
+                        <div
+                            {...getRootProps()}
+                            className={`border-2 border-dashed rounded p-4 text-center relative cursor-pointer h-40 ${
+                                isDragActive ? "bg-blue-100 border-blue-400" : "border-gray-300"
+                            }`}
+                        >
+                            <input {...getInputProps()} />
+                            {preview ? (
+                                <img
+                                    src={preview}
+                                    alt="Vista previa"
+                                    className="w-full h-full object-contain"
+                                />
+                            ) : (
+                                <div className="flex flex-col justify-center items-center h-full">
+                                    <p className="text-gray-600 font-semibold text-xs sm:text-sm">
+                                        {isDragActive
+                                            ? "Suelta los archivos aquí..."
+                                            : "Click para subir o arrastra y suelta"}
+                                    </p>
+                                    <p className="text-gray-600 font-semibold text-xs sm:text-sm">PNG, JPG</p>
+                                </div>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
+                                Stock
+                            </label>
+                            <input
+                                className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5"
+                                type="number"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
+                                Nombre
+                            </label>
+                            <input
+                                className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
+                                Precio
+                            </label>
+                            <input
+                                className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5"
+                                type="number"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
+                                Categoría
+                            </label>
+                            <select
+                                name="rol"
+                                className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5 mb-6"
+                            >
+                                <option value="">Selecciona una categoría</option>
+                                <option value="admin">Bebidas</option>
+                                <option value="user">Frutas y verduras</option>
+                                <option value="user">Leguminosas</option>
+                            </select>
+                        </div>
+
+                        <div className="flex justify-center space-x-4 mt-6">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="text-gray-600 font-semibold bg-gray-200 hover:bg-gray-300 rounded-lg px-4 py-2 text-xs sm:text-sm"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                className="text-white font-semibold bg-blue-700 hover:bg-blue-800 rounded-lg px-4 py-2 text-xs sm:text-sm"
+                            >
+                                Guardar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </>
+    );
+};
+
+export default ProductModal;
