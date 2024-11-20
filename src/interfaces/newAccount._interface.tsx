@@ -8,4 +8,5 @@ export interface IAccount{
     confirmPassword?: string
     rol: string
     estatusUsuario: StatusUser
+    isDeleted: boolean;
 }

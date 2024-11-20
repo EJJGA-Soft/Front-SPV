@@ -1,7 +1,7 @@
-import { IUser } from "../user_interface";
+import { IAccount } from "../newAccount._interface";
 
 export interface UsersTableProps{
-    users: IUser[];
+    users: IAccount[];
     currentPage: number;
     usersPerPage: number;
     handleNextPage: () => void;

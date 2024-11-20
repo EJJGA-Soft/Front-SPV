@@ -1,9 +1,9 @@
-import { IUser } from "../user_interface";
+import { IAccount } from "../newAccount._interface";
 
 
 export interface UsuariosModalProps{
     isOpen:  boolean;
     onClose: () => void;
-    user?: IUser;
-    onSave: (user: IUser) => void;
+    user?: IAccount;
+    onSave: (user: IAccount) => void;
 }

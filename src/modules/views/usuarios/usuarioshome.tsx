@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/layout/layout";
-import { IUser } from "../../../interfaces/user_interface";
-import UserService from "../../services/user/userService";
-import { ResponseHelperModel } from "../../../interfaces/responseHelper_T_interface";
 import UsersTable from "../../../components/usuarios/UsuariosTable";
 import UsuarioModal from '../../../components/usuarios/UsuariosModal';
-import LoadingView from "../../../components/loading/loading";
-
-const userService = new UserService();
+import BaseService from '../../services/base_service';
+import { IAccount } from "../../../interfaces/newAccount._interface";
+const baseService = new BaseService();
 
 export default function UsuariosHome() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [users, setUsers] = useState<IUser[]>([]);
+  const [users, setUsers] = useState<IAccount[]>([]);
   const [usersPerPage] = useState(7);
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +23,7 @@ export default function UsuariosHome() {
     setIsModalOpen(false); 
   };
 
-  const handleSaveUser = (newUser: IUser) => {
+  const handleSaveUser = (newUser: IAccount) => {
     setUsers((prevUsers) => [...prevUsers, newUser]);
     handleCloseModal();
   };
@@ -43,19 +40,23 @@ export default function UsuariosHome() {
     }
   };
 
-  async function GetUsers() {
+  const GetUsers = async() => {
     try {
       setIsLoading(true);
-      const response = await userService.GetUsers();
-
+      const response = await baseService.Get<IAccount>("/Account/AllUsersWithRole")
       if(response.success){
-      setIsLoading(false);
-      setUsers(response.data as IUser[]);
-      return response as ResponseHelperModel<IUser>;
+        setIsLoading(false);
+        setUsers(response.data as IAccount[]);
+      } else {
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
     }
+  }
+
+  const handleUsersUpdate = async() => {
+    await GetUsers();
   }
 
   useEffect(() => {
@@ -86,6 +87,7 @@ export default function UsuariosHome() {
             handleNextPage={handleNextPage}
             handlePrevPage={handlePrevPage}
             isLoading={isLoading}
+            onUsersUpdate={handleUsersUpdate}
           />
         
         </div>
