@@ -64,11 +64,12 @@ export default function UsuariosHome() {
 
   return (
     <Layout>
-      <div className="bg-gray-100 p-4 lg:mt-[-50px] md:mb-[80px]">
+      <div className="bg-gray-100 sm:py-10 px-4 sm:px-6 lg:px-8 pt-6 pb-[95px] lg:mt-[-70px]">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl sm:text-2xl font-semibold">Usuarios</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
+        Usuarios</h1>
           <button
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 w-auto"
+          className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
             onClick={handleOpenModal}
           >
             Agregar usuario
@@ -76,18 +77,17 @@ export default function UsuariosHome() {
         </div>
 
         
-        <div className="max-h-[500px] sm:max-h-full">
-        {isLoading ? (
-          <LoadingView />
-        ) : (
+        <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
+       
           <UsersTable
             users={users}
             currentPage={currentPage}
             usersPerPage={usersPerPage}
             handleNextPage={handleNextPage}
             handlePrevPage={handlePrevPage}
+            isLoading={isLoading}
           />
-        )}
+        
         </div>
         <div className="flex justify-between items-center mt-4 flex-wrap">
           <button

@@ -6,4 +6,5 @@ export interface UsersTableProps{
     usersPerPage: number;
     handleNextPage: () => void;
     handlePrevPage: () => void;
+    isLoading: boolean;
 }
