@@ -138,21 +138,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
 
                             <div>
                                 <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
-                                    Categoría
-                                </label>
-                                <select
-                                    name="rol"
-                                    className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5 mb-6"
-                                >
-                                    <option value="">Selecciona una categoría</option>
-                                    <option value="admin">Bebidas</option>
-                                    <option value="user">Frutas y verduras</option>
-                                    <option value="user">Leguminosas</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block mb-1 text-xs sm:text-sm font-medium text-gray-900">
                                     Proveedor
                                 </label>
                                 <select
