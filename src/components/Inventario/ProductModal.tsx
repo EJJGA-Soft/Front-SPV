@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+import { useDropzone } from "react-dropzone";
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -5,6 +7,21 @@ interface ProductModalProps {
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const onDrop = (acceptedFiles: File[]) => {
+        if (acceptedFiles.length > 0) {
+            const file = acceptedFiles[0];
+            const objectUrl = URL.createObjectURL(file);
+            setPreview(objectUrl);
+        }
+    };
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        accept: { "image/*": [".png", ".jpg", ".jpeg"] },
+    });
+
     return (
         <>
             <div
@@ -39,28 +56,30 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                     </div>
 
                     <form className="p-3 space-y-3">
-
-                        <div className="border-2 border-dashed rounded border-gray-300 p-4 text-center mb-3 relative">
-                            <div className="flex justify-center my-2">
+                        {/* Sección de Dropzone */}
+                        <div
+                            {...getRootProps()}
+                            className={`border-2 border-dashed rounded p-4 text-center relative cursor-pointer h-40 ${
+                                isDragActive ? "bg-blue-100 border-blue-400" : "border-gray-300"
+                            }`}
+                        >
+                            <input {...getInputProps()} />
+                            {preview ? (
                                 <img
-                                    src="src/assets/icons/cloud-upload-svgrepo-com.png"
-                                    alt="Icono de subida"
-                                    className="w-10 h-10 sm:w-14 sm:h-14" // Imagen más pequeña en móvil
+                                    src={preview}
+                                    alt="Vista previa"
+                                    className="w-full h-full object-contain"
                                 />
-                            </div>
-                            <p className="text-gray-600 font-semibold text-xs sm:text-sm">Click para subir o arrastra y suelta</p>
-                            <p className="text-gray-600 font-semibold text-xs sm:text-sm">PNG, JPG</p>
-                            <label htmlFor="file-upload" className="absolute inset-0 cursor-pointer">
-                                <input
-                                    id="file-upload"
-                                    type="file"
-                                    accept="image/png, image/jpeg"
-                                    className="hidden"
-                                    onClick={(e) => {
-                                        e.stopPropagation(); // Evita que el evento se propague fuera del contenedor
-                                    }}
-                                />
-                            </label>
+                            ) : (
+                                <div className="flex flex-col justify-center items-center h-full">
+                                    <p className="text-gray-600 font-semibold text-xs sm:text-sm">
+                                        {isDragActive
+                                            ? "Suelta los archivos aquí..."
+                                            : "Click para subir o arrastra y suelta"}
+                                    </p>
+                                    <p className="text-gray-600 font-semibold text-xs sm:text-sm">PNG, JPG</p>
+                                </div>
+                            )}
                         </div>
 
                         <div>
@@ -128,9 +147,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                     </form>
                 </div>
             </div>
-
         </>
-    )
-}
+    );
+};
 
 export default ProductModal;
