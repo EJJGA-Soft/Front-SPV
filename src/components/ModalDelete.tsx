@@ -1,8 +1,18 @@
 import React from "react";
 import { DeleteModalProps } from "../interfaces/DeleteModalProps";
+import BaseService from '../modules/services/base_service';
 
+const baseService = new BaseService();
 const ConfirmDeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, onConfirmDelete, entity, itemEntity}) => {
     if(!isOpen) return null;
+
+    const HandleDelete = async(id: string) => {
+      const response = await baseService.Delete(`/Account/DeleteUser/${id}`);
+      if(response.success){
+        onClose();
+        onConfirmDelete(id);
+      }
+    }
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -12,7 +22,7 @@ const ConfirmDeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, onConf
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">X</button>
           </div>
   
-          <p className="text-gray-700 mb-4">¿Estás seguro de que deseas eliminar el {entity} <strong>{itemEntity}</strong>?</p>
+          <p className="text-gray-700 mb-4">¿Estás seguro de que deseas eliminar el {entity} <strong>{itemEntity.name}</strong>?</p>
   
           <div className="flex justify-center space-x-4">
             <button
@@ -22,7 +32,7 @@ const ConfirmDeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, onConf
               Cancelar
             </button>
             <button
-              onClick={onConfirmDelete}
+              onClick={() => HandleDelete(itemEntity.id!)}
               className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
             >
               Eliminar

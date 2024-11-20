@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { UsersTableProps } from "../../interfaces/Users/UsersTableProps";
 import UsuarioModal from "./UsuariosModal";
 import { HiPencil, HiTrash } from "react-icons/hi";
-import { IUser } from "../../interfaces/user_interface";
 import ConfirmDeleteModal from "../ModalDelete";
 import LoadingTables from "../loading/loadingtables";
+import { IAccount } from "../../interfaces/newAccount._interface";
 
 const UserTable: React.FC<UsersTableProps> = ({
   users,
@@ -12,22 +12,20 @@ const UserTable: React.FC<UsersTableProps> = ({
   usersPerPage,
   handleNextPage,
   handlePrevPage,
-  isLoading
+  isLoading,
+  onUsersUpdate 
 }) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<IUser | null>(
-    null
-  );
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<IAccount | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [usuarioAEliminar, setUsuarioAEliminar] = useState<IUser | null>(null);
-  
+  const [usuarioAEliminar, setUsuarioAEliminar] = useState<IAccount | null>(null);
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
   const emptyRows = usersPerPage - currentUsers.length;
 
-  const handleOpenModal = (user: IUser) => {
+  const handleOpenModal = (user: IAccount) => {
     setUsuarioSeleccionado(user);
     setModalOpen(true);
   };
@@ -37,7 +35,7 @@ const UserTable: React.FC<UsersTableProps> = ({
     setUsuarioSeleccionado(null);
   };
 
-  const handleOpenDeleteModal = (user: IUser) => {
+  const handleOpenDeleteModal = (user: IAccount) => {
     setUsuarioAEliminar(user);
     setDeleteModalOpen(true);
   };
@@ -49,8 +47,7 @@ const UserTable: React.FC<UsersTableProps> = ({
 
   const handleConfirmDelete = () => {
     if (usuarioAEliminar && usuarioAEliminar.id) {
-      console.log("Usuario eliminado", usuarioAEliminar.id);
-      users = users.filter((u) => u.id !== usuarioAEliminar.id);
+      onUsersUpdate();
       setDeleteModalOpen(false);
       setUsuarioAEliminar(null);
     } else {
@@ -61,74 +58,73 @@ const UserTable: React.FC<UsersTableProps> = ({
   return (
     <div className="w-full h-auto">
       <div className="overflow-x-auto">
-      {isLoading ? (
-        <LoadingTables /> 
-      ) : (
-        <table className="min-w-full bg-white shadow-md rounded-lg">
-          <thead>
-            <tr className="bg-white-100 text-gray-700 text-center">
-              <th className="p-4 text-xs md:text-sm lg:text-base">Nombre</th>
-              <th className="p-4 text-xs md:text-sm lg:text-base">Rol</th>
-              <th className="p-4 text-xs md:text-sm lg:text-base">Email</th>
-              <th className="p-4 text-xs md:text-sm lg:text-base">Estado</th>
-              <th className="p-4 text-xs md:text-sm lg:text-base">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentUsers.map((user, index) => (
-              <tr
-                key={index}
-                className="border-t border-gray-200 text-center text-xs md:text-sm"
-              >
-                <td className="p-4 break-words">{user.name}</td>
-                <td className="p-4 break-words">{user.rol}</td>
-                <td className="p-4 break-words">{user.email}</td>
-                <td className="p-4">
-                  {user.isDeleted ? (
-                    <span className="bg-red-200 text-red-700 py-1 px-3 rounded-full text-xs">
-                      Inactivo
-                    </span>
-                  ) : (
-                    <span className="bg-green-200 text-green-700 py-1 px-3 rounded-full text-xs">
-                      Activo
-                    </span>
-                  )}
-                </td>
-                <td className="p-4 flex justify-center space-x-4">
-                  <button
-                    onClick={() => handleOpenModal(user)}
-                    className="text-blue-500 hover:text-blue-700"
-                    aria-label="Editar usuario"
-                  >
-                    <HiPencil className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleOpenDeleteModal(user)}
-                    className="text-red-500 hover:text-red-700"
-                    aria-label="Eliminar usuario"
-                  >
-                    <HiTrash className="w-5 h-5" />
-                  </button>
-                </td>
+        {isLoading ? (
+          <LoadingTables /> 
+        ) : (
+          <table className="min-w-full bg-white shadow-md rounded-lg">
+            <thead>
+              <tr className="bg-white-100 text-gray-700 text-center">
+                <th className="p-4 text-xs md:text-sm lg:text-base">Nombre</th>
+                <th className="p-4 text-xs md:text-sm lg:text-base">Rol</th>
+                <th className="p-4 text-xs md:text-sm lg:text-base">Email</th>
+                <th className="p-4 text-xs md:text-sm lg:text-base">Estado</th>
+                <th className="p-4 text-xs md:text-sm lg:text-base">Acciones</th>
               </tr>
-            ))}
-            {emptyRows > 0 &&
-              Array.from({ length: emptyRows }).map((_, index) => (
+            </thead>
+            <tbody>
+              {currentUsers.map((user, index) => (
                 <tr
-                  key={`empty-${index}`}
-                  className="border-t border-gray-200 text-center"
+                  key={index}
+                  className="border-t border-gray-200 text-center text-xs md:text-sm"
                 >
-                  <td className="p-4">&nbsp;</td>
-                  <td className="p-4">&nbsp;</td>
-                  <td className="p-4">&nbsp;</td>
-                  <td className="p-4">&nbsp;</td>
-                  <td className="p-4">&nbsp;</td>
+                  <td className="p-4 break-words">{user.name}</td>
+                  <td className="p-4 break-words">{user.rol}</td>
+                  <td className="p-4 break-words">{user.email}</td>
+                  <td className="p-4">
+                    {user.isDeleted ? (
+                      <span className="bg-red-200 text-red-700 py-1 px-3 rounded-full text-xs">
+                        Inactivo
+                      </span>
+                    ) : (
+                      <span className="bg-green-200 text-green-700 py-1 px-3 rounded-full text-xs">
+                        Activo
+                      </span>
+                    )}
+                  </td>
+                  <td className="p-4 flex justify-center space-x-4">
+                    <button
+                      onClick={() => handleOpenModal(user)}
+                      className="text-blue-500 hover:text-blue-700"
+                      aria-label="Editar usuario"
+                    >
+                      <HiPencil className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleOpenDeleteModal(user)}
+                      className="text-red-500 hover:text-red-700"
+                      aria-label="Eliminar usuario"
+                    >
+                      <HiTrash className="w-5 h-5" />
+                    </button>
+                  </td>
                 </tr>
               ))}
-          </tbody>
-        </table>
-      )}
-
+              {emptyRows > 0 &&
+                Array.from({ length: emptyRows }).map((_, index) => (
+                  <tr
+                    key={`empty-${index}`}
+                    className="border-t border-gray-200 text-center"
+                  >
+                    <td className="p-4">&nbsp;</td>
+                    <td className="p-4">&nbsp;</td>
+                    <td className="p-4">&nbsp;</td>
+                    <td className="p-4">&nbsp;</td>
+                    <td className="p-4">&nbsp;</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {usuarioSeleccionado && isModalOpen && (
@@ -136,6 +132,7 @@ const UserTable: React.FC<UsersTableProps> = ({
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           user={usuarioSeleccionado}
+          onSave={onUsersUpdate}
         />
       )}
 
@@ -144,8 +141,8 @@ const UserTable: React.FC<UsersTableProps> = ({
           isOpen={isDeleteModalOpen}
           onClose={handleCloseDeleteModal}
           onConfirmDelete={handleConfirmDelete}
-          entity="usuario"
-          itemEntity={usuarioAEliminar.name}
+          entity=""
+          itemEntity={usuarioAEliminar}
         />
       )}
     </div>

@@ -20,7 +20,7 @@ export default function Login() {
         const response = await accountService.Login({ email, password });
         const results = response as ResponseHelper;
         if (results.success) {
-          navigate("/inicio");
+          navigate("/dashboard");
         } else {
           alert("El usuario no existe, o la contraseña es incorrecta. Comprueba tu cuenta.");
         }

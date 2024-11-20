@@ -1,63 +1,76 @@
 import React, { useState, useEffect } from "react";
 import { evaluatePassword } from "../../modules/services/profile/password_evaluate";
-import UserService from "../../modules/services/user/userService";
+import BaseService from "../../modules/services/base_service";
+import { IAccount } from "../../interfaces/newAccount._interface";
+import { StatusUser } from "../../enum/enum";
 import { UsuariosModalProps } from "../../interfaces/Users/UsersModalProps";
-import { Usuario } from "../../interfaces/usuario_interface";
 
-const UsuarioModal: React.FC<UsuarioModalProps> = ({
+const UsuarioModal: React.FC<UsuariosModalProps> = ({
   isOpen,
   onClose,
   user,
-  onSave
+  onSave,
 }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [rol, setRol] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formData, setFormData] = useState({
+    id: "",
+    nombre: "",
+    correo: "",
+    rol: "",
+    password: "",
+    confirmPassword: "",
+    estado: StatusUser.ACTIVO,
+  });
   const [passwordStrength, setPasswordStrength] = useState<string>("");
   const [passwordMatch, setPasswordMatch] = useState<boolean | null>(null);
-  const [estado, setEstado] = useState("Activo");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       if (user) {
-        setName(user.name);
-        setEmail(user.email);
-        setRol(user.rol); 
-        setEstado(user.estado || "Activo");
-        setPassword(""); 
-        setConfirmPassword("");
+        setFormData({
+          id: user.id || "",
+          nombre: user.name,
+          correo: user.email,
+          rol: user.rol || "",
+          password: "",
+          confirmPassword: "",
+          estado: user.estatusUsuario || StatusUser.ACTIVO,
+        });
       } else {
-        setName("");
-        setEmail("");
-        setRol("");
-        setEstado("Activo");
-        setPassword("");
-        setConfirmPassword("");
+        setFormData({
+          id: "",
+          nombre: "",
+          correo: "",
+          rol: "",
+          password: "",
+          confirmPassword: "",
+          estado: StatusUser.ACTIVO,
+        });
       }
       setError(null);
       setPasswordMatch(null);
     }
-  }, [isOpen, user]); 
+  }, [isOpen, user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    if (name === "nombre") setName(value);
-    if (name === "correo") setEmail(value);
-    if (name === "rol") setRol(value);
-    if (name === "password") {
-      setPassword(value);
-      setPasswordStrength(evaluatePassword(value));
-      setPasswordMatch(value === confirmPassword);
-    }
-    if (name === "confirmPassword") {
-      setConfirmPassword(value);
-      setPasswordMatch(value === password);
-    }
-    if (name === "estado") setEstado(value);
+
+    setFormData((prev) => {
+      const updatedData = { ...prev, [name]: value };
+
+      if (name === "password") {
+        setPasswordStrength(evaluatePassword(value));
+        setPasswordMatch(value === updatedData.confirmPassword);
+      }
+      if (name === "confirmPassword") {
+        setPasswordMatch(value === updatedData.password);
+      }
+
+      return updatedData;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -65,34 +78,42 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({
     setLoading(true);
     setError(null);
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setError("Las contraseñas no coinciden.");
       setLoading(false);
       return;
     }
 
-    const newUsuario: Usuario = {
-      nombre: name,
-      email: email,
-      password: password || undefined, 
-      estado: estado,
-      rol: rol,
+    const newUsuario: IAccount = {
+      id: formData.id,
+      name: formData.nombre,
+      email: formData.correo,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+      estatusUsuario: formData.estado,
+      rol: formData.rol,
+      isDeleted: false,
     };
 
-    const usuarioService = new UserService();
+    const baseService = new BaseService();
 
     try {
-      const response = user
-        ? await usuarioService.UpdateUsuarioService(user.id, newUsuario)
-        : await usuarioService.AddUsuarioService(newUsuario);
+      let response;
+      if (user) {
+        response = await baseService.Put("/Account/UpdateUserData", newUsuario);
+      } else {
+        // Si es un nuevo usuario, hacemos un registro (POST)
+        response = await baseService.Post("/Account/register", newUsuario);
+      }
 
       if (response.success) {
         onSave(newUsuario);
         onClose();
       } else {
-        setError(response.message);
+        setError(response.message!);
       }
     } catch (error) {
+      console.error(error);
       setError("Error al guardar el usuario.");
     } finally {
       setLoading(false);
@@ -121,7 +142,7 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({
             <input
               type="text"
               name="nombre"
-              value={name}
+              value={formData.nombre}
               onChange={handleChange}
               className="w-full border rounded p-2"
               required
@@ -132,7 +153,7 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({
             <input
               type="email"
               name="correo"
-              value={email}
+              value={formData.correo}
               onChange={handleChange}
               className="w-full border rounded p-2"
               required
@@ -142,11 +163,13 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({
             <label className="block text-sm font-medium">Rol</label>
             <select
               name="rol"
-              value={rol}
+              value={formData.rol}
               onChange={handleChange}
               className="w-full border rounded p-2"
+              required
             >
-              <option value="Administrativo">Administrativo</option>
+              <option value="">Selecciona un rol</option>
+              <option value="Administrador">Administrador</option>
               <option value="Empleado">Empleado</option>
             </select>
           </div>
@@ -155,7 +178,7 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({
             <input
               type="password"
               name="password"
-              value={password}
+              value={formData.password}
               onChange={handleChange}
               className="w-full border rounded p-2"
             />
@@ -166,25 +189,13 @@ const UsuarioModal: React.FC<UsuarioModalProps> = ({
             <input
               type="password"
               name="confirmPassword"
-              value={confirmPassword}
+              value={formData.confirmPassword}
               onChange={handleChange}
               className="w-full border rounded p-2"
             />
             {passwordMatch === false && (
               <p className="text-sm text-red-500">Las contraseñas no coinciden.</p>
             )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium">Estado</label>
-            <select
-              name="estado"
-              value={estado}
-              onChange={handleChange}
-              className="w-full border rounded p-2"
-            >
-              <option value="Activo">Activo</option>
-              <option value="Inactivo">Inactivo</option>
-            </select>
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex justify-end space-x-2">
