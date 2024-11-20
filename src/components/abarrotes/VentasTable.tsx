@@ -44,9 +44,9 @@ const VentasTable: React.FC<VentasTableProps> = ({
   };
 
   return (
-    <div className="max-h-[calc(100vh-200px)] py-4">
-      <div className="overflow-hidden h-[500px]">
-        <table className="w-full table-auto border-collapse bg-white shadow-md rounded-lg">
+    <div className="w-full h-auto">
+    <div className="overflow-x-auto">
+    <table className="w-full table-auto border-collapse bg-white shadow-md rounded-lg">
           <thead>
             <tr className="bg-white text-gray-700 text-center">
               <th className="p-4">Número de venta</th>

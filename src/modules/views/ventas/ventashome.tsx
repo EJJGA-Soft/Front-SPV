@@ -11,9 +11,9 @@ interface Venta {
 }
 
 const VentasHome: React.FC = () => {
-  const navigate = useNavigate();
+
   const [currentPage, setCurrentPage] = useState(1);
-  const ventasPerPage = 7; // Número de ventas por página
+  const ventasPerPage = 7; 
 
   const ventas: Venta[] = [
     { numeroVenta: 1, fechaRegistro: '28/08/2024', tipoPago: 'Efectivo', total: 327 },
@@ -40,14 +40,15 @@ const VentasHome: React.FC = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto min-h-screen h-screen flex flex-col">
+      <div className="bg-gray-100 sm:py-10 px-4 sm:px-6 lg:px-8 pt-6 pb-[95px] lg:mt-[-70px]">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-semibold">Detalle de ventas</h1>
-          <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">Detalle de ventas</h1>
+          <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 sm:py-2 sm:text-base sm:px-4">
             Exportar PDF
           </button>
         </div>
 
+        <div className=" max-h-[600px] sm:max-h-full">
         <VentasTable
           ventas={ventas}
           currentPage={currentPage}
@@ -55,6 +56,7 @@ const VentasHome: React.FC = () => {
           handleNextPage={handleNextPage}
           handlePrevPage={handlePrevPage}
         />
+        </div>
       </div>
     </Layout>
   );
