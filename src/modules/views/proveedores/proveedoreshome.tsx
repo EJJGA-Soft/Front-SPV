@@ -3,7 +3,7 @@ import Layout from "../../../components/layout/layout";
 import ProveedoresTable from "../../../components/proveedores/ProveedoresTable";
 import ProveedoresModal from "../../../components/proveedores/ModalProveedores";
 import ProveedorService from "../../services/proveedor/proveedores_service";
-import { IProveedores } from "../../../interfaces/proveedor_interface";
+import { IProveedores } from "../../../interfaces/Proveedores/proveedor_interface";
 import LoadingView from "../../../components/loading/loading";
 
 const Proveedores = new ProveedorService();
@@ -13,13 +13,13 @@ const ProveedoresHome: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const proveedoresPerPage = 7;
   const [proveedores, setProveedores] = useState<IProveedores[]>([]);
-  const [IsLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function GetProveedores(): Promise<IProveedores[]> {
     setIsLoading(true);
   
     try {
-      const response = await Proveedores.getProveedores();
+      const response = await Proveedores.getProveedoreswithProductos();
 
       if(response.success){
       const convert = response.data as IProveedores[];
@@ -30,7 +30,6 @@ const ProveedoresHome: React.FC = () => {
       return [];
     } catch (error) {
       console.error("Error al obtener proveedores:", error);
-      throw error;
     }
   }
   
@@ -81,17 +80,17 @@ const ProveedoresHome: React.FC = () => {
         </div>
         
         <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
-      { IsLoading ? (
-          <LoadingView/>
-        ) : (
+     
           <ProveedoresTable
           proveedores={proveedores}
           currentPage={currentPage}
           proveedoresPerPage={proveedoresPerPage}
           handleNextPage={handleNextPage}
           handlePrevPage={handlePrevPage}
+          isLoading={isLoading}
+
         />
-        )}
+        
         </div>
 
         <div className="flex justify-between items-center mt-4 flex-wrap">

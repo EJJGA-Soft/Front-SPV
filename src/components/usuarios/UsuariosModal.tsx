@@ -4,6 +4,8 @@ import BaseService from "../../modules/services/base_service";
 import { IAccount } from "../../interfaces/newAccount._interface";
 import { StatusUser } from "../../enum/enum";
 import { UsuariosModalProps } from "../../interfaces/Users/UsersModalProps";
+import { validatePassword } from "../../modules/services/profile/passwordValidationService";
+import { useSnackbar } from "notistack";
 
 const UsuarioModal: React.FC<UsuariosModalProps> = ({
   isOpen,
@@ -24,6 +26,9 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
   const [passwordMatch, setPasswordMatch] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
+  const { enqueueSnackbar } = useSnackbar();
+
 
   useEffect(() => {
     if (isOpen) {
@@ -63,10 +68,21 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
 
       if (name === "password") {
         setPasswordStrength(evaluatePassword(value));
-        setPasswordMatch(value === updatedData.confirmPassword);
+        setPasswordMatch(value === updatedData.confirmPassword);  
       }
       if (name === "confirmPassword") {
         setPasswordMatch(value === updatedData.password);
+        if(value === updatedData.password){
+          const {isValid, message} = validatePassword(updatedData.password);
+          if(!isValid){
+            setError(message); 
+            setButtonDisabled(true);
+          } else{
+            setError(null); 
+            setButtonDisabled(false);
+
+          }
+        }
       }
 
       return updatedData;
@@ -102,7 +118,6 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
       if (user) {
         response = await baseService.Put("/Account/UpdateUserData", newUsuario);
       } else {
-        // Si es un nuevo usuario, hacemos un registro (POST)
         response = await baseService.Post("/Account/register", newUsuario);
       }
 
@@ -197,7 +212,14 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
               <p className="text-sm text-red-500">Las contraseñas no coinciden.</p>
             )}
           </div>
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && (
+            <p
+              className="text-sm text-red-500"
+              dangerouslySetInnerHTML={{ __html: error }}
+            />
+          )}
+          
+
           <div className="flex justify-end space-x-2">
             <button
               type="button"
@@ -206,13 +228,26 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
             >
               Cancelar
             </button>
-            <button
+            {buttonDisabled ? (
+              <button
+              type="submit"
+              className="px-4 py-2 bg-gray-300 text-white rounded hover:bg-blue-700"
+              disabled
+              
+            >
+            Guardar
+            </button>
+            ) : (
+              <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               disabled={loading}
+              
             >
               {loading ? "Guardando..." : "Guardar"}
             </button>
+            )}
+           
           </div>
         </form>
       </div>

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { ProveedoresModalProps } from "../../interfaces/proveedoresModalProps";
+import { ProveedoresModalProps } from "../../interfaces/Proveedores/proveedoresModalProps";
 import { Proveedores } from "../../interfaces/proveedores_interface";
 import ProveedorService from "../../modules/services/proveedor/proveedores_service";
+import { useSnackbar } from "notistack";
 
 const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
   isOpen,
@@ -10,20 +11,18 @@ const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
   onSave
 }) => {
   const [nombreEmpresa, setNombreEmpresa] = useState("");
-  const [productoProveedor, setProductoProveedor] = useState<string[]>([]);
-  const [numeroContacto, setNumeroContacto] = useState<string>("");
+  const [numeroCelular, setNumeroCelular] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     if (proveedor) {
       setNombreEmpresa(proveedor.nombreEmpresa);
-      setProductoProveedor(proveedor.productoProveedor || []); 
-      setNumeroContacto(proveedor.numeroContacto);
+      setNumeroCelular(proveedor.numeroCelular);
     } else {
       setNombreEmpresa("");
-      setProductoProveedor([]);  
-      setNumeroContacto("");
+      setNumeroCelular("");
     }
   }, [proveedor]);
 
@@ -33,28 +32,29 @@ const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
     setLoading(true);
     setError(null);
 
+    if(!nombreEmpresa || !numeroCelular){
+      enqueueSnackbar("Por favor, completa todos los campos", {variant:"error"});
+      setLoading(false);
+      return;
+    }
+
     const newProveedor: Proveedores = {
       nombreEmpresa,
-      productoProveedor,
-      numeroContacto
+      numeroContacto: numeroCelular
     };
 
     const proveedorService = new ProveedorService();
 
-    try {
-      const response = await proveedorService.AddProvService(newProveedor);
-      if(response.success){
-        onSave(newProveedor);
-        onClose();
-      } else {
-        setError(response.message);
-      } 
-    } catch (error) {
-      setError("Error al guardar proveedor");
-
-    } finally {
-      setLoading(false);
-    }
+   const response = await proveedorService.AddProvService(newProveedor);
+   if(response.success){
+    onSave(newProveedor);
+    onClose();
+    enqueueSnackbar("Proveedor guardado exitosamente", {variant:"success"});
+   } else{
+    setError(response.message);
+    enqueueSnackbar(response.message || "Error al guardar proveedor", { variant: "error" });
+   }
+   setLoading(false);
   };
 
   return (
@@ -99,36 +99,15 @@ const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
             />
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-900">
-              Productos del proveedor
-            </label>
-            <select
-              multiple
-              value={productoProveedor}
-              onChange={(e) =>
-                setProductoProveedor(
-                  Array.from(e.target.selectedOptions, (option) => option.value)
-                )
-              }
-              className="bg-gray-100 border border-gray-300 rounded-lg p-2 w-full"
-            >
-              {(proveedor?.productoProveedor || []).map((producto, index) => (
-                <option key={index} value={producto}>
-                  {producto}
-                </option>
-              ))}
-            </select>
-          </div>
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-900">
               Número de Contacto
             </label>
             <input
-              type="number"
-              value={numeroContacto}
-              onChange={(e) => setNumeroContacto(e.target.value)}
+              type="text"
+              value={numeroCelular}
+              onChange={(e) => setNumeroCelular(e.target.value)}
               className="bg-gray-100 border border-gray-300 rounded-lg p-2 w-full"
             />
           </div>

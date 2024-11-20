@@ -60,6 +60,12 @@ const UserTable: React.FC<UsersTableProps> = ({
       <div className="overflow-x-auto">
         {isLoading ? (
           <LoadingTables /> 
+        ) : users.length <= 0 ? (
+          <div className="flex bg-white justify-center items-center h-80">
+          <span className="text-gray-500 text-sm md:text-base lg:text-lg">
+            No hay usuarios disponibles.
+          </span>
+        </div>
         ) : (
           <table className="min-w-full bg-white shadow-md rounded-lg">
             <thead>
