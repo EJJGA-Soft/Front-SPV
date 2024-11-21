@@ -1,9 +1,9 @@
-import { IAccount } from "./newAccount._interface";
 
-export interface DeleteModalProps {
+export interface DeleteModalProps<T> {
     isOpen: boolean;
     onClose: () => void;
     onConfirmDelete: (id: string) => void;
     entity:string;
-    itemEntity:IAccount;
+    itemEntity: T;
+    deleteRoute: string;
 }
