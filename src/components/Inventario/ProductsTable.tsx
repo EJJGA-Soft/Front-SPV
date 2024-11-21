@@ -5,8 +5,12 @@ import { Api_Connection } from "../../modules/services/API/api_connection";
 import LoadingTables from "../loading/loadingtables";
 import BaseService from "../../modules/services/base_service";
 
-const ProductsTable = () => {
-  // Estado para manejar la lista de productos
+interface Props {
+  reload: boolean;
+  setReload: (value: boolean) => void;
+}
+
+const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -49,6 +53,12 @@ const ProductsTable = () => {
   useEffect(() => {
     getProductos();
   }, []);
+
+  useEffect(() => {
+    if (reload) {
+      getProductos().then(() => setReload(false));
+    }
+  }, [reload, setReload]);
 
   // Paginación
   const handleNextPage = () => {
