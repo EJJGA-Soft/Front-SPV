@@ -35,7 +35,8 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
   };
 
   const handleOpenDeleteModal = (proveedor: IProveedores) => {
-    setProveedorAEliminar(proveedor);
+    const stockTotal = proveedor.productos?.reduce((total, producto) => total + producto.stock, 0) || 0;
+    setProveedorAEliminar({ ...proveedor, stockTotal });
     setDeleteModalOpen(true);
   }
 
@@ -137,7 +138,7 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
         onConfirmDelete={(id:string) => {
           handleConfirmDelete();
         }}
-        entity="proveedor"
+        entity={`proveedor con un total ${proveedorAEliminar.stockTotal || 0} productos`}
         itemEntity={proveedorAEliminar}
         deleteRoute={`/Proveedor/${proveedorAEliminar.id}`}
         />

@@ -5,5 +5,6 @@ export interface IProveedores {
     nombreEmpresa: string;
     numeroCelular: string;
     productos?: Producto[];
+    stockTotal?: number;
     esBorrado: boolean;
 }
