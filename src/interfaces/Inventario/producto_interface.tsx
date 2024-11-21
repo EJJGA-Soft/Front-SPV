@@ -4,6 +4,7 @@ export interface Producto {
     precio: number;
     stock: number;
     urlImagen: string;
+    Imagen: Blob;
     categoriaId: number;
     proveedorId: number;
     esBorrado: boolean;

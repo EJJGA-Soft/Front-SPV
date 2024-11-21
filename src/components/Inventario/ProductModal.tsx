@@ -20,11 +20,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
         precio: 0,
         stock: 0,
         urlImagen: '',
+        Imagen: new Blob(),
         categoriaId: 0,
         proveedorId: 0,
         esBorrado: false,
     });
-    
+
     // Instancia de BaseService
     const baseService = new BaseService();
 
@@ -34,7 +35,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
             const file = acceptedFiles[0];
             const objectUrl = URL.createObjectURL(file);
             setPreview(objectUrl);
-            setProducto({ ...producto, urlImagen: objectUrl });
+            setProducto({ ...producto, Imagen: new Blob([file], { type: file.type }) });
         }
     };
 
@@ -46,9 +47,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
     // Función para obtener categorías
     const getCategories = async () => {
         try {
-            const response = await baseService.Get<ICategoria>("/Categorias"); // Cambia el endpoint según tu API
+            const response = await baseService.Get<ICategoria>("/Categorias");
             if (response.success) {
-                console.log('Categorias:', response);
                 setCategories(response.data as ICategoria[]);
             }
         } catch (error) {
@@ -59,7 +59,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
     // Función para obtener proveedores
     const getProviders = async () => {
         try {
-            const response = await baseService.Get<IProveedores>("/Proveedor"); 
+            const response = await baseService.Get<IProveedores>("/Proveedor");
             if (response.success) {
                 setProviders(response.data as IProveedores[]);
             }
@@ -70,11 +70,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
 
     useEffect(() => {
         getCategories();
-      }, []);
+    }, []);
 
-      useEffect(() => {
+    useEffect(() => {
         getProviders();
-      }, []);
+    }, []);
 
     // Función para crear el producto
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -87,8 +87,25 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("Datos enviados:", producto);
+
+        const formData = new FormData();
+
+        formData.append('nombre', producto.nombre);
+        formData.append('precio', producto.precio.toString());
+        formData.append('stock', producto.stock.toString());
+        formData.append('categoriaId', producto.categoriaId.toString());
+        formData.append('proveedorId', producto.proveedorId.toString());
+        formData.append('esBorrado', producto.esBorrado ? 'true' : 'false');
+
+        // Aquí se agrega el Blob de la imagen
+        if (producto.Imagen instanceof Blob) {
+            console.log('Archivo de imagen:', producto.Imagen);
+            formData.append('Imagen', producto.Imagen);
+        }
+
         try {
-            const response = await baseService.Post<Producto>('/Productos', producto);
+            const response = await baseService.Post<Producto>('/Productos', formData);
             if (response.success) {
                 console.log('Producto creado:', response.data);
                 onClose(); // Cierra el modal
@@ -141,7 +158,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                                 className={`border-2 border-dashed rounded p-4 text-center relative cursor-pointer h-40 ${isDragActive ? "bg-blue-100 border-blue-400" : "border-gray-300"
                                     }`}
                             >
-                                <input {...getInputProps()} 
+                                <input {...getInputProps()}
                                 />
                                 {preview ? (
                                     <img
