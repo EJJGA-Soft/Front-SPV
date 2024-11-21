@@ -7,6 +7,7 @@ const Inventario = () => {
 
     //Modal
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
+    const [reloadTable, setReloadTable] = useState<boolean>(false);    
 
     // Funciones para manejar el modal de "Agregar Producto"
     const handleOpenAddProductModal = () => {
@@ -16,6 +17,10 @@ const Inventario = () => {
     const handleCloseAddProductModal = () => {
         setIsAddProductModalOpen(false);
     };
+
+    const handleReloadAddProductModal =() => {
+        setReloadTable(true);
+    }
 
     return (
         <>
@@ -82,13 +87,16 @@ const Inventario = () => {
                             Agregar producto
                         </button>
                         {isAddProductModalOpen && (
-                            <ProductModal isOpen={isAddProductModalOpen} onClose={handleCloseAddProductModal} />
+                            <ProductModal
+                            isOpen={isAddProductModalOpen}
+                            onClose={handleCloseAddProductModal}
+                            onReload={handleReloadAddProductModal}
+                          />
                         )}
                     </div>
 
                     {/* Componente Tabla */}
-                    <ProductsTable />
-
+                    <ProductsTable reload={reloadTable} setReload={setReloadTable} />
                 </div>
             </Layout>
         </>

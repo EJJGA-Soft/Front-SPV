@@ -8,9 +8,12 @@ import { Producto } from "../../interfaces/Inventario/producto_interface";
 interface ProductModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onReload: () => void;
 }
 
-const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
+const baseService = new BaseService();
+
+const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
     const [preview, setPreview] = useState<string | null>(null);
     const [categories, setCategories] = useState<ICategoria[]>([]);
     const [providers, setProviders] = useState<IProveedores[]>([]);
@@ -25,9 +28,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
         proveedorId: 0,
         esBorrado: false,
     });
-
-    // Instancia de BaseService
-    const baseService = new BaseService();
 
     // Función para la imagen previa
     const onDrop = (acceptedFiles: File[]) => {
@@ -70,9 +70,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
 
     useEffect(() => {
         getCategories();
-    }, []);
-
-    useEffect(() => {
         getProviders();
     }, []);
 
@@ -98,17 +95,18 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
         formData.append('proveedorId', producto.proveedorId.toString());
         formData.append('esBorrado', producto.esBorrado ? 'true' : 'false');
 
-        // Aquí se agrega el Blob de la imagen
-        if (producto.Imagen instanceof Blob) {
-            console.log('Archivo de imagen:', producto.Imagen);
-            formData.append('Imagen', producto.Imagen);
-        }
+        const blob = new Blob([producto.Imagen], { type: "image/jpeg" });
+        formData.append('Imagen', blob, "producto.jpg");
 
         try {
-            const response = await baseService.Post<Producto>('/Productos', formData);
+            const response = await baseService.Post<Producto>('/Productos', formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             if (response.success) {
-                console.log('Producto creado:', response.data);
-                onClose(); // Cierra el modal
+                onClose();
+                onReload();
             } else {
                 console.error('Error al crear el producto:', response.message);
             }
@@ -172,7 +170,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose }) => {
                                             <img
                                                 src="src/assets/icons/cloud-upload-svgrepo-com.png"
                                                 alt="Icono de subida"
-                                                className="w-10 h-10 sm:w-14 sm:h-14" // Imagen más pequeña en móvil
+                                                className="w-10 h-10 sm:w-14 sm:h-14"
                                             />
                                         </div>
                                         <p className="text-gray-600 font-semibold text-xs sm:text-sm">
