@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { HiPencil, HiTrash } from 'react-icons/hi';
 import { Producto } from "../../interfaces/Inventario/producto_interface";
-import inventoryService from "../../modules/services/Inventario/InventoryService";
 import { Api_Connection } from "../../modules/services/API/api_connection";
 import LoadingTables from "../loading/loadingtables";
+import BaseService from "../../modules/services/base_service";
 
 const ProductsTable = () => {
   // Estado para manejar la lista de productos
@@ -13,7 +13,7 @@ const ProductsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const productosPerPage = 10;
 
-  const Productos = new inventoryService();
+  const baseService = new BaseService();
 
   // Calcular los índices para la paginación
   const indexOfLastProducto = currentPage * productosPerPage;
@@ -24,17 +24,17 @@ const ProductsTable = () => {
   const url = `${Api_Connection()}`;
   const urlImg = url.replace('/api/', '');
 
-  // Obtener los productos
+  //  Método para obtener los productos
   async function getProductos(): Promise<void> {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await Productos.getProducts();
-
-      if (response.success) {
-        const convert = response.data as Producto[];
-        setProductos(convert);
+      setIsLoading(true);
+      const response = await baseService.Get<Producto>("/Productos")
+      if(response.success){
+        setIsLoading(false);
+        setProductos(response.data as Producto[]);
       } else {
         setError('No se pudieron obtener los productos.');
       }
@@ -60,6 +60,28 @@ const ProductsTable = () => {
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Método para eliminar un producto
+  const deleteProducto = async (id: number) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este producto?")) {
+      try {
+        setIsLoading(true);
+        const response = await baseService.Delete(`/Productos/${id}`);
+
+        if (response.success) {
+          // Filtra el producto eliminado de la lista
+          setProductos(prevProducts => prevProducts.filter(producto => producto.id !== id));
+          console.log(`Producto eliminado con éxito. ID: ${id}`);
+        } else {
+          console.error("Error al eliminar el producto:", response.message);
+        }
+      } catch (error) {
+        console.error("Error al eliminar el producto:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -118,6 +140,7 @@ const ProductsTable = () => {
                       <button
                         className="text-red-500 hover:text-red-700"
                         aria-label="Eliminar proveedor"
+                        onClick={() => deleteProducto(producto.id)}
                       >
                         <HiTrash className="w-5 h-5" />
                       </button>
