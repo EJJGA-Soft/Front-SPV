@@ -6,6 +6,7 @@ import { StatusUser } from "../../enum/enum";
 import { UsuariosModalProps } from "../../interfaces/Users/UsersModalProps";
 import { validatePassword } from "../../modules/services/profile/passwordValidationService";
 import { useSnackbar } from "notistack";
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const UsuarioModal: React.FC<UsuariosModalProps> = ({
   isOpen,
@@ -28,6 +29,8 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
   const { enqueueSnackbar } = useSnackbar();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -190,24 +193,41 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
           </div>
           <div>
             <label className="block text-sm font-medium">Contraseña</label>
+            <div className="relative">
             <input
-              type="password"
+              type={ showPassword ? "text" : "password" }
               name="password"
               value={formData.password}
               onChange={handleChange}
               className="w-full border rounded p-2"
             />
+            <span
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer mr-4 text-gray-400 "
+            onClick={() => setShowPassword(!showPassword)} 
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />} 
+          </span>
+            </div>
             <p className="text-sm text-gray-500">Seguridad: {passwordStrength}</p>
           </div>
           <div>
             <label className="block text-sm font-medium">Confirmar Contraseña</label>
+            <div className="relative">
+
             <input
-              type="password"
+              type={ showConfirmPassword ? "text" : "password" }
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
               className="w-full border rounded p-2"
             />
+            <span
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer mr-4 text-gray-400 "
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
+          >
+            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />} 
+          </span>
+            </div>
             {passwordMatch === false && (
               <p className="text-sm text-red-500">Las contraseñas no coinciden.</p>
             )}
@@ -220,7 +240,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
           )}
           
 
-          <div className="flex justify-end space-x-2">
+          <div className="flex justify-center space-x-2">
             <button
               type="button"
               onClick={onClose}
