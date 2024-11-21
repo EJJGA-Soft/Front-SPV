@@ -1,9 +1,9 @@
 import { Producto } from "../Inventario/producto_interface";
 
 export interface IProveedores {
-    id: number;
+    id?: string;
     nombreEmpresa: string;
     numeroCelular: string;
-    productos: Producto[];
+    productos?: Producto[];
     esBorrado: boolean;
 }

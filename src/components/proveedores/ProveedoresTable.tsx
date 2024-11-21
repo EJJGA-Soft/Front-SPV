@@ -9,11 +9,10 @@ import ProveedorService from "../../modules/services/proveedor/proveedores_servi
 import { enqueueSnackbar } from 'notistack';
 
 const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
-  proveedores, currentPage, proveedoresPerPage, handleNextPage, handlePrevPage,   isLoading,
+  proveedores, currentPage, proveedoresPerPage, handleNextPage, handlePrevPage,   isLoading, onProveedoresUpdate
 
 }) => {
 
-  const [proveedoresState, setProveedores] =useState<IProveedores[]>([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState<IProveedores | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -23,7 +22,6 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
   const indexOfLastProveedor = currentPage * proveedoresPerPage;
   const indexOfFirstProveedor = indexOfLastProveedor - proveedoresPerPage;
   const currentProveedores = proveedores.slice(indexOfFirstProveedor, indexOfLastProveedor);
-
   const emptyRows = proveedoresPerPage - currentProveedores.length;
 
   const handleOpenModal = (proveedor: IProveedores) => {
@@ -46,39 +44,16 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
     setProveedorAEliminar(null);
   };
 
-  const handleConfirmDelete = async () => {
-    const { enqueueSnackbar } = useSnackbar();
-
-   if(proveedorAEliminar && proveedorAEliminar.id) {
-    const service = new ProveedorService();
-    const response = await service.DeleteProvService(proveedorAEliminar.id);
-    if(response.success){
-      setProveedores(proveedoresState.filter(p => p.id !== proveedorAEliminar.id));
+  const handleConfirmDelete = () => {
+    if(proveedorAEliminar && proveedorAEliminar.id){
+      onProveedoresUpdate();
       setDeleteModalOpen(false);
       setProveedorAEliminar(null);
-      enqueueSnackbar(`Proveedor ${proveedorAEliminar.nombreEmpresa} eliminado correctamente.`, { variant: 'success' });
-
     } else {
-      enqueueSnackbar(`Error: ${response.message}`, { variant: 'error' });
+      console.log("Error: proveedor no encontrado");
     }
-   } else {
-    enqueueSnackbar("Proveedor no encontrado o no tiene un ID válido", { variant: 'error' });
-   }
   };
 
-  useEffect(() => {
-    const obtenerProveedores = async () =>{
-      const service = new ProveedorService();
-      const response = await service.getProveedoreswithProductos();
-      if(response.success){
-        setProveedores(response.data);
-      } else{
-        console.error(response.message);
-      }
-      setLoading(false);
-    };
-    obtenerProveedores();
-  },[]);
 
   return (
     <div className="w-full h-auto">
@@ -151,16 +126,20 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           proveedor={proveedorSeleccionado}
+          onSave={onProveedoresUpdate}
         />
       )}
 
       {proveedorAEliminar && isDeleteModalOpen && (
-        <ConfirmDeleteModal 
-          isOpen={isDeleteModalOpen}
-          onClose={handleCloseDeleteModal}
-          onConfirmDelete={handleConfirmDelete}
-          entity="proveedor"
-          itemEntity={proveedorAEliminar.nombreEmpresa}
+        <ConfirmDeleteModal<IProveedores>
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirmDelete={(id:string) => {
+          handleConfirmDelete();
+        }}
+        entity="proveedor"
+        itemEntity={proveedorAEliminar}
+        deleteRoute={`/Proveedor/${proveedorAEliminar.id}`}
         />
       )}
     </div>

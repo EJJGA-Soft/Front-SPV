@@ -2,43 +2,33 @@ import React, { useEffect, useState } from "react";
 import Layout from "../../../components/layout/layout";
 import ProveedoresTable from "../../../components/proveedores/ProveedoresTable";
 import ProveedoresModal from "../../../components/proveedores/ModalProveedores";
-import ProveedorService from "../../services/proveedor/proveedores_service";
 import { IProveedores } from "../../../interfaces/Proveedores/proveedor_interface";
 import LoadingView from "../../../components/loading/loading";
+import BaseService from "../../services/base_service";
 
-const Proveedores = new ProveedorService();
+const baseService = new BaseService();
 
-const ProveedoresHome: React.FC = () => {
+export default function ProveedoresHome() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
-  const proveedoresPerPage = 7;
   const [proveedores, setProveedores] = useState<IProveedores[]>([]);
+  const [proveedoresPerPage] = useState(7);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isLoading, setIsLoading] = useState(false);
 
-  async function GetProveedores(): Promise<IProveedores[]> {
-    setIsLoading(true);
-  
-    try {
-      const response = await Proveedores.getProveedoreswithProductos();
+ 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
 
-      if(response.success){
-      const convert = response.data as IProveedores[];
-      setProveedores(convert);
-      setIsLoading(false);
-      return convert;
-      }
-      return [];
-    } catch (error) {
-      console.error("Error al obtener proveedores:", error);
-    }
-  }
-  
+  const handleCloseModal = () => {
+    setIsModalOpen(false); 
+  };
 
-  useEffect(() => {
-    GetProveedores()
-  }, [])
-
-
+  const handleSaveProveedor = (newProveedor: IProveedores) => {
+    setProveedores((prevProveedores) => [...prevProveedores, newProveedor]);
+    GetProveedores();
+    handleCloseModal();
+  };
 
   const handleNextPage = () => {
     if (currentPage * proveedoresPerPage < proveedores.length) {
@@ -52,18 +42,28 @@ const ProveedoresHome: React.FC = () => {
     }
   };
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+  const GetProveedores = async() =>{
+    try{
+      setIsLoading(true);
+      const response = await baseService.Get<IProveedores>("/Productos/ProductsWithProveedor")
+      if(response.success){
+        setIsLoading(false);
+        setProveedores(response.data as IProveedores[]);
+      } else {
+        setIsLoading(false);
+      } 
+    } catch(error){
+      console.error("Error al obtener proveedores: ", error);
+    }
+  }
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false); 
-  };
+  const handleProveedoresUpdate = async()=>{
+    await GetProveedores();
+  }
 
-  const handleSaveProveedor = (nuevoProveedor: Proveedores) => {
-    console.log("Proveedor guardado:", nuevoProveedor);
-    handleCloseModal();
-  };
+  useEffect(()=> {
+    GetProveedores();
+  }, []);
 
   return (
     <Layout>
@@ -88,6 +88,7 @@ const ProveedoresHome: React.FC = () => {
           handleNextPage={handleNextPage}
           handlePrevPage={handlePrevPage}
           isLoading={isLoading}
+          onProveedoresUpdate={handleProveedoresUpdate}
 
         />
         
@@ -117,10 +118,13 @@ const ProveedoresHome: React.FC = () => {
       
 
         
-        {isModalOpen && <ProveedoresModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveProveedor} />}
+        {isModalOpen &&
+           <ProveedoresModal 
+          isOpen={isModalOpen} 
+          onClose={handleCloseModal} 
+          onSave={handleSaveProveedor} />}
       </div>
     </Layout>
   );
 };
 
-export default ProveedoresHome;
