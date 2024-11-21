@@ -6,4 +6,6 @@ export interface ProveedoresTableProps{
     proveedoresPerPage: number;
     handleNextPage: () => void;
     handlePrevPage: () => void;
+    isLoading: boolean;
+
 }

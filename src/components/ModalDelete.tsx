@@ -3,11 +3,11 @@ import { DeleteModalProps } from "../interfaces/DeleteModalProps";
 import BaseService from '../modules/services/base_service';
 
 const baseService = new BaseService();
-const ConfirmDeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, onConfirmDelete, entity, itemEntity}) => {
+const ConfirmDeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, onConfirmDelete, entity, itemEntity, deleteRoute}) => {
     if(!isOpen) return null;
 
     const HandleDelete = async(id: string) => {
-      const response = await baseService.Delete(`/Account/DeleteUser/${id}`);
+      const response = await baseService.Delete(deleteRoute.replace("{id}, id"));
       if(response.success){
         onClose();
         onConfirmDelete(id);
@@ -22,8 +22,9 @@ const ConfirmDeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, onConf
             <button onClick={onClose} className="text-gray-500 hover:text-gray-700">X</button>
           </div>
   
-          <p className="text-gray-700 mb-4">¿Estás seguro de que deseas eliminar el {entity} <strong>{itemEntity.name}</strong>?</p>
-  
+          <p className="text-gray-700 mb-4">
+          ¿Estás seguro de que deseas eliminar el {entity} <strong> {itemEntity.name || itemEntity.nombreEmpresa}</strong>?
+        </p>  
           <div className="flex justify-center space-x-4">
             <button
               onClick={onClose}

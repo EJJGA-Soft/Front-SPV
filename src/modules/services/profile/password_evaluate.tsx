@@ -8,3 +8,4 @@ export const evaluatePassword = (password: string): string => {
         return "Difícil";
     }
 };
+
