@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { ICategoria } from "../../interfaces/Inventario/categoria_interface";
-import { IProveedores } from "../../interfaces/proveedor_interface";
+import { IProveedores } from "../../interfaces/Proveedores/proveedor_interface";
 import BaseService from "../../modules/services/base_service";
 import { Producto } from "../../interfaces/Inventario/producto_interface";
 
