@@ -4,6 +4,7 @@ import { Producto } from "../../interfaces/Inventario/producto_interface";
 import { Api_Connection } from "../../modules/services/API/api_connection";
 import LoadingTables from "../loading/loadingtables";
 import BaseService from "../../modules/services/base_service";
+import ConfirmDeleteModal from "../ModalDelete";
 
 interface Props {
   reload: boolean;
@@ -16,6 +17,8 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(1);
   const productosPerPage = 10;
+  const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
+  const [productToDelete, setProductToDelete] = useState<Producto | null>(null);
 
   const baseService = new BaseService();
 
@@ -36,11 +39,12 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
     try {
       setIsLoading(true);
       const response = await baseService.Get<Producto>("/Productos/ProductsWithCategory")
-      if(response.success){
+      if (response.success) {
         const result = response.data as Producto[];
 
         setIsLoading(false);
         setProductos(result);
+        console.log(result);
       } else {
         setError('No se pudieron obtener los productos.');
       }
@@ -50,6 +54,17 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  // Manejo de la eliminación
+  const HandleConfirmDelete = () => {
+    getProductos();
+    setProductToDelete(null);
+  }
+
+  const HandleClose = () => {
+    setProductToDelete(null);
+    setOpenModalDelete(false);
   }
 
   useEffect(() => {
@@ -72,28 +87,6 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
   const handlePrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
-    }
-  };
-
-  // Método para eliminar un producto
-  const deleteProducto = async (id: number) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-      try {
-        setIsLoading(true);
-        const response = await baseService.Delete(`/Productos/${id}`);
-
-        if (response.success) {
-          // Filtra el producto eliminado de la lista
-          setProductos(prevProducts => prevProducts.filter(producto => producto.id !== id));
-          console.log(`Producto eliminado con éxito. ID: ${id}`);
-        } else {
-          console.error("Error al eliminar el producto:", response.message);
-        }
-      } catch (error) {
-        console.error("Error al eliminar el producto:", error);
-      } finally {
-        setIsLoading(false);
-      }
     }
   };
 
@@ -146,15 +139,19 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
                     <td className="p-4 flex justify-center space-x-4">
                       <button
                         className="text-blue-500 hover:text-blue-700"
-                        aria-label="Editar proveedor"
+                        aria-label="Editar producto"
                       >
                         <HiPencil className="w-5 h-5" />
                       </button>
 
                       <button
                         className="text-red-500 hover:text-red-700"
-                        aria-label="Eliminar proveedor"
-                        onClick={() => deleteProducto(producto.id)}
+                        aria-label="Eliminar producto"
+                        onClick={() => {
+                          setOpenModalDelete(true);
+                          console.log(producto)
+                          setProductToDelete(producto);
+                        }}
                       >
                         <HiTrash className="w-5 h-5" />
                       </button>
@@ -189,6 +186,23 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
           Siguiente
         </button>
       </div>
+
+      {/* Modal de Confirmación */}
+      {openModalDelete && (
+        <>
+          <ConfirmDeleteModal
+            isOpen={openModalDelete}
+            onClose={HandleClose}
+            onConfirmDelete={() => {
+              HandleConfirmDelete();
+            }}
+            entity={"producto"}
+            itemEntity={productToDelete}
+            deleteRoute={`/Productos/${productToDelete!.id}`}
+          />
+        </>
+      )}
+
     </>
   );
 };
