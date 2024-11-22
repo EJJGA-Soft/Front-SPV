@@ -19,6 +19,7 @@ import ICategoria from "../assets/icons/ICategoria.svg";
 import IStock from "../assets/icons/IStock.svg";
 import Layout from "./layout/layout";
 
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -160,18 +161,23 @@ const Dashboard: React.FC = () => {
           {/* Columna Derecha (40% de ancho) */}
           <div className="md:col-span-2 space-y-4">
             {/* Resumen de inventario */}
-            <div className="bg-white rounded-lg p-4 shadow-md h-1/2 flex flex-col items-center justify-center">
-              <h2 className="text-lg font-semibold mb-2">
+            <div className="bg-white rounded-lg p-4 shadow-md h-[328px] flex flex-col items-center justify-center">
+              <h2 className="text-lg font-semibold mb-3">
                 Resumen de inventario
               </h2>
+              <a href="/inventario" className="flex flex-col items-center text-center">
               <img src={IStock} alt="Stock" className="h-8 mb-1" />
               <p className="text-gray-600">Stock disponible</p>
+              </a>
+
 
               {/* Línea horizontal */}
               <hr className="w-full border-t border-gray-300 my-4" />
 
-              <img src={ICategoria} alt="Categorías" className="h-8 mt-4" />
-              <p className="text-gray-600">Productos categorías</p>
+              <a href="/proveedores" className="flex flex-col items-cemter text-center">
+              <img src={ICategoria} alt="Categorías" className="h-8 mt-4 mb-2" />
+              <p className="text-gray-600">Proveedores con Productos</p>
+                </a>
             </div>
 
             {/* Productos por agotarse */}

@@ -100,7 +100,7 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
   return (
     <>
       {/* TABLA */}
-      <div className="overflow-x-auto max-h-[calc(100vh-200px)]">
+      <div className="overflow-x-auto custom-scrollbar max-h-[calc(100vh-200px)]">
         {isLoading ? (
           <LoadingTables />
         ) : error ? (
