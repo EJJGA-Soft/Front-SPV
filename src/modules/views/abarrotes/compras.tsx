@@ -5,18 +5,28 @@ import { Producto } from "../../../interfaces/Inventario/producto_interface";
 import inventoryService from "../../services/Inventario/InventoryService";
 import { Api_Connection } from "../../services/API/api_connection";
 import CarritoService from "../../services/carrito/CarritoService";
+import { FaPlus } from "react-icons/fa";
+import BaseService from "../../services/base_service";
+import { ICategoria } from '../../../interfaces/Categorias/categories_interface';
 
 const Compras: React.FC = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productos, setProductos] = useState<Producto[]>([]);
+  const [categorias, setCategories] = useState<ICategoria[]>([]);
   const [carrito, setCarrito] = useState<{ producto: Producto; cantidad: number }[]>([]);
   const [total, setTotal] = useState(0);
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null); 
   const [productoSeleccionadoId, setProductoSeleccionadoId] = useState<number | null>(null);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCarritoVacio, setIsCarritoVacio] = useState(true);
+
 
   const url = `${Api_Connection()}`;
   const urlImg = url.replace("/api/", "");
+
+  const baseService = new BaseService();
 
   useEffect(() => {
     const obtenerProductos = async () => {
@@ -33,7 +43,13 @@ const Compras: React.FC = () => {
       }
     };
     obtenerProductos();
+    getCategories();
   }, []);
+
+  useEffect(() => {
+    setIsCarritoVacio(carrito.length === 0);
+  }, [carrito]);
+  
 
   const agregarAlCarrito = useCallback((producto: Producto) => {
     setCarrito((prevCarrito) => CarritoService.agregarProducto(prevCarrito, producto));
@@ -60,15 +76,37 @@ const Compras: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const handleSeleccionarCategoria = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const categoriaId = e.target.value ? parseInt(e.target.value, 10) : null;
+    setCategoriaSeleccionada(categoriaId);
+  };
+
+  const productosFiltrados = categoriaSeleccionada
+    ? productos.filter((producto) => producto.categoriaId === categoriaSeleccionada)
+    : productos;
+
+  const getCategories = async () => {
+    try {
+        const response = await baseService.Get<ICategoria>("/Categorias");
+        if (response.success) {
+            setCategories(response.data as ICategoria[]);
+        }
+    } catch (error) {
+        console.error("Error al obtener categorías:", error);
+    }
+};
+  
+
   return (
     <>
       <Layout>
-        <div className="flex justify-between p-4 bg-gray-100 h-screen">
-          <div className="w-2/3 bg-white p-6 rounded-lg shadow-md">
+        <div className="flex flex-col md:flex-row justify-between p-4 bg-gray-100 min-h-screen">
+        <div className="w-full md:w-2/3 bg-white p-6 rounded-lg shadow-md mb-4 md:mb-0">
             <h1 className="text-xl font-semibold mb-4">Venta 1</h1>
             <p className="mb-2">Usuario: User1</p>
             <p className="mb-6 text-xl font-bold">Total: ${total.toFixed(2)}</p>
 
+            <div className="overflow-y-auto" style={{ maxHeight: '300px' }}>
             <table className="w-full border border-gray-300">
               <thead>
                 <tr className="bg-gray-200">
@@ -78,7 +116,12 @@ const Compras: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {carrito.map((item) => (
+              {carrito.length === 0 ? (
+                <tr>
+                      <td colSpan={3} className="p-2 text-center text-gray-500">No hay productos</td>
+                    </tr>
+              ) : (
+                carrito.map((item, index) => (
                   <tr
                     key={item.producto.id}
                     className={productoSeleccionadoId === item.producto.id ? "bg-blue-100" : ""}
@@ -90,9 +133,13 @@ const Compras: React.FC = () => {
                       ${(item.producto.precio * item.cantidad).toFixed(2)}
                     </td>
                   </tr>
-                ))}
+                ))
+              )}
+               
               </tbody>
             </table>
+            </div>
+
 
             <div className="flex items-center justify-center mt-6 space-x-4">
               <button
@@ -131,8 +178,9 @@ const Compras: React.FC = () => {
             <div className="flex justify-center mt-6">
               <button
                 onClick={handleCobrarClick}
-                className="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center space-x-2"
-              >
+                className={`bg-green-500 text-white px-6 py-3 rounded-lg flex items-center space-x-2 ${isCarritoVacio ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isCarritoVacio}
+                >
                 <span>Cobrar</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -147,17 +195,24 @@ const Compras: React.FC = () => {
             </div>
           </div>
 
-          <div className="w-[60vh] bg-white p-4 rounded-lg shadow-md flex flex-col">
+          <div className="w-full md:w-[60vh] bg-white p-4 rounded-lg shadow-md flex flex-col">
             <h2 className="text-xl font-semibold mb-4">Productos</h2>
+            
 
-            <select className="w-full mb-6 p-2 border border-gray-300 rounded">
-              <option>Seleccione una categoría</option>
-              <option>Categoría 1</option>
-              <option>Categoría 2</option>
+            <select 
+            className="w-full mb-6 p-2 border border-gray-300 rounded"
+            onChange={handleSeleccionarCategoria}
+            >
+              <option value="">Seleccione una categoría</option>
+              {categorias.map((categoria)=>(
+                <option key={categoria.id} value={categoria.id}>
+                {categoria.nombre}
+                </option>
+              ))}
             </select>
 
-            <div className="grid grid-cols-3 gap-4 overflow-y-auto max-h-[600px]">
-              {productos.map((producto) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 p-8 md:grid-cols-3 gap-4 overflow-y-auto max-h-[600px]">
+              {productosFiltrados.map((producto) => (
                 <div
                   key={producto.id}
                   className="bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out flex flex-col items-center justify-center"
@@ -170,16 +225,16 @@ const Compras: React.FC = () => {
                   <p className="text-center mt-2">{producto.nombre}</p>
                   <button
                     onClick={() => agregarAlCarrito(producto)}
-                    className="bg-purple-500 text-white px-2 py-2 mt-4 rounded-lg"
+                    className="bg-yellow-500 text-white px-2 py-2 mt-4 rounded-lg"
                   >
-                    +
+                    <FaPlus className="mx-1" />
                   </button>
                 </div>
               ))}
             </div>
           </div>
 
-          <CobroModal isOpen={isModalOpen} onClose={handleCloseModal} />
+          <CobroModal isOpen={isModalOpen} onClose={handleCloseModal} totalCuenta={total} />
         </div>
       </Layout>
     </>

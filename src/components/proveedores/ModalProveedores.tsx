@@ -55,7 +55,7 @@ const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
       let response;
       if(proveedor){
         newProveedor.id = proveedor.id;
-        response = await baseService.Put(`/Proveedor/${proveedor.id}`, newProveedor);
+          response = await baseService.Put(`/Proveedor/${proveedor.id}`, newProveedor);
         console.log("Respuesta del servidor:", response);
         
 

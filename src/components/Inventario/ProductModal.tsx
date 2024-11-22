@@ -14,6 +14,9 @@ interface ProductModalProps {
 const baseService = new BaseService();
 
 const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
+
+    const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
+    const [errormsg, setErrorMsg] = useState<string|null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [categories, setCategories] = useState<ICategoria[]>([]);
     const [providers, setProviders] = useState<IProveedores[]>([]);
@@ -69,9 +72,19 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
     };
 
     useEffect(() => {
+        
         getCategories();
         getProviders();
     }, []);
+    useEffect(() => {
+        const isFormValid =
+            producto.nombre.trim() !== '' &&
+            producto.precio > 0 &&
+            producto.stock > 0 &&
+            producto.categoriaId > 0 &&
+            producto.proveedorId > 0;
+        setButtonDisabled(!isFormValid);
+    }, [producto]);
 
     // Función para crear el producto
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -82,9 +95,31 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
         });
     };
 
+    const handleValidation = () => {
+        const validations = [
+            { condition: producto.nombre.trim() === '', message: "El campo 'Nombre' es obligatorio." },
+        { condition: producto.precio <= 0, message: "El campo 'Precio' debe ser mayor a 0." },
+        { condition: producto.stock <= 0, message: "El campo 'Stock' debe ser mayor a 0." },
+        { condition: producto.categoriaId === 0, message: "Debe seleccionar una categoría." },
+        { condition: producto.proveedorId === 0, message: "Debe seleccionar un proveedor." },
+        ];
+        for (const {condition, message} of validations){
+            if(condition){
+                setErrorMsg(message);
+                return false;
+            }
+        }
+        setErrorMsg(null);
+        return true;
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log("Datos enviados:", producto);
+
+        if(!handleValidation()){
+            return;
+        }
 
         const formData = new FormData();
 
@@ -107,6 +142,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
             if (response.success) {
                 onClose();
                 onReload();
+                setButtonDisabled(true);
+
             } else {
                 console.error('Error al crear el producto:', response.message);
             }
@@ -150,6 +187,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
 
                     <div className="max-h-[80vh] overflow-y-auto">
                         <form className="p-3 space-y-3" onSubmit={handleSubmit}>
+                        {errormsg && (
+                            <div className="p-2 mb-4 text-red-500 text-sm bg-red-100 border border-red-300 rounded">
+                            {errormsg}
+
+                            </div>
+                        )}
                             {/* Sección de Dropzone */}
                             <div
                                 {...getRootProps()}
@@ -231,6 +274,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
                                 <select
                                     name="categoriaId"
                                     onChange={handleChange}
+                                    value={producto.categoriaId || ''}
                                     className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5 mb-6"
                                 >
                                     <option value="">Selecciona una categoría</option>
@@ -248,6 +292,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
                                 </label>
                                 <select
                                     name="proveedorId"
+                                    value={producto.proveedorId || ''}
                                     onChange={handleChange}
                                     className="bg-gray-50 border border-gray-300 text-xs sm:text-sm rounded-lg block w-full p-2.5 mb-6"
                                 >
@@ -258,9 +303,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
                                         </option>
                                     ))}
                                 </select>
+                                
+                            
                             </div>
 
                             <div className="flex justify-center space-x-4 mt-6">
+                            {errormsg && (
+                                <p className="text-red-500 text-xs text-center mb-2">{errormsg}</p>
+                            )}
                                 <button
                                     type="button"
                                     onClick={onClose}
@@ -268,10 +318,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
                                 >
                                     Cancelar
                                 </button>
-                                <button
+                                    <button
                                     type="submit"
-                                    className="text-white font-semibold bg-blue-700 hover:bg-blue-800 rounded-lg px-4 py-2 text-xs sm:text-sm"
-                                >
+                                    disabled={buttonDisabled}
+                                    className={`text-white font-semibold rounded-lg px-4 py-2 text-xs sm:text-sm ${buttonDisabled ? "bg-gray-300": "bg-blue-700 hover:bg-blue-800"}`}
+                                    >
                                     Guardar
                                 </button>
                             </div>

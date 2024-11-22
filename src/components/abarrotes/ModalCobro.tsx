@@ -4,9 +4,10 @@ import { FaCashRegister, FaCreditCard } from "react-icons/fa";
 interface CobroModalProps {
   isOpen: boolean;
   onClose: () => void;
+  totalCuenta:number;
 }
 
-const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose }) => {
+const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose, totalCuenta }) => {
   const [amountEfectivo, setAmountEfectivo] = useState<string>("0");
   const [amountTarjeta, setAmountTarjeta] = useState<string>("0");
   const [paymentType, setPaymentType] = useState<string>("efectivo");
@@ -25,6 +26,9 @@ const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose }) => {
     e.stopPropagation();
     setPaymentType(type);
   };
+  const totalIngresado =
+  parseFloat(amountEfectivo || "0") + parseFloat(amountTarjeta || "0");
+const cambio = totalIngresado - totalCuenta;
 
   return (
     <div
@@ -124,24 +128,21 @@ const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="p-4 bg-gray-100 rounded mb-4">
-            <p>Total de la cuenta: <span className="font-semibold">$170.00</span></p>
+            <p> 
+             Total de la cuenta:{" "}
+            <span className="font-semibold">${totalCuenta.toFixed(2)}</span>
+            </p>
             <p>
               Total ingresado:{" "}
               <span className="font-semibold">
-                {parseFloat(amountEfectivo) + parseFloat(amountTarjeta) || "$0.00"}
-              </span>
+              ${totalIngresado.toFixed(2)}
+            </span>
             </p>
             <p>
               Cambio:{" "}
               <span className="font-semibold">
-                {parseFloat(amountEfectivo) + parseFloat(amountTarjeta) - 170 >= 0
-                  ? `$${(
-                      parseFloat(amountEfectivo) +
-                      parseFloat(amountTarjeta) -
-                      170
-                    ).toFixed(2)}`
-                  : "$0.00"}
-              </span>
+              {cambio >= 0 ? `$${cambio.toFixed(2)}` : "$0.00"}
+            </span>
             </p>
           </div>
 
