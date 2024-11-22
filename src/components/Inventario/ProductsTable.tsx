@@ -35,10 +35,12 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
 
     try {
       setIsLoading(true);
-      const response = await baseService.Get<Producto>("/Productos")
+      const response = await baseService.Get<Producto>("/Productos/ProductsWithCategory")
       if(response.success){
+        const result = response.data as Producto[];
+
         setIsLoading(false);
-        setProductos(response.data as Producto[]);
+        setProductos(result);
       } else {
         setError('No se pudieron obtener los productos.');
       }
@@ -112,6 +114,7 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
                 <th className="p-4 text-xs sm:text-base">Nombre</th>
                 <th className="p-4 text-xs sm:text-base">Precio</th>
                 <th className="p-4 text-xs sm:text-base">Categoría</th>
+                <th className="p-4 text-xs sm:text-base">Proveedor</th>
                 <th className="p-4 text-xs sm:text-base">Acciones</th>
               </tr>
             </thead>
@@ -138,7 +141,8 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
                     </td>
                     <td className="p-4 break-all">{producto.nombre}</td>
                     <td className="p-4 break-all">$ {producto.precio.toFixed(2)}</td>
-                    <td className="p-4 break-all">{producto.categoriaId}</td>
+                    <td className="p-4 break-all">{producto.nombreCategoria}</td>
+                    <td className="p-4 break-all">{producto.nombreProveedor}</td>
                     <td className="p-4 flex justify-center space-x-4">
                       <button
                         className="text-blue-500 hover:text-blue-700"
