@@ -23,7 +23,7 @@ const ConfirmDeleteModal: React.FC<DeleteModalProps> = ({isOpen, onClose, onConf
           </div>
   
           <p className="text-gray-700 mb-4">
-          ¿Estás seguro de que deseas eliminar el {entity} <strong> {itemEntity.name || itemEntity.nombreEmpresa}</strong>?
+          ¿Estás seguro de que deseas eliminar {entity} <strong> {itemEntity.name || itemEntity.nombreEmpresa || itemEntity.nombre}</strong>?
         </p>  
           <div className="flex justify-center space-x-4">
             <button

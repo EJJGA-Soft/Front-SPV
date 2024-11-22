@@ -7,6 +7,7 @@ const Inventario = () => {
 
     //Modal
     const [isAddCategoriesModalOpen, setIsAddCategoriesModalOpen] = useState(false);
+    const [reload, setReload] = useState<boolean>(false);
 
     // Funciones para manejar el modal de "Agregar Producto"
     const handleOpenAddCategoriesModal = () => {
@@ -16,6 +17,10 @@ const Inventario = () => {
     const handleCloseAddCategoriesModal = () => {
         setIsAddCategoriesModalOpen(false);
     };
+
+    const UpdateCategory = () => {
+        setReload(true);
+    }
 
 
     return (
@@ -37,13 +42,13 @@ const Inventario = () => {
                             Agregar categoria
                         </button>
                         {isAddCategoriesModalOpen && (
-                            <CategoriesModal isOpen={isAddCategoriesModalOpen} onClose={handleCloseAddCategoriesModal} />
+                            <CategoriesModal isOpen={isAddCategoriesModalOpen} onClose={handleCloseAddCategoriesModal} onSave={UpdateCategory} />
                         )}
                     </div>
 
 
 
-                    <CategoriesTable></CategoriesTable>
+                    <CategoriesTable reload={reload} setReload={setReload} />
 
                 </div>
             </Layout>
