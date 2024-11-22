@@ -1,15 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductsTable from "../../../components/Inventario/ProductsTable";
 import Layout from "../../../components/layout/layout";
 import ProductModal from "../../../components/Inventario/ProductModal";
+import BaseService from '../../services/base_service';
+import { Producto } from "../../../interfaces/Inventario/producto_interface";
+import { ICategoria } from "../../../interfaces/Inventario/categoria_interface";
 
+const baseService = new BaseService();
 const Inventario = () => {
 
     //Modal
     const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
-    const [reloadTable, setReloadTable] = useState<boolean>(false);    
+    const [reloadTable, setReloadTable] = useState<boolean>(false);  
+    const [countAllProducts, setCountAllProducts] = useState<number>(0);
+    const [countAllCategory, setCountAllCategory] = useState<number>(0);
+    const [countAllProductsRunOut, setCountAllProductsRunOut] = useState<number>(0);
+    
+    const getProducts = async() => {
+        const result = await baseService.Get<Producto>("/Productos");
+        const response = result.data as Producto[];
+        setCountAllProducts(response.length);
+      }
 
-    // Funciones para manejar el modal de "Agregar Producto"
+    const getCategorys = async() => {
+        const result = await baseService.Get<ICategoria>("/Categorias");
+        const response = result.data as ICategoria[];
+        setCountAllCategory(response.length);
+    }
+
+    const getProductsRunOut = async() => {
+        const result = await baseService.Get<Producto>("/Producto/ProductsByRunOut");
+        const response = result.data as Producto[];
+        setCountAllProductsRunOut(response.length);
+    }
+
+    useEffect(() => {
+        getProducts();
+        getCategorys();
+        getProductsRunOut();
+    }, [])
+
     const handleOpenAddProductModal = () => {
         setIsAddProductModalOpen(true);
     };
@@ -20,6 +50,9 @@ const Inventario = () => {
 
     const handleReloadAddProductModal =() => {
         setReloadTable(true);
+        getProducts();
+        getCategorys();
+        getProductsRunOut();
     }
 
     return (
@@ -34,10 +67,10 @@ const Inventario = () => {
                         <div className="flex flex-wrap justify-between gap-3 sm:gap-4">
                             {/* Categorías */}
                             <div className="text-center flex-1 min-w-[45%] sm:min-w-[80px]">
-                                <a href="#" className="text-blue-600 font-medium text-xs sm:text-sm">
+                                <span className="text-blue-600 font-medium text-xs sm:text-sm">
                                     Categorías
-                                </a>
-                                <p className="text-sm sm:text-base mt-1 font-semibold">14</p>
+                                </span>
+                                <p className="text-sm sm:text-base mt-1 font-semibold">{countAllCategory}</p>
                             </div>
 
                             {/* Divider */}
@@ -45,10 +78,10 @@ const Inventario = () => {
 
                             {/* Total de productos */}
                             <div className="text-center flex-1 min-w-[45%] sm:min-w-[80px]">
-                                <a href="#" className="text-orange-600 font-medium text-xs sm:text-sm">
+                                <span className="text-orange-600 font-medium text-xs sm:text-sm">
                                     Total de productos
-                                </a>
-                                <p className="text-sm sm:text-base mt-1 font-semibold">350</p>
+                                </span>
+                                <p className="text-sm sm:text-base mt-1 font-semibold">{countAllProducts}</p>
                             </div>
 
                             {/* Divider */}
@@ -56,9 +89,9 @@ const Inventario = () => {
 
                             {/* Los más vendidos */}
                             <div className="text-center flex-1 min-w-[45%] sm:min-w-[80px]">
-                                <a href="#" className="text-purple-600 font-medium text-xs sm:text-sm">
+                                <span className="text-purple-600 font-medium text-xs sm:text-sm">
                                     Los más vendidos
-                                </a>
+                                </span>
                                 <p className="text-sm sm:text-base mt-1 font-semibold">14</p>
                             </div>
 
@@ -67,15 +100,14 @@ const Inventario = () => {
 
                             {/* Productos por agotarse */}
                             <div className="text-center flex-1 min-w-[45%] sm:min-w-[80px]">
-                                <a href="#" className="text-red-600 font-medium text-xs sm:text-sm">
+                                <span className="text-red-600 font-medium text-xs sm:text-sm">
                                     Productos por agotarse
-                                </a>
-                                <p className="text-sm sm:text-base mt-1 font-semibold">14</p>
+                                </span>
+                                <p className="text-sm sm:text-base mt-1 font-semibold">{countAllProductsRunOut}</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* TABLA */}
                     <div className="flex justify-between items-center mb-4 mt-6">
                         <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
                             Productos

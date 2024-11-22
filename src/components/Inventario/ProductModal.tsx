@@ -91,8 +91,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
         formData.append('nombre', producto.nombre);
         formData.append('precio', producto.precio.toString());
         formData.append('stock', producto.stock.toString());
-        formData.append('categoriaId', producto.categoriaId.toString());
-        formData.append('proveedorId', producto.proveedorId.toString());
+        formData.append('categoriaId', producto.categoriaId!.toString());
+        formData.append('proveedorId', producto.proveedorId!.toString());
         formData.append('esBorrado', producto.esBorrado ? 'true' : 'false');
 
         const blob = new Blob([producto.Imagen], { type: "image/jpeg" });

@@ -5,8 +5,10 @@ export interface Producto {
     stock: number;
     urlImagen: string;
     Imagen: Blob;
-    categoriaId: number;
-    proveedorId: number;
+    categoriaId?: number;
+    proveedorId?: number;
     esBorrado: boolean;
+    nombreCategoria?: string;
+    nombreProveedor?: string;
   }
   
