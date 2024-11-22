@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -18,7 +18,9 @@ import IVentas from "../assets/icons/IVentas.svg";
 import ICategoria from "../assets/icons/ICategoria.svg";
 import IStock from "../assets/icons/IStock.svg";
 import Layout from "./layout/layout";
-
+import BaseService from "../modules/services/base_service";
+import { Producto } from "../interfaces/Inventario/producto_interface";
+import { Api_Connection } from '../modules/services/API/api_connection';
 
 ChartJS.register(
   CategoryScale,
@@ -29,7 +31,13 @@ ChartJS.register(
   Legend
 );
 
+const baseService = new BaseService();
+const api_connection = Api_Connection();
+
 const Dashboard: React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
   const data = {
     labels: [
       "12:00",
@@ -85,6 +93,39 @@ const Dashboard: React.FC = () => {
       },
     },
   };
+
+  const [productsRunOut, setProductsRunOut] = useState<Producto[]>([]);
+  const [message, setMessage] = useState<string>("");
+  const ProductsRunOut = async () => {
+    setLoading(true);
+    const results = await baseService.Get<Producto>(
+      "/Productos/ProductsByRunOut"
+    );
+
+    const response = results.data as Producto[];
+    const url = api_connection.split("/api");
+    const headurl = url.join("");
+
+    response.forEach(element => {
+      const nuevo = element.urlImagen = `${headurl}${element.urlImagen}`
+      console.log(nuevo);
+    });
+
+    if (results.success) {
+      setLoading(false);
+      if (response.length > 0) {
+        setProductsRunOut(response);
+      } else {
+        setMessage("No hay productos por agotarse");
+      }
+    } else {
+      setError(results.message!);
+    }
+  };
+
+  useEffect(() => {
+    ProductsRunOut();
+  }, []);
 
   return (
     <>
@@ -165,19 +206,28 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg font-semibold mb-3">
                 Resumen de inventario
               </h2>
-              <a href="/inventario" className="flex flex-col items-center text-center">
-              <img src={IStock} alt="Stock" className="h-8 mb-1" />
-              <p className="text-gray-600">Stock disponible</p>
+              <a
+                href="/inventario"
+                className="flex flex-col items-center text-center"
+              >
+                <img src={IStock} alt="Stock" className="h-8 mb-1" />
+                <p className="text-gray-600">Stock disponible</p>
               </a>
-
 
               {/* Línea horizontal */}
               <hr className="w-full border-t border-gray-300 my-4" />
 
-              <a href="/proveedores" className="flex flex-col items-cemter text-center">
-              <img src={ICategoria} alt="Categorías" className="h-8 mt-4 mb-2" />
-              <p className="text-gray-600">Proveedores con Productos</p>
-                </a>
+              <a
+                href="/proveedores"
+                className="flex flex-col items-cemter text-center"
+              >
+                <img
+                  src={ICategoria}
+                  alt="Categorías"
+                  className="h-8 mt-4 mb-2"
+                />
+                <p className="text-gray-600">Proveedores con Productos</p>
+              </a>
             </div>
 
             {/* Productos por agotarse */}
@@ -185,33 +235,34 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg font-semibold mb-2">
                 Productos por agotarse
               </h2>
-              <ul>
-                {[
-                  { name: "Tata salt", cantidad: 3 },
-                  { name: "Sabritas", cantidad: 3 },
-                  { name: "Galletas chokis", cantidad: 1 },
-                  { name: "Coca cola 2.5L", cantidad: 1 },
-                ].map((item, index) => (
-                  <li
-                    key={index}
-                    className="flex justify-between items-center my-2"
-                  >
-                    <div className="flex items-center">
-                      <img
-                        src={`src/assets/productsDashboard/${item.name
-                          .toLowerCase()
-                          .replace(/\s/g, "-")}-icono.svg`}
-                        alt={item.name}
-                        className="h-8 mr-2"
-                      />
-                      <span>{item.name}</span>
-                    </div>
-                    <span className="text-red-500">
-                      Cantidad restante: {item.cantidad}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              {productsRunOut.length <= 0 ? (
+                <div className="flex flex-1 items-center justify-center mt-[-30px]">
+                  <ul className="text-center">
+                    <li>{message}</li>
+                  </ul>
+                </div>
+              ) : (
+                productsRunOut.map((product) => (
+                  <ul>
+                    <li
+                      key={product.id}
+                      className="flex justify-between items-center my-2"
+                    >
+                      <div className="flex items-center">
+                        <img
+                          src={product.urlImagen}
+                          alt={product.nombre}
+                          className="h-8 mr-2"
+                        />
+                        <span className="ml-4">{product.nombre}</span>
+                      </div>
+                      <span className="text-red-500">
+                        Cantidad restante: {product.stock}
+                      </span>
+                    </li>
+                  </ul>
+                ))
+              )}
             </div>
           </div>
         </div>
