@@ -10,5 +10,6 @@ export interface Producto {
     esBorrado: boolean;
     nombreCategoria?: string;
     nombreProveedor?: string;
+    cantidad?: number;
   }
   

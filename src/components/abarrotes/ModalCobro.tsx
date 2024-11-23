@@ -1,16 +1,27 @@
 import React, { useState } from "react";
 import { FaCashRegister, FaCreditCard } from "react-icons/fa";
+import { Producto } from "../../interfaces/Inventario/producto_interface";
+import axios from "axios";
+import { Api_Connection } from "../../modules/services/API/api_connection";
+import { UserStore } from "../../security/store/userStore";
+import { enqueueSnackbar, useSnackbar } from 'notistack';
+
 
 interface CobroModalProps {
   isOpen: boolean;
   onClose: () => void;
   totalCuenta:number;
+  productos: Producto[];
 }
 
-const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose, totalCuenta }) => {
+const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose, totalCuenta, productos, resetCarrito  }) => {
   const [amountEfectivo, setAmountEfectivo] = useState<string>("0");
   const [amountTarjeta, setAmountTarjeta] = useState<string>("0");
   const [paymentType, setPaymentType] = useState<string>("efectivo");
+  const [carrito, setCarrito] = useState<Producto[]>([]);
+
+  const {id} = UserStore();
+  const {enqueueSnackbar} = useSnackbar();
 
   if (!isOpen) return null;
 
@@ -25,10 +36,67 @@ const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose, totalCuenta })
   const handlePaymentTypeChange = (type: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setPaymentType(type);
+
+    if(type === "efectivo"){
+      setAmountTarjeta("0");
+    } else{
+      setAmountEfectivo("0");
+    }
   };
-  const totalIngresado =
-  parseFloat(amountEfectivo || "0") + parseFloat(amountTarjeta || "0");
+
+  const totalIngresado = parseFloat(amountEfectivo || "0") + parseFloat(amountTarjeta || "0");
 const cambio = totalIngresado - totalCuenta;
+
+
+const handleConfirmar = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log("Productos recibidos:", productos);
+
+  if (!productos || productos.length === 0) {
+    enqueueSnackbar("No hay productos para registrar la venta.", { variant: "error" });
+    return;
+  }
+  if (totalIngresado < totalCuenta) {
+    enqueueSnackbar("El monto ingresado es insuficiente.", { variant: "error" });
+    return;
+  }
+
+  const productosVendidos = productos.map((item) => ({
+    id: item.producto.id,
+    esBorrado: false,
+    nombre: item.producto.nombre,
+    precio: item.producto.precio,
+    stock: item.cantidad, 
+    urlImagen: item.producto.urlImagen,
+    categoriaId: item.producto.categoriaId,
+    proveedorId: item.producto.proveedorId,
+  }));
+
+  const url = `${Api_Connection()}VentaProducto/ShoppingCartProducts?tipoPago=${paymentType}&uid=${id}`;
+
+  try {
+    const response = await axios.post(url, productosVendidos, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (response.status === 200) {
+      enqueueSnackbar("Venta registrada con éxito!", { variant: "success" });
+      resetCarrito();
+      onClose();
+    } else {
+      enqueueSnackbar("Hubo un error al registrar la venta. Intenta nuevamente.", { variant: "error" });
+    }
+  } catch (error) {
+    console.error("Error en la solicitud:", error.response || error.message);
+    enqueueSnackbar(
+      error.response?.data?.message || "Error en la conexión. Intenta nuevamente.",
+      { variant: "error" }
+    );
+  }
+};
+
+
+
 
   return (
     <div
@@ -89,7 +157,6 @@ const cambio = totalIngresado - totalCuenta;
               </button>
             </div>
 
-            {/* Contenedor de dos columnas */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label
@@ -105,6 +172,7 @@ const cambio = totalIngresado - totalCuenta;
                   onChange={handleEfectivoChange}
                   placeholder="Monto en efectivo"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3 mt-2"
+                  disabled={paymentType === "tarjeta"}
                 />
               </div>
 
@@ -122,6 +190,7 @@ const cambio = totalIngresado - totalCuenta;
                   onChange={handleTarjetaChange}
                   placeholder="Monto con tarjeta"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3 mt-2"
+                  disabled={paymentType === "efectivo"}
                 />
               </div>
             </div>
@@ -156,6 +225,7 @@ const cambio = totalIngresado - totalCuenta;
             </button>
             <button
               type="submit"
+              onClick={handleConfirmar}
               className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
             >
               Confirmar
