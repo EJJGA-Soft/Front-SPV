@@ -8,6 +8,7 @@ import CarritoService from "../../services/carrito/CarritoService";
 import { FaPlus } from "react-icons/fa";
 import BaseService from "../../services/base_service";
 import { ICategoria } from '../../../interfaces/Categorias/categories_interface';
+import { UserStore } from "../../../security/store/userStore";
 
 const Compras: React.FC = () => {
 
@@ -21,6 +22,8 @@ const Compras: React.FC = () => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isCarritoVacio, setIsCarritoVacio] = useState(true);
+  
+  const usuario = UserStore((state)=>state.name);
 
 
   const url = `${Api_Connection()}`;
@@ -103,7 +106,7 @@ const Compras: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-between p-4 bg-gray-100 min-h-screen">
         <div className="w-full md:w-2/3 bg-white p-6 rounded-lg shadow-md mb-4 md:mb-0">
             <h1 className="text-xl font-semibold mb-4">Venta 1</h1>
-            <p className="mb-2">Usuario: User1</p>
+            <p className="mb-2">Usuario: {usuario}</p>
             <p className="mb-6 text-xl font-bold">Total: ${total.toFixed(2)}</p>
 
             <div className="overflow-y-auto" style={{ maxHeight: '300px' }}>

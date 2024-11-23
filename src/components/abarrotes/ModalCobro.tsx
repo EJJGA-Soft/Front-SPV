@@ -70,7 +70,7 @@ const cambio = totalIngresado - totalCuenta;
                 type="button"
                 onClick={(e) => handlePaymentTypeChange("efectivo", e)}
                 className={`${
-                  paymentType === "efectivo" ? "bg-green-600" : "bg-green-500"
+                  paymentType === "efectivo" ? "bg-green-600" : "bg-gray-400"
                 } text-white px-6 py-3 rounded-lg flex items-center space-x-3 focus:outline-none hover:bg-green-400`}
               >
                 <FaCashRegister />
@@ -81,7 +81,7 @@ const cambio = totalIngresado - totalCuenta;
                 type="button"
                 onClick={(e) => handlePaymentTypeChange("tarjeta", e)}
                 className={`${
-                  paymentType === "tarjeta" ? "bg-red-600" : "bg-red-500"
+                  paymentType === "tarjeta" ? "bg-red-600" : "bg-gray-400"
                 } text-white px-6 py-3 rounded-lg flex items-center space-x-3 focus:outline-none hover:bg-red-400`}
               >
                 <FaCreditCard />
