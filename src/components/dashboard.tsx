@@ -21,6 +21,7 @@ import Layout from "./layout/layout";
 import BaseService from "../modules/services/base_service";
 import { Producto } from "../interfaces/Inventario/producto_interface";
 import { Api_Connection } from '../modules/services/API/api_connection';
+import LoadingTables from "./loading/loadingtables";
 
 ChartJS.register(
   CategoryScale,
@@ -35,7 +36,7 @@ const baseService = new BaseService();
 const api_connection = Api_Connection();
 
 const Dashboard: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingProductsRunOut, setLoadingRunOut] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const data = {
@@ -97,7 +98,7 @@ const Dashboard: React.FC = () => {
   const [productsRunOut, setProductsRunOut] = useState<Producto[]>([]);
   const [message, setMessage] = useState<string>("");
   const ProductsRunOut = async () => {
-    setLoading(true);
+    setLoadingRunOut(true);
     const results = await baseService.Get<Producto>(
       "/Productos/ProductsByRunOut"
     );
@@ -107,12 +108,11 @@ const Dashboard: React.FC = () => {
     const headurl = url.join("");
 
     response.forEach(element => {
-      const nuevo = element.urlImagen = `${headurl}${element.urlImagen}`
-      console.log(nuevo);
+      element.urlImagen = `${headurl}${element.urlImagen}`
     });
 
     if (results.success) {
-      setLoading(false);
+      setLoadingRunOut(false);
       if (response.length > 0) {
         setProductsRunOut(response);
       } else {
@@ -134,7 +134,7 @@ const Dashboard: React.FC = () => {
           {/* Columna Izquierda (60% de ancho) */}
           <div className="md:col-span-3 space-y-4">
             <div className="bg-white rounded-lg p-4 shadow-md">
-              <h2 className="text-lg font-semibold mb-2">Resumen de ventas</h2>
+              <h2 className="text-lg font-semibold mb-2">Resumen de ventas del día</h2>
               <div className="flex justify-around items-center">
                 <div className="flex flex-col items-center">
                   <img src={IBebidas} alt="Bebidas" className="h-8 mb-1" />
@@ -231,39 +231,49 @@ const Dashboard: React.FC = () => {
             </div>
 
             {/* Productos por agotarse */}
-            <div className="bg-white rounded-lg p-4 shadow-md h-[315px] flex flex-col">
-              <h2 className="text-lg font-semibold mb-2">
-                Productos por agotarse
-              </h2>
-              {productsRunOut.length <= 0 ? (
-                <div className="flex flex-1 items-center justify-center mt-[-30px]">
-                  <ul className="text-center">
-                    <li>{message}</li>
-                  </ul>
-                </div>
-              ) : (
-                productsRunOut.map((product) => (
-                  <ul>
-                    <li
-                      key={product.id}
-                      className="flex justify-between items-center my-2"
-                    >
-                      <div className="flex items-center">
-                        <img
-                          src={product.urlImagen}
-                          alt={product.nombre}
-                          className="h-8 mr-2"
-                        />
-                        <span className="ml-4">{product.nombre}</span>
-                      </div>
-                      <span className="text-red-500">
-                        Cantidad restante: {product.stock}
-                      </span>
-                    </li>
-                  </ul>
-                ))
-              )}
+            {loadingProductsRunOut ? (
+  <LoadingTables />
+) : (
+  <div className="bg-white rounded-lg p-4 shadow-md h-[315px] flex flex-col">
+    <h2 className="text-lg font-semibold mb-2">
+      Productos por agotarse
+    </h2>
+
+    {productsRunOut.length <= 0 ? (
+      <div className="flex flex-1 items-center justify-center mt-[-30px]">
+        <ul className="text-center">
+          {error ? (
+            <li>{error}</li>
+          ) : (
+            <li>{message}</li>
+          )}
+        </ul>
+      </div>
+    ) : (
+      <ul>
+        {productsRunOut.map((product) => (
+          <li
+            key={product.id}
+            className="flex justify-between items-center my-2"
+          >
+            <div className="flex items-center">
+              <img
+                src={product.urlImagen}
+                alt={product.nombre}
+                className="h-8 mr-2"
+              />
+              <span className="ml-4">{product.nombre}</span>
             </div>
+            <span className="text-red-500">
+              Cantidad restante: {product.stock}
+            </span>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+)}
+
           </div>
         </div>
       </Layout>

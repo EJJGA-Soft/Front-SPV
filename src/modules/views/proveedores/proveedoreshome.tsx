@@ -3,7 +3,6 @@ import Layout from "../../../components/layout/layout";
 import ProveedoresTable from "../../../components/proveedores/ProveedoresTable";
 import ProveedoresModal from "../../../components/proveedores/ModalProveedores";
 import { IProveedores } from "../../../interfaces/Proveedores/proveedor_interface";
-import LoadingView from "../../../components/loading/loading";
 import BaseService from "../../services/base_service";
 
 const baseService = new BaseService();
