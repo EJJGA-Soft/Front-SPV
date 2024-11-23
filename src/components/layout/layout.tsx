@@ -287,7 +287,7 @@ export default function Layout({ children }: LayoutProps) {
             ))}
           </ul>
 
-          <div className="mb-4">
+          <div className="mb-4 ml-[13px]">
             <Link
               to="/cerrar-sesion"
               className={`flex items-center w-full text-gray-700 rounded-lg hover:bg-gray-100 ${
@@ -296,7 +296,7 @@ export default function Layout({ children }: LayoutProps) {
             >
               <HiOutlineLogout className="text-xl" />
               {(isSidebarFull || isMobileMenuOpen) && (
-                <span className="">Cerrar sesión</span>
+                <span className="ml-[10px]">Cerrar sesión</span>
               )}
             </Link>
           </div>

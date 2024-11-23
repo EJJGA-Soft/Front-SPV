@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ICategoria } from "../../interfaces/Inventario/categoria_interface";
 import BaseService from "../../modules/services/base_service";
+import { useSnackbar } from "notistack";
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -11,7 +12,7 @@ interface ProductModalProps {
 const baseService = new BaseService();
 const ProductModal: React.FC<ProductModalProps> = ({ onClose, onSave }) => {
   const [category, setCategory] = useState<ICategoria>();
-  const [error, setError] = useState<string>();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -26,14 +27,15 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onSave }) => {
   const OnSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (category?.nombre?.trim() === "" || category?.nombre === undefined) {
-        setError("La categoria no puede estar vacia")
+        enqueueSnackbar("La categoria no puede estar vacia", {variant: "error"})
     } else {
       const response = await baseService.Post("/Categorias", category);
       if (response.success) {
+        enqueueSnackbar("¡Ha sido creada la nueva categoria con exito!", {variant:"success"})
         onClose();
         onSave();
       } else {
-        setError(response.message);
+        enqueueSnackbar(`${response.message}`, {variant: "error"})
       }
     }
   };
@@ -85,17 +87,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onSave }) => {
                 required
               />
             </div>
-            {
-                error && (
-                    <>
-                    <div className="mt-4 mb-4 text-center">
-                    <span className="text-red-600 text-md">
-                        {error}
-                    </span>
-                    </div>
-                    </>
-                )
-            }
 
             <div className="flex justify-center space-x-4 mt-6">
               <button

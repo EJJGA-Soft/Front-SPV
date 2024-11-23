@@ -5,6 +5,7 @@ import BaseService from '../../modules/services/base_service';
 import LoadingTables from '../loading/loadingtables';
 import ConfirmDeleteModal from '../ModalDelete';
 import CategoriesEditModal from './CategoriesModalEdit';
+import { useSnackbar } from 'notistack';
 
 const baseService = new BaseService();
 
@@ -22,6 +23,7 @@ const CategoriesTable: React.FC<Props> = (reload, setReload) => {
   const [categoryDelete, setCategoryDelete] = useState<ICategoria | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const categoriasPerPage = 5;
+  const { enqueueSnackbar } = useSnackbar();
 
   const indexOfLastCategoria = currentPage * categoriasPerPage;
   const indexOfFirstCategoria = indexOfLastCategoria - categoriasPerPage;
@@ -49,6 +51,7 @@ const CategoriesTable: React.FC<Props> = (reload, setReload) => {
   }
 
   const HandleConfirmDelete = () => {
+    enqueueSnackbar("¡La categoria ha sido eliminada con exito!", {variant: "success"} )
     getCategory();
     setCategoryDelete(null);
   }
@@ -64,6 +67,7 @@ const CategoriesTable: React.FC<Props> = (reload, setReload) => {
   }
 
   const UpdateCategory = () => {
+    enqueueSnackbar("¡Ha sido actualizada la categoria con exito!", {variant: "success"})
     getCategory();
     setCategoryEdit(null);
   }

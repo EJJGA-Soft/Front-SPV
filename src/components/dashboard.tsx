@@ -108,8 +108,7 @@ const Dashboard: React.FC = () => {
     const headurl = url.join("");
 
     response.forEach(element => {
-      const nuevo = element.urlImagen = `${headurl}${element.urlImagen}`
-      console.log(nuevo);
+      element.urlImagen = `${headurl}${element.urlImagen}`
     });
 
     if (results.success) {
