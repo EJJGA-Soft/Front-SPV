@@ -5,6 +5,7 @@ import { Api_Connection } from "../../modules/services/API/api_connection";
 import LoadingTables from "../loading/loadingtables";
 import BaseService from "../../modules/services/base_service";
 import ConfirmDeleteModal from "../ModalDelete";
+import ProductEditModal from "./ProductEditModal";
 import { useSnackbar } from "notistack";
 
 interface Props {
@@ -20,6 +21,8 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
   const productosPerPage = 10;
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
   const [productToDelete, setProductToDelete] = useState<Producto | null>(null);
+  const [openModalEdit, setOpenModalEdit] = useState<boolean>(false);
+  const [productToEdit, setProductToEdit] = useState<Producto | null>(null);
   const { enqueueSnackbar } = useSnackbar(); // Hook para los mensajes interactivos
 
   const baseService = new BaseService();
@@ -70,6 +73,17 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
   const HandleClose = () => {
     setProductToDelete(null);
     setOpenModalDelete(false);
+  }
+
+  // Manejo de la actualización
+  const HandleCloseEdit = () => {
+    setOpenModalEdit(false)
+    setProductToEdit(null);
+  }
+
+  const UpdateProduct = () => {
+    getProductos();
+    setProductToEdit(null);
   }
 
   useEffect(() => {
@@ -146,6 +160,10 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
                       <button
                         className="text-blue-500 hover:text-blue-700"
                         aria-label="Editar producto"
+                        onClick={() => {
+                          setOpenModalEdit(true);
+                          setProductToEdit(producto!);
+                        }}
                       >
                         <HiPencil className="w-5 h-5" />
                       </button>
@@ -208,6 +226,19 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
           />
         </>
       )}
+
+      {/* Modal de Edición */}
+      { openModalEdit && (
+          <>
+          <ProductEditModal 
+          isOpen={openModalEdit} 
+          onClose={HandleCloseEdit} 
+          onSave={UpdateProduct} 
+          itemEntity={productToEdit!}
+          />
+          </>
+        )
+      }
 
   </div>
     </>
