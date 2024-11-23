@@ -13,6 +13,7 @@ import Page404 from "../../errors/views/page404";
 import { ClearSession } from "../../components/log-out/log-out";
 import Inventario from "../../modules/views/Inventario/Inventario";
 import Categorias from "../../modules/views/categorias/categorias";
+import LandingPage from "../../modules/views/landingpage";
 
 export default function AppRoutes() {
   const status = UserStore((state) => state.status);
@@ -24,6 +25,10 @@ export default function AppRoutes() {
 
         {/* Ruta para el error 404 */}
         <Route path="*" element={<Page404 />} />
+        
+        <Route
+         path="/landing"
+         element={<LandingPage />}/>
 
         {/* Rutas públicas */}
         <Route
@@ -35,7 +40,7 @@ export default function AppRoutes() {
         <Route
           path="/"
           element={
-            isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/landing" replace />
           }
         />
 

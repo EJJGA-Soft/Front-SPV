@@ -89,6 +89,9 @@ export default function Login() {
           </button>
         </form>
       </div>
+      <footer className="absolute bottom-0 w-full text-center text-gray-100 text-sm py-4">
+        <p>&copy; 2024 Todos los derechos reservados.</p>
+      </footer>
     </div>
   );
 }
