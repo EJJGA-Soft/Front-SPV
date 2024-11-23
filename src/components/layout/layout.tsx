@@ -65,40 +65,54 @@ interface LayoutProps {
 const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
   const location = useLocation();
   const { pathname } = location;
-
   const pathSegments = pathname.split("/").filter((segment) => segment);
+
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval); 
+  }, []);
 
   const capitalize = (str: string) =>
     str.charAt(0).toUpperCase() + str.slice(1).replace("-", " ");
 
   return (
     <nav
-      className={`flex items-center text-gray-600 text-sm sm:text-base lg:text-lg py-3 px-4 lg:px-6 xl:px-8 bg-gray-50 border-b border-gray-300 transition-all duration-300 shadow-lg ${
+      className={`flex items-center justify-between text-gray-600 text-sm sm:text-base lg:text-lg py-3 px-4 lg:px-6 xl:px-8 bg-gray-50 border-b border-gray-300 transition-all duration-300 shadow-lg ${
         isSidebarFull ? "ml-10" : ""
       }`}
       aria-label="Breadcrumb"
     >
-      <Link to="/dashboard" className="hover:text-gray-800">
-        Dashboard
-      </Link>
+      <div className="flex items-center">
+        <Link to="/dashboard" className="hover:text-gray-800">
+          Dashboard
+        </Link>
 
-      {pathSegments.map((segment, index) => {
-        const fullPath = `/${pathSegments.slice(0, index + 1).join("/")}`;
-        const isLast = index === pathSegments.length - 1;
+        {pathSegments.map((segment, index) => {
+          const fullPath = `/${pathSegments.slice(0, index + 1).join("/")}`;
+          const isLast = index === pathSegments.length - 1;
 
-        return (
-          <div key={index} className="flex items-center">
-            <span className="mx-2 text-gray-400">/</span>
-            {isLast ? (
-              <span className="text-gray-500">{capitalize(segment)}</span>
-            ) : (
-              <Link to={fullPath} className="hover:text-gray-800">
-                {capitalize(segment)}
-              </Link>
-            )}
-          </div>
-        );
-      })}
+          return (
+            <div key={index} className="flex items-center">
+              <span className="mx-2 text-gray-400">/</span>
+              {isLast ? (
+                <span className="text-gray-500">{capitalize(segment)}</span>
+              ) : (
+                <Link to={fullPath} className="hover:text-gray-800">
+                  {capitalize(segment)}
+                </Link>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="text-gray-500">
+        {currentDateTime.toLocaleString()}
+      </div>
     </nav>
   );
 };
