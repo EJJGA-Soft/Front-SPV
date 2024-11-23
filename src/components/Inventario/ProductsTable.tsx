@@ -5,6 +5,7 @@ import { Api_Connection } from "../../modules/services/API/api_connection";
 import LoadingTables from "../loading/loadingtables";
 import BaseService from "../../modules/services/base_service";
 import ConfirmDeleteModal from "../ModalDelete";
+import { useSnackbar } from "notistack";
 
 interface Props {
   reload: boolean;
@@ -19,6 +20,7 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
   const productosPerPage = 10;
   const [openModalDelete, setOpenModalDelete] = useState<boolean>(false);
   const [productToDelete, setProductToDelete] = useState<Producto | null>(null);
+  const { enqueueSnackbar } = useSnackbar(); // Hook para los mensajes interactivos
 
   const baseService = new BaseService();
 
@@ -58,6 +60,9 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
 
   // Manejo de la eliminación
   const HandleConfirmDelete = () => {
+    enqueueSnackbar(`Producto "${productToDelete?.nombre}" eliminado exitosamente.`, {
+      variant: "success",
+    });
     getProductos();
     setProductToDelete(null);
   }
@@ -92,8 +97,9 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
 
   return (
     <>
+    <div className="w-full h-auto">
       {/* TABLA */}
-      <div className="overflow-x-auto custom-scrollbar max-h-[calc(100vh-200px)]">
+      <div className="overflow-x-auto custom-scrollbar">
         {isLoading ? (
           <LoadingTables />
         ) : error ? (
@@ -203,6 +209,7 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
         </>
       )}
 
+  </div>
     </>
   );
 };

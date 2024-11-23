@@ -4,6 +4,7 @@ import { ICategoria } from "../../interfaces/Inventario/categoria_interface";
 import { IProveedores } from "../../interfaces/Proveedores/proveedor_interface";
 import BaseService from "../../modules/services/base_service";
 import { Producto } from "../../interfaces/Inventario/producto_interface";
+import { useSnackbar } from "notistack";
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -15,8 +16,6 @@ const baseService = new BaseService();
 
 const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
 
-    const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
-    const [errormsg, setErrorMsg] = useState<string|null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [categories, setCategories] = useState<ICategoria[]>([]);
     const [providers, setProviders] = useState<IProveedores[]>([]);
@@ -31,6 +30,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
         proveedorId: 0,
         esBorrado: false,
     });
+    const { enqueueSnackbar } = useSnackbar(); // Hook para los mensajes interactivos
 
     // Función para la imagen previa
     const onDrop = (acceptedFiles: File[]) => {
@@ -83,7 +83,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
             producto.stock > 0 &&
             producto.categoriaId > 0 &&
             producto.proveedorId > 0;
-        setButtonDisabled(!isFormValid);
     }, [producto]);
 
     // Función para crear el producto
@@ -97,7 +96,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
 
     const handleValidation = () => {
         const validations = [
-            { condition: producto.nombre.trim() === '', message: "El campo 'Nombre' es obligatorio." },
+        { condition: producto.nombre.trim() === '', message: "El campo 'Nombre' es obligatorio." },
         { condition: producto.precio <= 0, message: "El campo 'Precio' debe ser mayor a 0." },
         { condition: producto.stock <= 0, message: "El campo 'Stock' debe ser mayor a 0." },
         { condition: producto.categoriaId === 0, message: "Debe seleccionar una categoría." },
@@ -105,11 +104,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
         ];
         for (const {condition, message} of validations){
             if(condition){
-                setErrorMsg(message);
+                enqueueSnackbar(message, { variant: "error" });
                 return false;
             }
         }
-        setErrorMsg(null);
         return true;
     }
 
@@ -140,11 +138,12 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
                 },
             });
             if (response.success) {
+                enqueueSnackbar("Producto creado exitosamente.", { variant: "success" });
                 onClose();
                 onReload();
-                setButtonDisabled(true);
 
             } else {
+                enqueueSnackbar("Error al crear el producto. Intenta nuevamente.", { variant: "error" });
                 console.error('Error al crear el producto:', response.message);
             }
         } catch (error) {
@@ -187,12 +186,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
 
                     <div className="max-h-[80vh] overflow-y-auto">
                         <form className="p-3 space-y-3" onSubmit={handleSubmit}>
-                        {errormsg && (
-                            <div className="p-2 mb-4 text-red-500 text-sm bg-red-100 border border-red-300 rounded">
-                            {errormsg}
-
-                            </div>
-                        )}
                             {/* Sección de Dropzone */}
                             <div
                                 {...getRootProps()}
@@ -308,9 +301,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
                             </div>
 
                             <div className="flex justify-center space-x-4 mt-6">
-                            {errormsg && (
-                                <p className="text-red-500 text-xs text-center mb-2">{errormsg}</p>
-                            )}
                                 <button
                                     type="button"
                                     onClick={onClose}
@@ -320,8 +310,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
                                 </button>
                                     <button
                                     type="submit"
-                                    disabled={buttonDisabled}
-                                    className={`text-white font-semibold rounded-lg px-4 py-2 text-xs sm:text-sm ${buttonDisabled ? "bg-gray-300": "bg-blue-700 hover:bg-blue-800"}`}
+                                    className="text-white font-semibold rounded-lg px-4 py-2 text-xs sm:text-sm bg-blue-700 hover:bg-blue-800"
                                     >
                                     Guardar
                                 </button>
