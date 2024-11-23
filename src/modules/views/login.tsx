@@ -25,7 +25,7 @@ export default function Login() {
           alert("El usuario no existe, o la contraseña es incorrecta. Comprueba tu cuenta.");
         }
       } catch (error) {
-        alert("Ocurrió un error al procesar tu solicitud. Inténtalo de nuevo más tarde.");
+        alert("Ocurrió un error al procesar tu solicitud. Inténtalo de nuevo más tarde: " + error);
       } finally {
         setIsLoading(false);
       }

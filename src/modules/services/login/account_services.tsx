@@ -26,6 +26,7 @@ export default class AccountService {
                 const userData = searchUserById.data.data as IAccount;
                 
                 UserStore.getState().setUser(
+                    strategyAccount.id,
                     userData.name,
                     userData.email,
                     "authenticated",
