@@ -86,53 +86,64 @@ const CategoriesTable: React.FC<Props> = (reload, setReload) => {
   return (
     <>
       {loading ? (
-        <LoadingTables />
-      ) : (
-        <div className="overflow-x-auto max-h-[calc(100vh-200px)]">
-          <table className="min-w-full bg-white shadow-md rounded-lg">
-            <thead>
-              <tr className="bg-white text-gray-700 text-center">
-                <th className="p-4 text-xs sm:text-base">Categoria</th>
-
-                <th className="p-4 text-xs sm:text-base">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentCategorias.map((categoria) => (
-                <tr
-                  key={categoria.id}
-                  className="border-t border-gray-200 text-center text-sm"
+  <LoadingTables />
+) : (
+  <div className="overflow-x-auto max-h-[calc(100vh-200px)]">
+    <table className="min-w-full bg-white shadow-md rounded-lg">
+      <thead>
+        <tr className="bg-white text-gray-700 text-center">
+          <th className="p-4 text-xs sm:text-base">Categoría</th>
+          <th className="p-4 text-xs sm:text-base">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {currentCategorias.length <= 0 ? (
+          <tr>
+            <td
+              className="p-4 text-center text-gray-500"
+              colSpan={2} // Asegúrate de que este valor coincida con la cantidad de columnas en la tabla
+            >
+              No hay categorías disponibles.
+            </td>
+          </tr>
+        ) : (
+          currentCategorias.map((categoria) => (
+            <tr
+              key={categoria.id}
+              className="border-t border-gray-200 text-center text-sm"
+            >
+              <td className="p-4 break-all">{categoria.nombre}</td>
+              <td className="p-4 flex justify-center space-x-4">
+                <button
+                  className="text-blue-500 hover:text-blue-700"
+                  aria-label="Editar categoría"
+                  onClick={() => {
+                    setOpenModalEdit(true);
+                    setCategoryEdit(categoria);
+                  }}
                 >
-                  <td className="p-4 break-all">{categoria.nombre}</td>
-                  <td className="p-4 flex justify-center space-x-4">
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      aria-label="Editar proveedor"
-                      onClick={() => {
-                        setOpenModalEdit(true);
-                        setCategoryEdit(categoria!);
-                      }}
-                    >
-                      <HiPencil className="w-5 h-5" />
-                    </button>
+                  <HiPencil className="w-5 h-5" />
+                </button>
 
-                    <button
-                      className="text-red-500 hover:text-red-700"
-                      aria-label="Eliminar proveedor"
-                      onClick={() => {
-                        setOpenModal(true);
-                        setCategoryDelete(categoria);
-                      }}
-                    >
-                      <HiTrash className="w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                <button
+                  className="text-red-500 hover:text-red-700"
+                  aria-label="Eliminar categoría"
+                  onClick={() => {
+                    setOpenModal(true);
+                    setCategoryDelete(categoria);
+                  }}
+                >
+                  <HiTrash className="w-5 h-5" />
+                </button>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+  </div>
+)}
+
 
       {/* Paginacion */}
       <div className="flex justify-between items-center mt-6 flex-wrap">
