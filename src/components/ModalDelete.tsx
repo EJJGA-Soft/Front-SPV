@@ -1,6 +1,7 @@
 import React from "react";
 import { DeleteModalProps } from "../interfaces/DeleteModalProps";
 import BaseService from '../modules/services/base_service';
+import { FiX } from "react-icons/fi";
 
 const baseService = new BaseService();
 const ConfirmDeleteModal: React.FC<DeleteModalProps> = ({ isOpen, onClose, onConfirmDelete, entity, itemEntity, deleteRoute }) => {
@@ -20,20 +21,7 @@ const ConfirmDeleteModal: React.FC<DeleteModalProps> = ({ isOpen, onClose, onCon
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Confirmar Eliminación</h2>
           <button onClick={onClose}>
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+          <FiX className="text-2xl" />
           </button>
         </div>
 

@@ -5,6 +5,7 @@ import ProveedorService from "../../modules/services/proveedor/proveedores_servi
 import { useSnackbar } from "notistack";
 import BaseService from "../../modules/services/base_service";
 import { IProveedores } from "../../interfaces/Proveedores/proveedor_interface";
+import { FiX } from "react-icons/fi";
 
 const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
   isOpen,
@@ -90,7 +91,7 @@ const ProveedoresModal: React.FC<ProveedoresModalProps> = ({
           onClick={onClose}
           className="text-gray-500 hover:bg-gray-200 rounded-full p-2"
         >
-          ✕
+        <FiX className="text-2xl" />
         </button>
         </div>
         <div className="p-4 w-full mt-8">

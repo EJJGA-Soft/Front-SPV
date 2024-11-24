@@ -5,6 +5,7 @@ import axios from "axios";
 import { Api_Connection } from "../../modules/services/API/api_connection";
 import { UserStore } from "../../security/store/userStore";
 import { enqueueSnackbar, useSnackbar } from 'notistack';
+import { FiX } from "react-icons/fi";
 
 
 interface CobroModalProps {
@@ -50,8 +51,6 @@ const cambio = totalIngresado - totalCuenta;
 
 const handleConfirmar = async (e: React.FormEvent) => {
   e.preventDefault();
-  console.log("Productos recibidos:", productos);
-
   if (!productos || productos.length === 0) {
     enqueueSnackbar("No hay productos para registrar la venta.", { variant: "error" });
     return;
@@ -113,20 +112,7 @@ const handleConfirmar = async (e: React.FormEvent) => {
             onClick={onClose}
             className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
           >
-            <svg
-              className="w-3 h-3"
-              aria-hidden="true"
-              fill="none"
-              viewBox="0 0 14 14"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M1 1l6 6m0 0l6 6M7 7L1 1m6 6l6-6"
-              />
-            </svg>
+          <FiX className="text-2xl" />
             <span className="sr-only">Cerrar modal</span>
           </button>
         </div>

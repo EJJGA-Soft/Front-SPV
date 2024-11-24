@@ -240,7 +240,7 @@ export default function Layout({ children }: LayoutProps) {
               aria-label="Cerrar menú móvil"
               title="Cerrar menú móvil"
             >
-              <FiX />
+            <FiX className="text-2xl" />
             </button>
           </div>
           <div className={`absolute flex flex-col items-center mt-2 mb-4 transition-transform duration-300 ${

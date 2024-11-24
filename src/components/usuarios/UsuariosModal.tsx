@@ -7,6 +7,7 @@ import { UsuariosModalProps } from "../../interfaces/Users/UsersModalProps";
 import { validatePassword } from "../../modules/services/profile/passwordValidationService";
 import { useSnackbar } from "notistack";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FiX } from "react-icons/fi";
 
 const UsuarioModal: React.FC<UsuariosModalProps> = ({
   isOpen,
@@ -151,7 +152,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
             onClick={onClose}
             className="text-gray-500 hover:bg-gray-200 rounded-full p-2"
           >
-            ✕
+          <FiX className="text-2xl" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">

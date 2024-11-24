@@ -60,7 +60,6 @@ const Compras: React.FC = () => {
       enqueueSnackbar('El producto no tiene stock disponible.', {variant:'error'});
       return;
     }
-    console.log("Producto a agregar:", producto); 
     setCarrito((prevCarrito) => CarritoService.agregarProducto(prevCarrito, producto));
   }, []);
 

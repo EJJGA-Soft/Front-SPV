@@ -193,19 +193,19 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs sm:text-base"
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
         >
           Antes
         </button>
 
-        <span className="text-gray-900 text-xs sm:text-base font-semibold">
+        <span className="text-gray-700 text-xs sm:text-sm md:text-base my-2 sm:my-0">
           Página {currentPage} de {Math.ceil(productos.length / productosPerPage)}
         </span>
 
         <button
           onClick={handleNextPage}
           disabled={currentPage * productosPerPage >= productos.length}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs sm:text-base"
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
         >
           Siguiente
         </button>

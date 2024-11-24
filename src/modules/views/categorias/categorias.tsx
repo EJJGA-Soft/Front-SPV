@@ -5,11 +5,9 @@ import CategoriesModal from "../../../components/categorias/CategoriesModal";
 
 const Inventario = () => {
 
-    //Modal
     const [isAddCategoriesModalOpen, setIsAddCategoriesModalOpen] = useState(false);
     const [reload, setReload] = useState<boolean>(false);
 
-    // Funciones para manejar el modal de "Agregar Producto"
     const handleOpenAddCategoriesModal = () => {
         setIsAddCategoriesModalOpen(true);
     };

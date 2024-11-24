@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { evaluatePassword } from "../../modules/services/profile/password_evaluate";
 import { IoMdClose } from 'react-icons/io';
+import { FiX } from "react-icons/fi";
 
 
 interface ProfileModalProps {
@@ -44,7 +45,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({onClose }) => {
                     onClick={onClose}
                     className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
                 >
-                    <IoMdClose className="w-3 h-3" />
+                <FiX className="text-2xl" />
                     <span className="sr-only">Close modal</span>
                 </button>
                 </div>
