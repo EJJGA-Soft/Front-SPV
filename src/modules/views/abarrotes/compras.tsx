@@ -220,18 +220,25 @@ const Compras: React.FC = () => {
               ))}
             </select>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 p-8 md:grid-cols-3 gap-4 overflow-y-auto max-h-[600px]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 p-8 md:grid-cols-3 gap-4 overflow-y-auto custom-scrollbar max-h-[600px]">
               {productosFiltrados.map((producto) => (
                 <div
                   key={producto.id}
-                  className="bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out flex flex-col items-center justify-center"
+                  className="bg-white p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out flex flex-col items-center justify-between"
                 >
-                  <img
-                    src={`${urlImg}${producto.urlImagen}`}
-                    alt={producto.nombre}
-                    className="h-24 w-auto object-contain"
-                  />
-                  <p className="text-center mt-2">{producto.nombre}</p>
+                <div className="relative group">
+                <img
+                src={`${urlImg}${producto.urlImagen}`}
+                alt={producto.nombre}
+                className="h-24 w-auto object-contain"
+              />
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-xs rounded px-2 py-1 transition-opacity duration-300">
+              {producto.nombre}
+              </div>
+            </div>
+            <p className="text-center mt-2 text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap max-w-full">{producto.nombre}</p>
+
+              
                   <button
                     onClick={() => agregarAlCarrito(producto)}
                     className="bg-yellow-500 text-white px-2 py-2 mt-4 rounded-lg"
