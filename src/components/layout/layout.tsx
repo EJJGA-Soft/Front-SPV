@@ -8,7 +8,7 @@ import {
   HiOutlineCollection,
 } from "react-icons/hi";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiChevronDown, FiMenu, FiX } from "react-icons/fi";
 import {
   FaCashRegister,
   FaFileInvoiceDollar,
@@ -18,6 +18,7 @@ import { useState, useRef, useEffect } from "react";
 import UserIcon from "../../assets/icons/IUser.svg";
 import ProfileModal from "../profile/detailsprofile";
 import { UserStore } from "../../security/store/userStore";
+import logotipo from "../../assets/images/LOGO.svg";
 
 interface SubItem {
   label: string;
@@ -61,6 +62,8 @@ const menuItems: MenuItem[] = [
 interface LayoutProps {
   children: React.ReactNode;
 }
+
+
 
 const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
   const location = useLocation();
@@ -133,6 +136,11 @@ export default function Layout({ children }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const [OpenSubItems, setOpenSubItems] = useState(false);
+  const toggleAbarrotesMenu = () => {
+  setOpenSubItems((prev)=> !prev);
+};
 
   //Usuario Store.
   const username = UserStore((state) => state.name);
@@ -215,7 +223,7 @@ export default function Layout({ children }: LayoutProps) {
       <aside
         className={`fixed top-0 left-0 z-50 h-screen transition-all duration-300 shadow-lg ${
           isMobileMenuOpen
-            ? "translate-x-0 w-48 bg-white lg:translate-x-0"
+            ? "translate-x-0 w-60 bg-white lg:translate-x-0"
             : "-translate-x-full lg:translate-x-0"
         } ${
           isSidebarFull
@@ -228,12 +236,26 @@ export default function Layout({ children }: LayoutProps) {
             <button
               type="button"
               onClick={toggleMobileMenu}
-              className="ml-auto text-gray-700 text-2xl focus:outline-none"
+              className="absolute top-4 right-4 text-gray-700 text-2xl focus:outline-none"
               aria-label="Cerrar menú móvil"
               title="Cerrar menú móvil"
             >
               <FiX />
             </button>
+          </div>
+          <div className={`absolute flex flex-col items-center mt-2 mb-4 transition-transform duration-300 ${
+            isSidebarFull || isMobileMenuOpen ? "translate-x-4" : "translate-x-0"
+          }`}
+        >
+          <img 
+          src={logotipo}
+          alt="Logotipo"
+          className={`${(isSidebarFull || isMobileMenuOpen) ? "w-10 h-10" : "hidden"}`}
+          />
+          {(isSidebarFull || isMobileMenuOpen) && (
+            <span className="mt-2 text-gray-800 text-sm font-semibold text-center"
+            >SISTEMA DE ABARROTES</span>
+          )}
           </div>
 
           <div className="justify-between w-full lg:flex hidden">
@@ -248,7 +270,7 @@ export default function Layout({ children }: LayoutProps) {
 </div>
 
 
-          <ul className="space-y-4 flex-grow">
+  <ul className={`space-y-4 flex-grow ${isSidebarFull ? 'pt-16' : (isMobileMenuOpen ? 'pt-24' : 'pt-26')}`}>
             {menuItems.map((item, index) => (
               <li key={index}>
                 <Link
@@ -256,15 +278,25 @@ export default function Layout({ children }: LayoutProps) {
                   className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
                     isSidebarFull ? "justify-start" : "justify-center"
                   }`}
+                  onClick={item.label === "Abarrotes" ? toggleAbarrotesMenu : undefined}
                 >
                   <span className="text-xl">{item.icon}</span>
                   {(isSidebarFull || isMobileMenuOpen) && (
+                    <div className="flex justify-between w-full ml-3">
                     <span className="ml-3">{item.label}</span>
+                    {item.label === "Abarrotes" && (
+                      <span className="text-xl group-hover">
+                      {OpenSubItems ? <FiChevronDown /> : ""}
+                      </span>
+                    )}
+                    </div>                  
                   )}
                 </Link>
 
                 {/* Mapeo de subitems */}
                 {(isSidebarFull || isMobileMenuOpen) &&
+                  item.label === "Abarrotes" &&
+                  OpenSubItems &&
                   item.subItems &&
                   item.subItems.length > 0 && (
                     <ul className="ml-6 space-y-2 mt-2">
@@ -291,7 +323,7 @@ export default function Layout({ children }: LayoutProps) {
             <Link
               to="/cerrar-sesion"
               className={`flex items-center w-full text-gray-700 rounded-lg hover:bg-gray-100 ${
-                isSidebarFull ? "justify-start" : "justify-center"
+                isSidebarFull ? "justify-start" : "justify-start"
               }`}
             >
               <HiOutlineLogout className="text-xl" />
