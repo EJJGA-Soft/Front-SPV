@@ -58,7 +58,7 @@ const Inventario = () => {
     return (
         <>
             <Layout>
-                <div className="flex flex-col px-4 sm:px-1 py-4">
+                <div className="flex flex-col sm:py-10 px-4 sm:px-6 lg:px-8 pt-6 pb-[95px] lg:mt-[-70px]">
 
                     <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 w-full max-w-3xl mx-auto sm:max-w-xl md:max-w-3xl">
                         <h2 className="text-center text-sm sm:text-base font-semibold mb-3 sm:mb-4">

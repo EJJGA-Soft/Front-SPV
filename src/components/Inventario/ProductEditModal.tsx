@@ -4,17 +4,23 @@ import { ICategoria } from "../../interfaces/Inventario/categoria_interface";
 import { IProveedores } from "../../interfaces/Proveedores/proveedor_interface";
 import BaseService from "../../modules/services/base_service";
 import { Producto } from "../../interfaces/Inventario/producto_interface";
+import { Api_Connection } from "../../modules/services/API/api_connection";
 import { useSnackbar } from "notistack";
 
 interface ProductModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onReload: () => void;
+    onSave: () => void;
+    itemEntity: Producto;
 }
+
+// URL de la API
+const url = `${Api_Connection()}`;
+const urlImg = url.replace('/api/', '');
 
 const baseService = new BaseService();
 
-const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
+const ProductEditModal: React.FC<ProductModalProps> = ({ onClose, onSave, itemEntity }) => {
 
     const [preview, setPreview] = useState<string | null>(null);
     const [categories, setCategories] = useState<ICategoria[]>([]);
@@ -31,6 +37,15 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
         esBorrado: false,
     });
     const { enqueueSnackbar } = useSnackbar(); // Hook para los mensajes interactivos
+
+    useEffect(() => {
+        setProducto(itemEntity);
+        if (itemEntity.urlImagen) {
+            setPreview(`${urlImg}${itemEntity.urlImagen}`);  // Cargar la imagen existente
+        } else {
+            setPreview(null); // Si no hay imagen, limpiar la vista previa
+        }
+    }, [itemEntity]);
 
     // Función para la imagen previa
     const onDrop = (acceptedFiles: File[]) => {
@@ -72,10 +87,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
     };
 
     useEffect(() => {
-        
+
         getCategories();
         getProviders();
     }, []);
+
     useEffect(() => {
         const isFormValid =
             producto.nombre.trim() !== '' &&
@@ -96,14 +112,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
 
     const handleValidation = () => {
         const validations = [
-        { condition: producto.nombre.trim() === '', message: "El campo 'Nombre' es obligatorio." },
-        { condition: producto.precio <= 0, message: "El campo 'Precio' debe ser mayor a 0." },
-        { condition: producto.stock <= 0, message: "El campo 'Stock' debe ser mayor a 0." },
-        { condition: producto.categoriaId === 0, message: "Debe seleccionar una categoría." },
-        { condition: producto.proveedorId === 0, message: "Debe seleccionar un proveedor." },
+            { condition: producto.nombre.trim() === '', message: "El campo 'Nombre' es obligatorio." },
+            { condition: producto.precio <= 0, message: "El campo 'Precio' debe ser mayor a 0." },
+            { condition: producto.stock <= 0, message: "El campo 'Stock' debe ser mayor a 0." },
+            { condition: producto.categoriaId === 0, message: "Debe seleccionar una categoría." },
+            { condition: producto.proveedorId === 0, message: "Debe seleccionar un proveedor." },
         ];
-        for (const {condition, message} of validations){
-            if(condition){
+        for (const { condition, message } of validations) {
+            if (condition) {
                 enqueueSnackbar(message, { variant: "error" });
                 return false;
             }
@@ -115,7 +131,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
         e.preventDefault();
         console.log("Datos enviados:", producto);
 
-        if(!handleValidation()){
+        if (!handleValidation()) {
             return;
         }
 
@@ -132,19 +148,17 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
         formData.append('Imagen', blob, "producto.jpg");
 
         try {
-            const response = await baseService.Post<Producto>('/Productos', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
+            const response = await baseService.Put<Producto>(`/Productos/${producto.id}`, formData, {
+
             });
             if (response.success) {
-                enqueueSnackbar("Producto creado exitosamente.", { variant: "success" });
+                enqueueSnackbar("Producto editado exitosamente.", { variant: "success" });
+                onSave(); // Llamar a onSave para refrescar la lista de productos
                 onClose();
-                onReload();
 
             } else {
-                enqueueSnackbar("Error al crear el producto. Intenta nuevamente.", { variant: "error" });
-                console.error('Error al crear el producto:', response.message);
+                enqueueSnackbar("Error al editar el producto. Intenta nuevamente.", { variant: "error" });
+                console.error('Error al editar el producto:', response.message);
             }
         } catch (error) {
             console.error('Error en la solicitud:', error);
@@ -160,7 +174,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
             >
                 <div className="relative p-4 w-full max-w-xs sm:max-w-md bg-white rounded-lg shadow-lg">
                     <div className="flex items-center justify-between p-3 border-b">
-                        <h3 className="text-base sm:text-lg font-semibold text-gray-900">Agregar producto</h3>
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900">Editar producto</h3>
                         <button
                             type="button"
                             onClick={onClose}
@@ -296,8 +310,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
                                         </option>
                                     ))}
                                 </select>
-                                
-                            
+
+
                             </div>
 
                             <div className="flex justify-center space-x-4 mt-6">
@@ -308,10 +322,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
                                 >
                                     Cancelar
                                 </button>
-                                    <button
+                                <button
                                     type="submit"
                                     className="text-white font-semibold rounded-lg px-4 py-2 text-xs sm:text-sm bg-blue-700 hover:bg-blue-800"
-                                    >
+                                >
                                     Guardar
                                 </button>
                             </div>
@@ -323,4 +337,4 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onReload }) => {
     );
 };
 
-export default ProductModal;
+export default ProductEditModal;
