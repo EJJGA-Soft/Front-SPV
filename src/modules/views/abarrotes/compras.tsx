@@ -9,26 +9,23 @@ import { FaPlus } from "react-icons/fa";
 import BaseService from "../../services/base_service";
 import { ICategoria } from '../../../interfaces/Categorias/categories_interface';
 import { UserStore } from "../../../security/store/userStore";
+import { useSnackbar } from "notistack";
 
 const Compras: React.FC = () => {
+  const { enqueueSnackbar } = useSnackbar();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategories] = useState<ICategoria[]>([]);
   const [carrito, setCarrito] = useState<{ producto: Producto; cantidad: number }[]>([]);
   const [total, setTotal] = useState(0);
-  const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null); 
   const [productoSeleccionadoId, setProductoSeleccionadoId] = useState<number | null>(null);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [isCarritoVacio, setIsCarritoVacio] = useState(true);
   
   const usuario = UserStore((state)=>state.name);
-
-
   const url = `${Api_Connection()}`;
   const urlImg = url.replace("/api/", "");
-
   const baseService = new BaseService();
 
   useEffect(() => {
@@ -53,8 +50,17 @@ const Compras: React.FC = () => {
     setIsCarritoVacio(carrito.length === 0);
   }, [carrito]);
   
+  const resetCarrito = () => {
+    setCarrito([]);
+    setTotal(0);
+  };
 
   const agregarAlCarrito = useCallback((producto: Producto) => {
+    if(producto.stock === 0){
+      enqueueSnackbar('El producto no tiene stock disponible.', {variant:'error'});
+      return;
+    }
+    console.log("Producto a agregar:", producto); 
     setCarrito((prevCarrito) => CarritoService.agregarProducto(prevCarrito, producto));
   }, []);
 
@@ -237,7 +243,7 @@ const Compras: React.FC = () => {
             </div>
           </div>
 
-          <CobroModal isOpen={isModalOpen} onClose={handleCloseModal} totalCuenta={total} />
+          <CobroModal isOpen={isModalOpen} onClose={handleCloseModal} totalCuenta={total}  productos={carrito} resetCarrito={resetCarrito}  />
         </div>
       </Layout>
     </>
