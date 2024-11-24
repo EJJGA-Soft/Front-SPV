@@ -29,7 +29,7 @@ const Inventario = () => {
     }
 
     const getProductsRunOut = async() => {
-        const result = await baseService.Get<Producto>("/Producto/ProductsByRunOut");
+        const result = await baseService.Get<Producto>("/Productos/ProductsByRunOut");
         const response = result.data as Producto[];
         setCountAllProductsRunOut(response.length);
     }

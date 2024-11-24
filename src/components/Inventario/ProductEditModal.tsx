@@ -62,7 +62,6 @@ const ProductEditModal: React.FC<ProductModalProps> = ({ onClose, onSave, itemEn
         accept: { "image/*": [".png", ".jpg", ".jpeg"] },
     });
 
-    // Función para obtener categorías
     const getCategories = async () => {
         try {
             const response = await baseService.Get<ICategoria>("/Categorias");
@@ -74,7 +73,6 @@ const ProductEditModal: React.FC<ProductModalProps> = ({ onClose, onSave, itemEn
         }
     };
 
-    // Función para obtener proveedores
     const getProviders = async () => {
         try {
             const response = await baseService.Get<IProveedores>("/Proveedor");
@@ -87,7 +85,6 @@ const ProductEditModal: React.FC<ProductModalProps> = ({ onClose, onSave, itemEn
     };
 
     useEffect(() => {
-
         getCategories();
         getProviders();
     }, []);
@@ -129,7 +126,6 @@ const ProductEditModal: React.FC<ProductModalProps> = ({ onClose, onSave, itemEn
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Datos enviados:", producto);
 
         if (!handleValidation()) {
             return;
@@ -137,6 +133,7 @@ const ProductEditModal: React.FC<ProductModalProps> = ({ onClose, onSave, itemEn
 
         const formData = new FormData();
 
+        formData.append("id", producto.id.toString())
         formData.append('nombre', producto.nombre);
         formData.append('precio', producto.precio.toString());
         formData.append('stock', producto.stock.toString());
@@ -148,12 +145,14 @@ const ProductEditModal: React.FC<ProductModalProps> = ({ onClose, onSave, itemEn
         formData.append('Imagen', blob, "producto.jpg");
 
         try {
-            const response = await baseService.Put<Producto>(`/Productos/${producto.id}`, formData, {
-
+            const response = await baseService.Put<Producto>("/Productos/UpdateWithImage", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                }
             });
             if (response.success) {
-                enqueueSnackbar("Producto editado exitosamente.", { variant: "success" });
-                onSave(); // Llamar a onSave para refrescar la lista de productos
+                enqueueSnackbar(response.message, { variant: "success" });
+                onSave();
                 onClose();
 
             } else {
