@@ -15,7 +15,7 @@ interface CobroModalProps {
   productos: Producto[];
 }
 
-const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose, totalCuenta, productos, resetCarrito  }) => {
+const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose, totalCuenta, productos, resetCarrito, actualizarNumeroVenta   }) => {
   const [amountEfectivo, setAmountEfectivo] = useState<string>("0");
   const [amountTarjeta, setAmountTarjeta] = useState<string>("0");
   const [paymentType, setPaymentType] = useState<string>("efectivo");
@@ -80,6 +80,7 @@ const handleConfirmar = async (e: React.FormEvent) => {
 
     if (response.status === 200) {
       enqueueSnackbar("Venta registrada con éxito!", { variant: "success" });
+      actualizarNumeroVenta((prevNumeroVenta) => prevNumeroVenta + 1);
       resetCarrito();
       onClose();
     } else {

@@ -10,6 +10,7 @@ import BaseService from "../../services/base_service";
 import { ICategoria } from '../../../interfaces/Categorias/categories_interface';
 import { UserStore } from "../../../security/store/userStore";
 import { useSnackbar } from "notistack";
+import axios from "axios";
 
 const Compras: React.FC = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -17,6 +18,8 @@ const Compras: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategories] = useState<ICategoria[]>([]);
+  const [ventasDelDia, setVentasDelDia] = useState([]);
+  const [numeroVenta, setNumeroVenta] = useState(0);
   const [carrito, setCarrito] = useState<{ producto: Producto; cantidad: number }[]>([]);
   const [total, setTotal] = useState(0);
   const [productoSeleccionadoId, setProductoSeleccionadoId] = useState<number | null>(null);
@@ -27,6 +30,28 @@ const Compras: React.FC = () => {
   const url = `${Api_Connection()}`;
   const urlImg = url.replace("/api/", "");
   const baseService = new BaseService();
+
+  useEffect(() => {
+    const obtenerVentasDelDia = async () => {
+      try {
+        const response = await axios.get(`${url}Venta`);
+        if (response.data.success) {
+          const ventasHoy = response.data.data.filter((venta) => {
+            const fechaVenta = new Date(venta.fechaRegistro);
+            const hoy = new Date();
+            return fechaVenta.toDateString() === hoy.toDateString();
+          });
+          setVentasDelDia(ventasHoy);
+          setNumeroVenta(ventasHoy.length + 1);
+        } else {
+          console.error(response.data.message);
+        }
+      } catch (error) {
+        console.error("Error al obtener las ventas del día:", error);
+      }
+    };
+    obtenerVentasDelDia();
+  }, []);
 
   useEffect(() => {
     const obtenerProductos = async () => {
@@ -44,7 +69,7 @@ const Compras: React.FC = () => {
     };
     obtenerProductos();
     getCategories();
-  }, []);
+  }, [productos]);
 
   useEffect(() => {
     setIsCarritoVacio(carrito.length === 0);
@@ -61,6 +86,7 @@ const Compras: React.FC = () => {
       return;
     }
     setCarrito((prevCarrito) => CarritoService.agregarProducto(prevCarrito, producto));
+    
   }, []);
 
   const eliminarDelCarrito = useCallback((productoId: number) => {
@@ -83,6 +109,11 @@ const Compras: React.FC = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
+  const actualizarNumeroVenta = (nuevoNumeroVenta: number) => {
+    setNumeroVenta(nuevoNumeroVenta);
+  };
+
 
   const handleSeleccionarCategoria = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const categoriaId = e.target.value ? parseInt(e.target.value, 10) : null;
@@ -110,7 +141,7 @@ const Compras: React.FC = () => {
       <Layout>
         <div className="flex flex-col md:flex-row justify-between p-4 bg-gray-100 min-h-screen">
         <div className="w-full md:w-2/3 bg-white p-6 rounded-lg shadow-md mb-4 md:mb-0">
-            <h1 className="text-xl font-semibold mb-4">Venta 1</h1>
+            <h1 className="text-xl font-semibold mb-4">Venta: {numeroVenta}</h1>
             <p className="mb-2">Usuario: {usuario}</p>
             <p className="mb-6 text-xl font-bold">Total: ${total.toFixed(2)}</p>
 
@@ -249,7 +280,8 @@ const Compras: React.FC = () => {
             </div>
           </div>
 
-          <CobroModal isOpen={isModalOpen} onClose={handleCloseModal} totalCuenta={total}  productos={carrito} resetCarrito={resetCarrito}  />
+          <CobroModal isOpen={isModalOpen} onClose={handleCloseModal} totalCuenta={total}  productos={carrito} resetCarrito={resetCarrito} actualizarNumeroVenta={actualizarNumeroVenta} 
+          />
         </div>
       </Layout>
     </>
