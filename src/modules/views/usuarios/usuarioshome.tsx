@@ -4,6 +4,7 @@ import UsersTable from "../../../components/usuarios/UsuariosTable";
 import UsuarioModal from '../../../components/usuarios/UsuariosModal';
 import BaseService from '../../services/base_service';
 import { IAccount } from "../../../interfaces/newAccount._interface";
+import { UserStore } from "../../../security/store/userStore";
 const baseService = new BaseService();
 
 export default function UsuariosHome() {
@@ -12,7 +13,6 @@ export default function UsuariosHome() {
   const [usersPerPage] = useState(7);
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isLoading, setIsLoading] = useState(false);
-
 
   const handleOpenModal = () => {
     setIsModalOpen(true);

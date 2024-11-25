@@ -17,6 +17,7 @@ import LandingPage from "../../modules/views/landingpage";
 export default function AppRoutes() {
   const status = UserStore((state) => state.status);
   const isAuthenticated = status === "authenticated";
+  const role = UserStore((state) => state.rol);
 
   return (
     <BrowserRouter>
@@ -104,9 +105,13 @@ export default function AppRoutes() {
         <Route
           path="/usuarios"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
+            isAuthenticated && role !== "Empleado" ? (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
               <UsuariosHome />
             </ProtectedRoute>
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
           }
         />
         <Route

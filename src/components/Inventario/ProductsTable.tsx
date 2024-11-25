@@ -7,6 +7,7 @@ import BaseService from "../../modules/services/base_service";
 import ConfirmDeleteModal from "../ModalDelete";
 import ProductEditModal from "./ProductEditModal";
 import { useSnackbar } from "notistack";
+import { UserStore } from "../../security/store/userStore";
 
 interface Props {
   reload: boolean;
@@ -23,7 +24,9 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
   const [productToDelete, setProductToDelete] = useState<Producto | null>(null);
   const [openModalEdit, setOpenModalEdit] = useState<boolean>(false);
   const [productToEdit, setProductToEdit] = useState<Producto | null>(null);
-  const { enqueueSnackbar } = useSnackbar(); // Hook para los mensajes interactivos
+  const { enqueueSnackbar } = useSnackbar();
+
+  const {rol} = UserStore();
 
   const baseService = new BaseService();
 
@@ -156,7 +159,9 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
                     <td className="p-4 break-all">$ {producto.precio.toFixed(2)}</td>
                     <td className="p-4 break-all">{producto.nombreCategoria}</td>
                     <td className="p-4 break-all">{producto.nombreProveedor}</td>
-                    <td className="p-4 flex justify-center space-x-4">
+                    {rol !== 'Empleado' && (
+                      <td className="p-4 flex justify-center space-x-4">
+
                       <button
                         className="text-blue-500 hover:text-blue-700"
                         aria-label="Editar producto"
@@ -180,6 +185,8 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
                         <HiTrash className="w-5 h-5" />
                       </button>
                     </td>
+                    )}
+                   
                   </tr>
                 ))
               )}

@@ -6,6 +6,7 @@ import LoadingTables from '../loading/loadingtables';
 import ConfirmDeleteModal from '../ModalDelete';
 import CategoriesEditModal from './CategoriesModalEdit';
 import { useSnackbar } from 'notistack';
+import { UserStore } from '../../security/store/userStore';
 
 const baseService = new BaseService();
 
@@ -24,6 +25,7 @@ const CategoriesTable: React.FC<Props> = (reload, setReload) => {
   const [currentPage, setCurrentPage] = useState(1);
   const categoriasPerPage = 5;
   const { enqueueSnackbar } = useSnackbar();
+  const {rol} = UserStore();
 
   const indexOfLastCategoria = currentPage * categoriasPerPage;
   const indexOfFirstCategoria = indexOfLastCategoria - categoriasPerPage;
@@ -113,7 +115,8 @@ const CategoriesTable: React.FC<Props> = (reload, setReload) => {
               className="border-t border-gray-200 text-center text-sm"
             >
               <td className="p-4 break-all">{categoria.nombre}</td>
-              <td className="p-4 flex justify-center space-x-4">
+              {rol !== 'Empleado' && (
+                <td className="p-4 flex justify-center space-x-4">
                 <button
                   className="text-blue-500 hover:text-blue-700"
                   aria-label="Editar categoría"
@@ -136,6 +139,8 @@ const CategoriesTable: React.FC<Props> = (reload, setReload) => {
                   <HiTrash className="w-5 h-5" />
                 </button>
               </td>
+              )}
+              
             </tr>
           ))
         )}
