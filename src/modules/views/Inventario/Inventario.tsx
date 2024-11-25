@@ -5,6 +5,7 @@ import ProductModal from "../../../components/Inventario/ProductModal";
 import BaseService from '../../services/base_service';
 import { Producto } from "../../../interfaces/Inventario/producto_interface";
 import { ICategoria } from "../../../interfaces/Inventario/categoria_interface";
+import { UserStore } from "../../../security/store/userStore";
 
 const baseService = new BaseService();
 const Inventario = () => {
@@ -15,6 +16,7 @@ const Inventario = () => {
     const [countAllProducts, setCountAllProducts] = useState<number>(0);
     const [countAllCategory, setCountAllCategory] = useState<number>(0);
     const [countAllProductsRunOut, setCountAllProductsRunOut] = useState<number>(0);
+    const { rol } = UserStore();
     
     const getProducts = async() => {
         const result = await baseService.Get<Producto>("/Productos");
@@ -112,12 +114,15 @@ const Inventario = () => {
                         <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
                             Productos
                         </h1>
-                        <button
+                        {rol !== 'Empleado' && (
+                            <button
                             onClick={handleOpenAddProductModal}
                             className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
                         >
                             Agregar producto
                         </button>
+                        )}
+                        
                         {isAddProductModalOpen && (
                             <ProductModal
                             isOpen={isAddProductModalOpen}

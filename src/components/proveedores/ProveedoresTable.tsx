@@ -7,6 +7,7 @@ import { IProveedores } from '../../interfaces/Proveedores/proveedor_interface';
 import LoadingTables from "../loading/loadingtables";
 import ProveedorService from "../../modules/services/proveedor/proveedores_service";
 import { enqueueSnackbar } from 'notistack';
+import { UserStore } from "../../security/store/userStore";
 
 const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
   proveedores, currentPage, proveedoresPerPage, handleNextPage, handlePrevPage,   isLoading, onProveedoresUpdate
@@ -17,7 +18,7 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState<IProveedores | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [proveedorAEliminar, setProveedorAEliminar] = useState<IProveedores | null>(null);
-  
+  const {rol} = UserStore();
 
   const indexOfLastProveedor = currentPage * proveedoresPerPage;
   const indexOfFirstProveedor = indexOfLastProveedor - proveedoresPerPage;
@@ -87,7 +88,9 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
               : "Sin productos"}
             </td>
             <td className="p-4 break-all">{proveedor.numeroCelular}</td>
-            <td className="p-4 flex justify-center space-x-4">
+            {rol !== 'Empleado' && (
+              <td className="p-4 flex justify-center space-x-4">
+
               <button
                 onClick={() => handleOpenModal(proveedor)}
                 className="text-blue-500 hover:text-blue-700"
@@ -104,6 +107,8 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
                 <HiTrash className="w-5 h-5" />
               </button>
             </td>
+            )}
+            
           </tr>
         ))}
 

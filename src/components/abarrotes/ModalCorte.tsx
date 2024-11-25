@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import { BsFillCalendarFill } from 'react-icons/bs';
+import { FiX } from 'react-icons/fi';
 
 interface ModalCorteProps {
   isOpen: boolean;
@@ -33,20 +34,7 @@ const ModalCorte: React.FC<ModalCorteProps> = ({
             onClick={onClose}
             className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
           >
-            <svg
-              className="w-3 h-3"
-              aria-hidden="true"
-              fill="none"
-              viewBox="0 0 14 14"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M1 1l6 6m0 0l6 6M7 7L1 1m6 6l6-6"
-              />
-            </svg>
+          <FiX className="text-2xl" />
             <span className="sr-only">Cerrar modal</span>
           </button>
         </div>

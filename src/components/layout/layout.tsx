@@ -240,7 +240,7 @@ export default function Layout({ children }: LayoutProps) {
               aria-label="Cerrar menú móvil"
               title="Cerrar menú móvil"
             >
-              <FiX />
+            <FiX className="text-2xl" />
             </button>
           </div>
           <div className={`absolute flex flex-col items-center mt-2 mb-4 transition-transform duration-300 ${
@@ -271,7 +271,9 @@ export default function Layout({ children }: LayoutProps) {
 
 
   <ul className={`space-y-4 flex-grow ${isSidebarFull ? 'pt-16' : (isMobileMenuOpen ? 'pt-24' : 'pt-26')}`}>
-            {menuItems.map((item, index) => (
+            {menuItems
+              .filter(item => !(role === 'Empleado' && item.label === 'Usuarios'))
+              .map((item, index) => (
               <li key={index}>
                 <Link
                   to={item.link}

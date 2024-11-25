@@ -7,6 +7,7 @@ import BaseService from "../../modules/services/base_service";
 import ConfirmDeleteModal from "../ModalDelete";
 import ProductEditModal from "./ProductEditModal";
 import { useSnackbar } from "notistack";
+import { UserStore } from "../../security/store/userStore";
 
 interface Props {
   reload: boolean;
@@ -23,7 +24,9 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
   const [productToDelete, setProductToDelete] = useState<Producto | null>(null);
   const [openModalEdit, setOpenModalEdit] = useState<boolean>(false);
   const [productToEdit, setProductToEdit] = useState<Producto | null>(null);
-  const { enqueueSnackbar } = useSnackbar(); // Hook para los mensajes interactivos
+  const { enqueueSnackbar } = useSnackbar();
+
+  const {rol} = UserStore();
 
   const baseService = new BaseService();
 
@@ -156,7 +159,9 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
                     <td className="p-4 break-all">$ {producto.precio.toFixed(2)}</td>
                     <td className="p-4 break-all">{producto.nombreCategoria}</td>
                     <td className="p-4 break-all">{producto.nombreProveedor}</td>
-                    <td className="p-4 flex justify-center space-x-4">
+                    {rol !== 'Empleado' && (
+                      <td className="p-4 flex justify-center space-x-4">
+
                       <button
                         className="text-blue-500 hover:text-blue-700"
                         aria-label="Editar producto"
@@ -180,6 +185,8 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
                         <HiTrash className="w-5 h-5" />
                       </button>
                     </td>
+                    )}
+                   
                   </tr>
                 ))
               )}
@@ -193,19 +200,19 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
         <button
           onClick={handlePrevPage}
           disabled={currentPage === 1}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs sm:text-base"
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
         >
           Antes
         </button>
 
-        <span className="text-gray-900 text-xs sm:text-base font-semibold">
+        <span className="text-gray-700 text-xs sm:text-sm md:text-base my-2 sm:my-0">
           Página {currentPage} de {Math.ceil(productos.length / productosPerPage)}
         </span>
 
         <button
           onClick={handleNextPage}
           disabled={currentPage * productosPerPage >= productos.length}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-xs sm:text-base"
+          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
         >
           Siguiente
         </button>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ICategoria } from "../../interfaces/Inventario/categoria_interface";
 import BaseService from "../../modules/services/base_service";
 import { useSnackbar } from "notistack";
+import { FiX } from "react-icons/fi";
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -57,20 +58,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ onClose, onSave }) => {
               onClick={onClose}
               className="text-gray-400 hover:bg-gray-200 rounded-lg w-6 h-6 flex items-center justify-center"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+            <FiX className="text-2xl" />
               <span className="sr-only">Cerrar modal</span>
             </button>
           </div>

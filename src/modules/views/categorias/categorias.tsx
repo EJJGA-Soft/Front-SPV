@@ -2,14 +2,14 @@ import { useState } from "react";
 import CategoriesTable from "../../../components/categorias/CategoriesTable";
 import Layout from "../../../components/layout/layout";
 import CategoriesModal from "../../../components/categorias/CategoriesModal";
+import { UserStore } from "../../../security/store/userStore";
 
 const Inventario = () => {
 
-    //Modal
     const [isAddCategoriesModalOpen, setIsAddCategoriesModalOpen] = useState(false);
     const [reload, setReload] = useState<boolean>(false);
+    const {rol} = UserStore();
 
-    // Funciones para manejar el modal de "Agregar Producto"
     const handleOpenAddCategoriesModal = () => {
         setIsAddCategoriesModalOpen(true);
     };
@@ -35,12 +35,15 @@ const Inventario = () => {
                         <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
                             Categorias
                         </h1>
-                        <button
+                        {rol !== 'Empleado' && (
+                            <button
                             onClick={handleOpenAddCategoriesModal}
                             className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
                         >
                             Agregar categoria
                         </button>
+                        )}
+                       
                         {isAddCategoriesModalOpen && (
                             <CategoriesModal isOpen={isAddCategoriesModalOpen} onClose={handleCloseAddCategoriesModal} onSave={UpdateCategory} />
                         )}

@@ -4,6 +4,7 @@ import ProveedoresTable from "../../../components/proveedores/ProveedoresTable";
 import ProveedoresModal from "../../../components/proveedores/ModalProveedores";
 import { IProveedores } from "../../../interfaces/Proveedores/proveedor_interface";
 import BaseService from "../../services/base_service";
+import { UserStore } from "../../../security/store/userStore";
 
 const baseService = new BaseService();
 
@@ -14,6 +15,7 @@ export default function ProveedoresHome() {
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isLoading, setIsLoading] = useState(false);
 
+  const {rol} =UserStore();
  
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -70,12 +72,15 @@ export default function ProveedoresHome() {
       <div className="flex justify-between items-center mb-4">
       <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
           Proveedores</h1>
-          <button 
-          className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
-          onClick={handleOpenModal} 
-          >
-            Agregar proveedor
-          </button>
+          {rol !== 'Empleado' &&(
+            <button 
+            className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
+            onClick={handleOpenModal} 
+            >
+              Agregar proveedor
+            </button>
+          )}
+         
         </div>
         
         <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
