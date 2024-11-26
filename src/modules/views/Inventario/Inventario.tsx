@@ -86,16 +86,6 @@ const Inventario = () => {
                                 <p className="text-sm sm:text-base mt-1 font-semibold">{countAllProducts}</p>
                             </div>
 
-                            {/* Divider */}
-                            <div className="hidden sm:block border-l border-gray-300" />
-
-                            {/* Los más vendidos */}
-                            <div className="text-center flex-1 min-w-[45%] sm:min-w-[80px]">
-                                <span className="text-purple-600 font-medium text-xs sm:text-sm">
-                                    Los más vendidos
-                                </span>
-                                <p className="text-sm sm:text-base mt-1 font-semibold">14</p>
-                            </div>
 
                             {/* Divider */}
                             <div className="hidden sm:block border-l border-gray-300" />

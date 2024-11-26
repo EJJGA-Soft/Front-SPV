@@ -26,9 +26,7 @@ const Inventario = () => {
     return (
         <>
             <Layout>
-                <div className="container mx-auto min-h-screen h-screen flex flex-col px-4 sm:px-1 py-4">
-
-                    
+                <div className="mx-auto flex flex-col px-4 sm:px-1 py-4 md:mt-[-50px]">
 
                     {/* TABLA */}
                     <div className="flex justify-between items-center mb-4 mt-6">

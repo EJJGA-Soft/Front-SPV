@@ -48,12 +48,9 @@ const VentasHome: React.FC = () => {
 
   return (
     <Layout>
-      <div className="bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="bg-gray-100 py-6 px-4 sm:px-6 lg:px-8 md:mt-[-40px]">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold">Detalle de Ventas</h1>
-          <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-            Exportar PDF
-          </button>
         </div>
 
         <div className="overflow-x-auto max-h-[500px]">

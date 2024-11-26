@@ -1,5 +1,3 @@
-import { Producto } from "../../Inventario/producto_interface";
-
 export interface IVenta {
     id: number;
     fechaRegistro: string;

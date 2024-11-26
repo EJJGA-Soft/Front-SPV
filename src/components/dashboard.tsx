@@ -15,13 +15,14 @@ import IAccess from "../assets/icons/IAccess.svg";
 import ICancel from "../assets/icons/ICancel.svg";
 import ITotal from "../assets/icons/ITotal.svg";
 import IVentas from "../assets/icons/IVentas.svg";
-import ICategoria from "../assets/icons/ICategoria.svg";
+import IconCategory from "../assets/icons/ICategoria.svg";
 import IStock from "../assets/icons/IStock.svg";
 import Layout from "./layout/layout";
 import BaseService from "../modules/services/base_service";
 import { Producto } from "../interfaces/Inventario/producto_interface";
-import { Api_Connection } from '../modules/services/API/api_connection';
+import { Api_Connection } from "../modules/services/API/api_connection";
 import LoadingTables from "./loading/loadingtables";
+import { IAccount } from "../interfaces/newAccount._interface";
 
 ChartJS.register(
   CategoryScale,
@@ -39,44 +40,44 @@ const Dashboard: React.FC = () => {
   const [loadingProductsRunOut, setLoadingRunOut] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const data = {
-    labels: [
-      "12:00",
-      "13:00",
-      "14:00",
-      "15:00",
-      "16:00",
-      "17:00",
-      "18:00",
-      "19:00",
-      "20:00",
-      "21:00",
-    ],
-    datasets: [
-      {
-        label: "Bebidas",
-        data: [
-          30000, 45000, 20000, 55000, 40000, 30000, 45000, 50000, 35000, 30000,
-        ],
-        backgroundColor: "#27A9E0",
-      },
-      {
-        label: "Productos",
-        data: [
-          20000, 35000, 15000, 45000, 35000, 20000, 40000, 45000, 30000, 25000,
-        ],
-        backgroundColor: "#AB60F1",
-      },
-      {
-        label: "Total",
-        data: [
-          50000, 80000, 45000, 100000, 75000, 50000, 85000, 95000, 65000, 55000,
-        ],
-        backgroundColor: "#33CC66",
-      },
-    ],
-  };
+  const [chartData, setChartData] = useState<any>({
+    labels: [],
+    datasets: [],
+  });
 
+  const fetchChartData = async () => {
+    try {
+      const result = await baseService.GetSimple("/Venta/SummarySalesByDay");
+      if (result.success) {
+        const categories = result.data as { nombreCategoria: string; total: number }[];
+  
+        const colors = categories.map(() => getRandomColor());
+  
+        setChartData({
+          labels: ["Categorías"], // Etiqueta genérica única
+          datasets: categories.map((item, index) => ({
+            label: item.nombreCategoria, // Nombre específico de cada categoría
+            data: [item.total], // Solo un valor por categoría
+            backgroundColor: colors[index],
+            borderColor: colors[index],
+            borderWidth: 1,
+          })),
+        });
+      }
+    } catch (error) {
+      console.error("Error al obtener datos para la gráfica:", error);
+    }
+  };
+  
+  const getRandomColor = () => {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+  
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -94,6 +95,11 @@ const Dashboard: React.FC = () => {
       },
     },
   };
+  
+  
+  
+  
+   
 
   const [productsRunOut, setProductsRunOut] = useState<Producto[]>([]);
   const [message, setMessage] = useState<string>("");
@@ -107,8 +113,8 @@ const Dashboard: React.FC = () => {
     const url = api_connection.split("/api");
     const headurl = url.join("");
 
-    response.forEach(element => {
-      element.urlImagen = `${headurl}${element.urlImagen}`
+    response.forEach((element) => {
+      element.urlImagen = `${headurl}${element.urlImagen}`;
     });
 
     if (results.success) {
@@ -123,8 +129,62 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const [countSales, setCountSales] = useState<number>(0);
+
+  const APIVentaCount = async () => {
+    const results = await baseService.GetSimple("/Venta/GetSalesInDayCount");
+
+    if (results.success) {
+      const data = results.data as number;
+      setCountSales(data);
+    }
+  };
+
+  const [countAccess, setCountAccess] = useState<number>(0);
+  const APIUsersCount = async () => {
+    const results = await baseService.Get<IAccount>("/Account/GetUsers");
+
+    if (results.success) {
+      const cast = results.data as IAccount[];
+      const count = cast.length;
+      setCountAccess(count);
+    }
+  };
+
+  const [countTotalProduct, setCountTotalProduct] = useState<number>(0);
+  const APITotalProducts = async () => {
+    const results = await baseService.GetSimple(
+      "/VentaProducto/GetTotalProducts"
+    );
+
+    if (results.success) {
+      setCountTotalProduct(results.data as number);
+    }
+  };
+
+  interface Sumarry {
+    nombreCategoria: string;
+    total: number;
+  }
+
+  const [dbCategories, setCategories] = useState<Sumarry[]>([]);
+
+  const APICategories = async () => {
+    const results = await baseService.GetSimple<Sumarry[]>("/Venta/SummarySalesByDay");
+
+    if (results.success) {
+      const response = results.data as Sumarry[];
+      setCategories(response);
+    }
+  };
+
   useEffect(() => {
     ProductsRunOut();
+    APIVentaCount();
+    APIUsersCount();
+    APITotalProducts();
+    APICategories();
+    fetchChartData();
   }, []);
 
   return (
@@ -134,29 +194,37 @@ const Dashboard: React.FC = () => {
           {/* Columna Izquierda (60% de ancho) */}
           <div className="md:col-span-3 space-y-4">
             <div className="bg-white rounded-lg p-4 shadow-md">
-              <h2 className="text-lg font-semibold mb-2">Resumen de ventas del día</h2>
+              <h2 className="text-lg font-semibold mb-2">
+                Resumen de ventas del día
+              </h2>
               <div className="flex justify-around items-center">
-                <div className="flex flex-col items-center">
-                  <img src={IBebidas} alt="Bebidas" className="h-8 mb-1" />
-                  <p className="text-xl font-bold">$850</p>
-                  <p className="text-gray-600">Bebidas</p>
-                </div>
+                {dbCategories.map((category, index) => (
+                  <div key={index} className="flex items-center">
+                    <div className="flex flex-col items-center">
+                      <img
+                        src={IProductos}
+                        alt={category.nombreCategoria}
+                        className="h-8 mb-1"
+                      />
+                      <p className="text-xl font-bold">${category.total}</p>
+                      <p className="text-gray-600">
+                        {category.nombreCategoria}
+                      </p>
+                    </div>
 
-                {/* Línea vertical entre Bebidas y Productos */}
-                <div className="border-l border-gray-300 h-12 mx-4"></div>
-
-                <div className="flex flex-col items-center">
-                  <img src={IProductos} alt="Productos" className="h-8 mb-1" />
-                  <p className="text-xl font-bold">$2000</p>
-                  <p className="text-gray-600">Productos</p>
-                </div>
+                    {/* Línea vertical entre categorías, excepto después de la última */}
+                    {index < dbCategories.length - 1 && (
+                      <div className="border-l border-gray-300 h-12 mx-4"></div>
+                    )}
+                  </div>
+                ))}
 
                 {/* Línea vertical entre Productos y Total */}
                 <div className="border-l border-gray-300 h-12 mx-4"></div>
 
                 <div className="flex flex-col items-center">
                   <img src={ITotal} alt="Total" className="h-8 mb-1" />
-                  <p className="text-xl font-bold">$17,500</p>
+                  <p className="text-xl font-bold">${countTotalProduct}</p>
                   <p className="text-gray-600">Total</p>
                 </div>
               </div>
@@ -169,22 +237,15 @@ const Dashboard: React.FC = () => {
               </h2>
               <div className="flex justify-around">
                 <div className="flex flex-col items-center">
-                  <img src={ICancel} alt="Cancelaciones" className="h-8 mb-1" />
-                  <p className="text-xl font-bold">5</p>
-                  <p className="text-gray-600">Cancelaciones</p>
-                </div>
-                <div className="border-l border-gray-300 h-12 mx-4"></div>
-
-                <div className="flex flex-col items-center">
                   <img src={IAccess} alt="Accesos" className="h-8 mb-1" />
-                  <p className="text-xl font-bold">15</p>
+                  <p className="text-xl font-bold">{countAccess}</p>
                   <p className="text-gray-600">Accesos</p>
                 </div>
                 <div className="border-l border-gray-300 h-12 mx-4"></div>
 
                 <div className="flex flex-col items-center">
                   <img src={IVentas} alt="Ventas" className="h-8 mb-1" />
-                  <p className="text-xl font-bold">40</p>
+                  <p className="text-xl font-bold">{countSales}</p>
                   <p className="text-gray-600">Ventas</p>
                 </div>
               </div>
@@ -194,7 +255,7 @@ const Dashboard: React.FC = () => {
             <div className="bg-white rounded-lg p-4 shadow-md h-80">
               <h2 className="text-lg font-semibold mb-2">Ventas del día</h2>
               <div className="p-4 h-64">
-                <Bar data={data} options={options} />
+                <Bar data={chartData} options={options} />
               </div>
             </div>
           </div>
@@ -222,7 +283,7 @@ const Dashboard: React.FC = () => {
                 className="flex flex-col items-cemter text-center"
               >
                 <img
-                  src={ICategoria}
+                  src={IconCategory}
                   alt="Categorías"
                   className="h-8 mt-4 mb-2"
                 />
@@ -232,48 +293,43 @@ const Dashboard: React.FC = () => {
 
             {/* Productos por agotarse */}
             {loadingProductsRunOut ? (
-  <LoadingTables />
-) : (
-  <div className="bg-white rounded-lg p-4 shadow-md h-[315px] flex flex-col">
-    <h2 className="text-lg font-semibold mb-2">
-      Productos por agotarse
-    </h2>
+              <LoadingTables />
+            ) : (
+              <div className="bg-white rounded-lg p-4 shadow-md h-[320px] flex flex-col">
+                <h2 className="text-lg font-semibold mb-2">
+                  Productos por agotarse
+                </h2>
 
-    {productsRunOut.length <= 0 ? (
-      <div className="flex flex-1 items-center justify-center mt-[-30px]">
-        <ul className="text-center">
-          {error ? (
-            <li>{error}</li>
-          ) : (
-            <li>{message}</li>
-          )}
-        </ul>
-      </div>
-    ) : (
-      <ul>
-        {productsRunOut.map((product) => (
-          <li
-            key={product.id}
-            className="flex justify-between items-center my-2"
-          >
-            <div className="flex items-center">
-              <img
-                src={product.urlImagen}
-                alt={product.nombre}
-                className="h-8 mr-2"
-              />
-              <span className="ml-4">{product.nombre}</span>
-            </div>
-            <span className="text-red-500">
-              Cantidad restante: {product.stock}
-            </span>
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
-)}
-
+                {productsRunOut.length <= 0 ? (
+                  <div className="flex flex-1 items-center justify-center mt-[-30px]">
+                    <ul className="text-center">
+                      {error ? <li>{error}</li> : <li>{message}</li>}
+                    </ul>
+                  </div>
+                ) : (
+                  <ul>
+                    {productsRunOut.map((product) => (
+                      <li
+                        key={product.id}
+                        className="flex justify-between items-center my-2"
+                      >
+                        <div className="flex items-center">
+                          <img
+                            src={product.urlImagen}
+                            alt={product.nombre}
+                            className="h-8 mr-2"
+                          />
+                          <span className="ml-4">{product.nombre}</span>
+                        </div>
+                        <span className="text-red-500">
+                          Cantidad restante: {product.stock}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Layout>

@@ -126,43 +126,47 @@ const ProductEditModal: React.FC<ProductModalProps> = ({ onClose, onSave, itemEn
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+    
         if (!handleValidation()) {
             return;
         }
-
+    
         const formData = new FormData();
-
-        formData.append("id", producto.id.toString())
-        formData.append('nombre', producto.nombre);
-        formData.append('precio', producto.precio.toString());
-        formData.append('stock', producto.stock.toString());
-        formData.append('categoriaId', producto.categoriaId!.toString());
-        formData.append('proveedorId', producto.proveedorId!.toString());
-        formData.append('esBorrado', producto.esBorrado ? 'true' : 'false');
-
-        const blob = new Blob([producto.Imagen], { type: "image/jpeg" });
-        formData.append('Imagen', blob, "producto.jpg");
-
+    
+        formData.append("id", producto.id.toString());
+        formData.append("nombre", producto.nombre);
+        formData.append("precio", producto.precio.toString());
+        formData.append("stock", producto.stock.toString());
+        formData.append("categoriaId", producto.categoriaId!.toString());
+        formData.append("proveedorId", producto.proveedorId!.toString());
+        formData.append("esBorrado", producto.esBorrado ? "true" : "false");
+    
+        if (preview && preview !== `${urlImg}${itemEntity.urlImagen}`) {
+            const blob = new Blob([producto.Imagen], { type: "image/jpeg" });
+            formData.append("Imagen", blob, "producto.jpg");
+        } else {
+            formData.append("Imagen", "null");
+        }
+    
         try {
             const response = await baseService.Put<Producto>("/Productos/UpdateWithImage", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                }
+                },
             });
+    
             if (response.success) {
                 enqueueSnackbar(response.message, { variant: "success" });
                 onSave();
                 onClose();
-
             } else {
                 enqueueSnackbar("Error al editar el producto. Intenta nuevamente.", { variant: "error" });
-                console.error('Error al editar el producto:', response.message);
+                console.error("Error al editar el producto:", response.message);
             }
         } catch (error) {
-            console.error('Error en la solicitud:', error);
+            console.error("Error en la solicitud:", error);
         }
-    };
+    };    
 
     return (
         <>

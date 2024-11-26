@@ -13,10 +13,13 @@ const ModalVentasDetalle: React.FC<ModalVentasDetalleProps> = ({ ventaId,usuario
   const [isLoading, setIsLoading] = useState(false);
   const baseService = new BaseService();
 
-  const obtenerInfoProducto = async (productoId: number): Promise<IProducto | null> => {
+  const obtenerInfoProducto = async (productoId: number, precioUnitario: number): Promise<IProducto | null> => {
     try {
-      const { success, data } = await baseService.Get<{ success: boolean; data: IProducto }>(`${Api_Connection()}Productos/${productoId}`);
-      return success ? data : (console.error(`Error al obtener producto ${productoId}`), null);
+      const response = await baseService.GetSimple<IProducto>(`${Api_Connection()}Productos/${productoId}`);
+      const results = response.data as IProducto;
+      results.precio = precioUnitario;
+
+      return results;
     } catch (error) {
       console.error("Error al realizar la solicitud de producto:", error);
       return null;
@@ -25,12 +28,13 @@ const ModalVentasDetalle: React.FC<ModalVentasDetalleProps> = ({ ventaId,usuario
   
   const obtenerProductosVenta = async () => {
     setIsLoading(true);
-    const { success, data } = await baseService.Get<{ success: boolean; data: IVentaProducto[] }>(`${Api_Connection()}VentaProducto`);
-    if (success) {
+    const response = await baseService.Get<IVentaProducto>(`${Api_Connection()}VentaProducto`);
+    if (response.success) {
+      const data = response.data as IVentaProducto[];
       const productosConDetalles = await Promise.all(
         data.filter(vp => vp.ventaId === ventaId).map(async (producto) => ({
           ...producto,
-          ...await obtenerInfoProducto(producto.productoId),
+          ...await obtenerInfoProducto(producto.productoId, producto.precioUnitario),
         }))
       );
       setVentaProductos(productosConDetalles);

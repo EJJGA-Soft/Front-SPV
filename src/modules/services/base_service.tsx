@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
-import { ResponseHelperModel } from "../../interfaces/responseHelper_T_interface";
+import { ResponseHelperModel, ResponseHelperModelSimple } from "../../interfaces/responseHelper_T_interface";
 import { Api_Connection } from "./API/api_connection";
 
 export default class BaseService {
@@ -25,6 +25,37 @@ export default class BaseService {
             this.handleError(error);
         }
     }
+
+    async GetSimple<T>(endpoint: string, params?: Record<string, any>): Promise<ResponseHelperModelSimple<T>> {
+        try {
+            const response = await this._api.get<ResponseHelperModelSimple<T>>(endpoint, { params });
+            return response.data;
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+        async GetSimpleEndpoint(endpoint: string, params?: Record<string, any>){
+            try {
+                const response = await this._api.get(endpoint, { params });
+                return response;
+            } catch (error) {
+                this.handleError(error);
+            }
+        }
+
+        async GetSimpleEndpointPDF(endpoint: string, params?: Record<string, any>, responseType: 'json' | 'blob' = 'json') {
+            try {
+                const response = await this._api.get(endpoint, {
+                    params,
+                    responseType,
+                });
+                return response;
+            } catch (error) {
+                this.handleError(error);
+                throw error;
+            }
+        }
 
     async Post<T>(endpoint: string, data: any, config?: AxiosRequestConfig): Promise<ResponseHelperModel<T>> {
         try {

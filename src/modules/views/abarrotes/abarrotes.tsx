@@ -62,7 +62,7 @@ const AbarrotesHome: React.FC = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col items-center bg-gray-100 sm:py-10 px-6 pt-10 pb-[140px]">
+      <div className="flex flex-col items-center bg-gray-100 md:mt-[-30px] sm:py-10 px-6 pt-10 pb-[140px]">
         <div className="mb-8 sm:mb-12">
           <img src={Logotipo} alt="Logotipo" className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40" />
         </div>
