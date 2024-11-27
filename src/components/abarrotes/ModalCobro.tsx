@@ -41,6 +41,7 @@ const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose, totalCuenta, p
     if(type === "efectivo"){
       setAmountTarjeta("0");
     } else{
+      setAmountTarjeta(totalCuenta.toString());
       setAmountEfectivo("0");
     }
   };
@@ -178,7 +179,7 @@ const handleConfirmar = async (e: React.FormEvent) => {
                   placeholder="Monto con tarjeta"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3 mt-2"
                   disabled={paymentType === "efectivo"}
-                />
+                /> 
               </div>
             </div>
           </div>

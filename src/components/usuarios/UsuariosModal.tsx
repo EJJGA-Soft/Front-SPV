@@ -32,6 +32,8 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+
 
 
   useEffect(() => {
@@ -191,6 +193,26 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
               <option value="Administrador">Administrador</option>
               <option value="Empleado">Empleado</option>
             </select>
+          </div>
+          <div>
+          <label className="block text-sm font-medium">Contraseña actual</label>
+          <div className="relative">
+          <input
+          type={ showCurrentPassword ? "text" : "password" }
+          name="currentPassword"
+          value={formData.currentPassword}
+          onChange={handleChange}
+          className="w-full border rounded p-2"
+
+          />
+          <span
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer mr-4 text-gray-400 "
+            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+            >
+            {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+
+          </div>
           </div>
           <div>
             <label className="block text-sm font-medium">Contraseña</label>

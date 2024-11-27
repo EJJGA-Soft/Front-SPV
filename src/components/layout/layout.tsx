@@ -247,11 +247,13 @@ export default function Layout({ children }: LayoutProps) {
             isSidebarFull || isMobileMenuOpen ? "translate-x-4" : "translate-x-0"
           }`}
         >
+        <a href="/dashboard">
           <img 
           src={logotipo}
           alt="Logotipo"
+          
           className={`${(isSidebarFull || isMobileMenuOpen) ? "w-10 h-10" : "hidden"}`}
-          />
+          /> </a>
           {(isSidebarFull || isMobileMenuOpen) && (
             <span className="mt-2 text-gray-800 text-sm font-semibold text-center"
             >SISTEMA DE ABARROTES</span>

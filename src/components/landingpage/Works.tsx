@@ -116,7 +116,7 @@ const Works: React.FC = () => {
 
   return (
     <section id="works" className="p-8 xl:p-20 bg-gray-100 ">
-      <h2 className="text-3xl font-bold text-center mb-8">Cómo Funciona el Sistema</h2>
+      <h2 className="text-3xl font-bold text-center mb-8">¿Cómo funciona el sistema?</h2>
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={30}

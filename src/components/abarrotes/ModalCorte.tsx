@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FiX } from "react-icons/fi";
 import NotificationService from "../../modules/services/mensajes/notification_service";
 import BaseService from '../../modules/services/base_service';
@@ -23,6 +23,9 @@ const ModalCorte: React.FC<ModalCorteProps> = ({
   const today = new Date().toLocaleDateString("en-CA");
   const userid = UserStore((user) => user.id);
 
+  const [isPDFEnabled, setIsPDFEnabled] = useState(false);
+  
+
   if (!isOpen) return null;
 
   const HandleCorte = async () =>{
@@ -32,7 +35,7 @@ const ModalCorte: React.FC<ModalCorteProps> = ({
 
     if(results.success){
     NotificationService.showSuccess(results.message!);
-    onClose();
+    setIsPDFEnabled(true);
     } else{ 
     NotificationService.showError(results.message!)
     }
@@ -124,9 +127,17 @@ const ModalCorte: React.FC<ModalCorteProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => {HandlePDF()}}
-              className="w-full text-white bg-purple-700 hover:bg-purple-800 font-medium rounded-lg text-sm px-5 py-2.5"
-            >
+              onClick={() => {
+                HandlePDF();
+              }}
+              disabled={!isPDFEnabled}
+              className={`w-full text-white ${
+                isPDFEnabled
+                  ? "bg-purple-700 hover:bg-purple-800"
+                  : "bg-gray-400 cursor-not-allowed"
+              } font-medium rounded-lg text-sm px-5 py-2.5`}
+            
+              >
               Ver PDF
             </button>
           </div>

@@ -141,9 +141,9 @@ const Compras: React.FC = () => {
       <Layout>
         <div className="flex flex-col md:flex-row justify-between p-4 bg-gray-100 min-h-screen">
         <div className="w-full md:w-2/3 bg-white p-6 rounded-lg shadow-md mb-4 md:mb-0">
-            <h1 className="text-xl font-semibold mb-4">Venta: {numeroVenta}</h1>
-            <p className="mb-2">Usuario: {usuario}</p>
-            <p className="mb-6 text-xl font-bold">Total: ${total.toFixed(2)}</p>
+            <h1 className="text-xl mb-4"><span className="font-semibold">Venta: </span> {numeroVenta}</h1>
+            <p className="mb-2"><span className="font-semibold">Usuario: </span> {usuario}</p>
+            <p className="mb-6 text-xl text-end"><span className="font-bold">Total: </span> ${total.toFixed(2)}</p>
 
             <div className="overflow-y-auto" style={{ maxHeight: '300px' }}>
             <table className="w-full border border-gray-300">

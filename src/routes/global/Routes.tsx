@@ -89,9 +89,13 @@ export default function AppRoutes() {
         <Route
           path="/detalle-ventas"
           element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
+            isAuthenticated && role !== "Empleado" ? (
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
               <VentasHome />
             </ProtectedRoute>
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
           }
         />
         <Route
