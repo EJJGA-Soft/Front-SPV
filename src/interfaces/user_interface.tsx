@@ -9,3 +9,13 @@ export interface IUser {
     isDeleted: boolean;
     estatusUsuario: StatusUser;
   }
+
+export interface IUserObligatory {
+    id: string;
+    name: string;
+    email: string;
+    rol: string;
+    activo: StatusUser;
+    isDeleted: boolean;
+    estatusUsuario: StatusUser;
+  }

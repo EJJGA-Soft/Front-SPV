@@ -1,111 +1,170 @@
 import React, { useState } from "react";
 import { evaluatePassword } from "../../modules/services/profile/password_evaluate";
-import { IoMdClose } from 'react-icons/io';
 import { FiX } from "react-icons/fi";
-
+import { UserStore } from "../../security/store/userStore";
+import BaseService from '../../modules/services/base_service';
+import NotificationService from "../../modules/services/mensajes/notification_service";
+import { IUserObligatory } from '../../interfaces/user_interface';
 
 interface ProfileModalProps {
     isOpen?: boolean;
     onClose: () => void;
 }
 
-const ProfileModal: React.FC<ProfileModalProps> = ({onClose }) => {
-    const [name, setName] = useState<string>("");
-    const [correo, setCorreo] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [confirmPassword, setConfirmPassword] = useState<string>("");
-    const [passwordStrength, setPasswordStrength] = useState<string>("");
-    const [passwordMatch, setPasswordMatch] = useState<boolean | null>(null);
+const baseService = new BaseService();
 
+const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
+    const { id , name, email } = UserStore.getState();
 
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newPassword = e.target.value;
-        setPassword(newPassword);
-        setPasswordStrength(evaluatePassword(newPassword));
-        setPasswordMatch(confirmPassword === newPassword);
+    const [formData, setFormData] = useState({
+        id: id,
+        name: name || "",
+        email: email || "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    const [passwordStrength, setPasswordStrength] = useState<string | null>(null);
+    const [passwordsMatch, setPasswordsMatch] = useState(true);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+        if (name === "password") {
+            setPasswordStrength(evaluatePassword(value));
+        }
+
+        if (name === "confirmPassword") {
+            setPasswordsMatch(value === formData.password);
+        }
+
+        if (name === "password" && formData.confirmPassword) {
+            setPasswordsMatch(value === formData.confirmPassword);
+        }
     };
 
-    const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newConfirmPassword = e.target.value;
-        setConfirmPassword(newConfirmPassword);
-        setPasswordMatch(password === newConfirmPassword);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!passwordsMatch) {
+            alert("Las contraseñas no coinciden");
+            return;
+        }
+
+        try {
+            const updateUser = await baseService.Put("/Account/UpdateUserData/", formData);
+
+            if (updateUser.success) {
+                const user = await baseService.GetSimple<IUserObligatory>(
+                    `/Account/GetUserById/${id}`
+                );
+
+                const name = user.data!.name;
+                const email = user.data!.email;
+                const status = "authenticated";
+                const rol = user.data!.rol;
+
+                if (user.success) {
+                    UserStore.getState().setUser(
+                        id,
+                        name,
+                        email,
+                        status,
+                        rol
+                        );
+                    NotificationService.showSuccess("¡Su perfil se actualizó con éxito!");
+                    onClose();
+                }
+            } else {
+                NotificationService.showError("Error al actualizar el perfil.");
+            }
+        } catch (error) {
+            console.error("Error al actualizar el usuario:", error);
+            NotificationService.showError("Ocurrió un error inesperado.");
+        }
     };
 
     return (
-        <div id="profile-modal" tabIndex={-1} aria-hidden="true"
+        <div
+            id="profile-modal"
+            tabIndex={-1}
+            aria-hidden="true"
             className="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-gray-500 bg-opacity-50"
         >
-      
-
             <div className="relative p-4 w-full max-w-md bg-white max-h-full rounded-lg shadow-lg">
                 <div className="flex items-center justify-between p-4 border-b rounded-t">
                     <h3 className="text-lg font-semibold text-gray-900">Editar Perfil</h3>
                     <button
-                    type="button"
-                    onClick={onClose}
-                    className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
-                >
-                <FiX className="text-2xl" />
-                    <span className="sr-only">Close modal</span>
-                </button>
+                        type="button"
+                        onClick={onClose}
+                        className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
+                    >
+                        <FiX className="text-2xl" />
+                        <span className="sr-only">Close modal</span>
+                    </button>
                 </div>
-                <form className="p-4">
+                <form className="p-4" onSubmit={handleSubmit}>
                     <div className="grid gap-4 mb-4">
                         <div>
-                            <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Nombre</label>
+                            <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
+                                Nombre
+                            </label>
                             <input
                                 type="text"
                                 name="name"
                                 id="name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                value={formData.name}
+                                onChange={handleInputChange}
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                                placeholder=""
                                 required
                             />
                         </div>
                         <div>
-                            <label htmlFor="correo" className="block mb-2 text-sm font-medium text-gray-900">Correo electrónico</label>
+                            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
+                                Correo electrónico
+                            </label>
                             <input
                                 type="email"
-                                name="correo"
-                                id="correo"
-                                value={correo}
-                                onChange={(e) => setCorreo(e.target.value)}
+                                name="email"
+                                id="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                                placeholder=""
                                 required
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Contraseña</label>
+                            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">
+                                Contraseña
+                            </label>
                             <input
                                 type="password"
                                 name="password"
                                 id="password"
-                                value={password}
-                                onChange={handlePasswordChange}
+                                value={formData.password}
+                                onChange={handleInputChange}
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                                 placeholder="Ingresa una nueva contraseña"
-                                required
                             />
-                            <p className="mt-1 text-sm text-gray-600">
-                                Seguridad: {passwordStrength}
-                            </p>
+                            {passwordStrength && (
+                                <p className="mt-1 text-sm text-gray-600">Seguridad: {passwordStrength}</p>
+                            )}
                         </div>
                         <div>
-                            <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900">Confirmar Contraseña</label>
+                            <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900">
+                                Confirmar Contraseña
+                            </label>
                             <input
                                 type="password"
                                 name="confirmPassword"
                                 id="confirmPassword"
-                                value={confirmPassword}
-                                onChange={handleConfirmPasswordChange}
+                                value={formData.confirmPassword}
+                                onChange={handleInputChange}
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                                 placeholder="Confirma tu contraseña"
-                                required
                             />
-                            {passwordMatch === false && (
+                            {!passwordsMatch && (
                                 <p className="mt-1 text-sm text-red-600">Las contraseñas no coinciden</p>
                             )}
                         </div>
@@ -121,6 +180,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({onClose }) => {
                         <button
                             type="submit"
                             className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
+                            onClick={() => {UpdateUser(formData)}}
                         >
                             Guardar
                         </button>
