@@ -30,6 +30,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -52,7 +54,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
         e.preventDefault();
 
         if (!passwordsMatch) {
-            alert("Las contraseñas no coinciden");
             return;
         }
 
@@ -247,10 +248,16 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                                 </button>
                             </div>
                             {!passwordsMatch && (
-                                <p className="mt-1 text-sm text-red-600">Las contraseñas no coinciden</p>
+                                <p className="mt-1 text-sm text-red-600">Las contraseñas no coinciden y tiene que tener 8 dígitos, 1 mayuscula y un caracter. </p>
                             )}
                         </div>
                     </div>
+                    {error && (
+                        <p
+                          className="text-sm text-red-500"
+                          dangerouslySetInnerHTML={{ __html: error }}
+                        />
+                      )}
                     <div className="flex justify-center space-x-2">
                         <button
                             type="button"

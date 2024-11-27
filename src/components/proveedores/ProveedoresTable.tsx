@@ -75,8 +75,9 @@ const ProveedoresTable: React.FC<ProveedoresTableProps> = ({
           <th className="p-4 text-xs sm:text-base">Nombre de la Empresa</th>
           <th className="p-4 text-xs sm:text-base">Productos del proveedor</th>
           <th className="p-4 text-xs sm:text-base">Número de Contacto</th>
-          <th className="p-4 text-xs sm:text-base">Acciones</th>
-        </tr>
+          {rol !== 'Empleado' && (
+            <th className="p-4 text-xs sm:text-base">Acciones</th>
+          )}        </tr>
       </thead>
       <tbody>
         {currentProveedores.map((proveedor, index) => (

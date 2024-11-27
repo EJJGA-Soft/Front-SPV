@@ -131,7 +131,9 @@ const ProductsTable: React.FC<Props> = ({ reload, setReload }) => {
                 <th className="p-4 text-xs sm:text-base">Precio</th>
                 <th className="p-4 text-xs sm:text-base">Categoría</th>
                 <th className="p-4 text-xs sm:text-base">Proveedor</th>
-                <th className="p-4 text-xs sm:text-base">Acciones</th>
+                {rol !== 'Empleado' && (
+                  <th className="p-4 text-xs sm:text-base">Acciones</th>
+                )}
               </tr>
             </thead>
 

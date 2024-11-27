@@ -95,8 +95,9 @@ const CategoriesTable: React.FC<Props> = (reload, setReload) => {
       <thead>
         <tr className="bg-white text-gray-700 text-center">
           <th className="p-4 text-xs sm:text-base">Categoría</th>
-          <th className="p-4 text-xs sm:text-base">Acciones</th>
-        </tr>
+          {rol !== 'Empleado' && (
+            <th className="p-4 text-xs sm:text-base">Acciones</th>
+          )}        </tr>
       </thead>
       <tbody>
         {currentCategorias.length <= 0 ? (
