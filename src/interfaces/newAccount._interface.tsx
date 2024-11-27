@@ -9,4 +9,5 @@ export interface IAccount{
     rol: string
     estatusUsuario: StatusUser
     isDeleted: boolean;
+    currentPassword?: string
 }

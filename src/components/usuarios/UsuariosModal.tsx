@@ -8,6 +8,7 @@ import { validatePassword } from "../../modules/services/profile/passwordValidat
 import { useSnackbar } from "notistack";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { FiX } from "react-icons/fi";
+import NotificationService from "../../modules/services/mensajes/notification_service";
 
 const UsuarioModal: React.FC<UsuariosModalProps> = ({
   isOpen,
@@ -22,6 +23,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
     rol: "",
     password: "",
     confirmPassword: "",
+    currentPassword: "",
     estado: StatusUser.ACTIVO,
   });
   const [passwordStrength, setPasswordStrength] = useState<string>("");
@@ -32,9 +34,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-
-
+  const [showCurrentPassword, setShowCurrentPassword] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -46,6 +46,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
           rol: user.rol || "",
           password: "",
           confirmPassword: "",
+          currentPassword: "",
           estado: user.estatusUsuario || StatusUser.ACTIVO,
         });
       } else {
@@ -56,6 +57,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
           rol: "",
           password: "",
           confirmPassword: "",
+          currentPassword: "",
           estado: StatusUser.ACTIVO,
         });
       }
@@ -74,19 +76,18 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
 
       if (name === "password") {
         setPasswordStrength(evaluatePassword(value));
-        setPasswordMatch(value === updatedData.confirmPassword);  
+        setPasswordMatch(value === updatedData.confirmPassword);
       }
       if (name === "confirmPassword") {
         setPasswordMatch(value === updatedData.password);
-        if(value === updatedData.password){
-          const {isValid, message} = validatePassword(updatedData.password);
-          if(!isValid){
-            setError(message); 
+        if (value === updatedData.password) {
+          const { isValid, message } = validatePassword(updatedData.password);
+          if (!isValid) {
+            setError(message);
             setButtonDisabled(true);
-          } else{
-            setError(null); 
+          } else {
+            setError(null);
             setButtonDisabled(false);
-
           }
         }
       }
@@ -112,6 +113,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
       email: formData.correo,
       password: formData.password,
       confirmPassword: formData.confirmPassword,
+      currentPassword: formData.currentPassword,
       estatusUsuario: formData.estado,
       rol: formData.rol,
       isDeleted: false,
@@ -123,8 +125,19 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
       let response;
       if (user) {
         response = await baseService.Put("/Account/UpdateUserData", newUsuario);
+        if(newUsuario.currentPassword != null){
+          await baseService.Put("/Account/ChangePassword", {
+            id: newUsuario.id,
+            currentPassword: newUsuario.currentPassword,
+            newPassword: newUsuario.password,
+            confirmPassword: newUsuario.confirmPassword
+          });
+
+          NotificationService.showSuccess("¡Se ha actualizado con exito al usuario!")
+        }
       } else {
         response = await baseService.Post("/Account/register", newUsuario);
+        NotificationService.showSuccess("¡Se ha creado con exito al usuario!")
       }
 
       if (response.success) {
@@ -143,6 +156,9 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
 
   if (!isOpen) return null;
 
+  // Verifica si se está editando y si currentPassword no está presente
+  const isEditing = user && !formData.currentPassword;
+
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center bg-gray-500 bg-opacity-50">
       <div className="relative w-full max-w-md bg-white rounded-lg shadow-lg p-6">
@@ -154,7 +170,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
             onClick={onClose}
             className="text-gray-500 hover:bg-gray-200 rounded-full p-2"
           >
-          <FiX className="text-2xl" />
+            <FiX className="text-2xl" />
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -194,104 +210,90 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
               <option value="Empleado">Empleado</option>
             </select>
           </div>
-          <div>
-          <label className="block text-sm font-medium">Contraseña actual</label>
-          <div className="relative">
-          <input
-          type={ showCurrentPassword ? "text" : "password" }
-          name="currentPassword"
-          value={formData.currentPassword}
-          onChange={handleChange}
-          className="w-full border rounded p-2"
-
-          />
-          <span
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer mr-4 text-gray-400 "
-            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-            >
-            {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-
-          </div>
-          </div>
+          {user && (
+            <div>
+              <label className="block text-sm font-medium">Contraseña actual</label>
+              <div className="relative">
+                <input
+                  type={showCurrentPassword ? "text" : "password"}
+                  name="currentPassword"
+                  value={formData.currentPassword}
+                  onChange={handleChange}
+                  className="w-full border rounded p-2"
+                />
+                <span
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer mr-4 text-gray-400"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                >
+                  {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium">Contraseña</label>
             <div className="relative">
-            <input
-              type={ showPassword ? "text" : "password" }
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full border rounded p-2"
-            />
-            <span
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer mr-4 text-gray-400 "
-            onClick={() => setShowPassword(!showPassword)} 
-          >
-            {showPassword ? <FaEyeSlash /> : <FaEye />} 
-          </span>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full border rounded p-2"
+                disabled={isEditing}
+              />
+              <span
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer mr-4 text-gray-400"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
             <p className="text-sm text-gray-500">Seguridad: {passwordStrength}</p>
           </div>
           <div>
             <label className="block text-sm font-medium">Confirmar Contraseña</label>
             <div className="relative">
-
-            <input
-              type={ showConfirmPassword ? "text" : "password" }
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="w-full border rounded p-2"
-            />
-            <span
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer mr-4 text-gray-400 "
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)} 
-          >
-            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />} 
-          </span>
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="w-full border rounded p-2"
+                disabled={isEditing} // Desactiva si se está editando y no hay currentPassword
+              />
+              <span
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer mr-4 text-gray-400"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
             {passwordMatch === false && (
-              <p className="text-sm text-red-500">Las contraseñas no coinciden.</p>
+              <p className="text-sm text-red-500">Las contraseñas no coinciden</p>
             )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Estado</label>
+            <select
+              name="estado"
+              value={formData.estado}
+              onChange={handleChange}
+              className="w-full border rounded p-2"
+            >
+              <option value={StatusUser.ACTIVO}>Activo</option>
+              <option value={StatusUser.INACTIVO}>Inactivo</option>
+            </select>
           </div>
           {error && (
-            <p
-              className="text-sm text-red-500"
-              dangerouslySetInnerHTML={{ __html: error }}
-            />
+            <p className="text-red-500 text-sm mt-2">{error}</p>
           )}
-          
-
-          <div className="flex justify-center space-x-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              Cancelar
-            </button>
-            {buttonDisabled ? (
-              <button
-              type="submit"
-              className="px-4 py-2 bg-gray-300 text-white rounded hover:bg-blue-700"
-              disabled
-              
-            >
-            Guardar
-            </button>
-            ) : (
-              <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-              disabled={loading}
-              
-            >
-              {loading ? "Guardando..." : "Guardar"}
-            </button>
-            )}
-           
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:bg-gray-300"
+            disabled={buttonDisabled || loading}
+          >
+            {loading ? "Guardando..." : "Guardar"}
+          </button>
         </form>
       </div>
     </div>

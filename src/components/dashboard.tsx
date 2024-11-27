@@ -197,10 +197,10 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg font-semibold mb-2">
                 Resumen de ventas del día
               </h2>
-              <div className="flex justify-around items-center">
+              <div className="flex justify-center">
                 {dbCategories.map((category, index) => (
                   <div key={index} className="flex items-center">
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center px-10">
                       <img
                         src={IProductos}
                         alt={category.nombreCategoria}
@@ -212,17 +212,16 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
 
-                    {/* Línea vertical entre categorías, excepto después de la última */}
                     {index < dbCategories.length - 1 && (
                       <div className="border-l border-gray-300 h-12 mx-4"></div>
                     )}
                   </div>
+                  
                 ))}
 
-                {/* Línea vertical entre Productos y Total */}
-                <div className="border-l border-gray-300 h-12 mx-4"></div>
+                <div className="border-l border-gray-300 mt-[15px] h-12 mx-4"></div>
 
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center px-[40px]">
                   <img src={ITotal} alt="Total" className="h-8 mb-1" />
                   <p className="text-xl font-bold">${countTotalProduct}</p>
                   <p className="text-gray-600">Total</p>
@@ -235,7 +234,7 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg font-semibold mb-2">
                 Resumen de movimientos
               </h2>
-              <div className="flex justify-around">
+              <div className="flex justify-around px-[90px]">
                 <div className="flex flex-col items-center">
                   <img src={IAccess} alt="Accesos" className="h-8 mb-1" />
                   <p className="text-xl font-bold">{countAccess}</p>
