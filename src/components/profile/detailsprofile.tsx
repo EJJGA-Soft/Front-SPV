@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { evaluatePassword } from "../../modules/services/profile/password_evaluate";
-import { FiX } from "react-icons/fi";
+import { FiX, FiEye, FiEyeOff } from "react-icons/fi";
 import { UserStore } from "../../security/store/userStore";
 import BaseService from '../../modules/services/base_service';
 import NotificationService from "../../modules/services/mensajes/notification_service";
@@ -14,18 +14,22 @@ interface ProfileModalProps {
 const baseService = new BaseService();
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
-    const { id , name, email } = UserStore.getState();
+    const { id, name, email } = UserStore.getState();
 
     const [formData, setFormData] = useState({
         id: id,
         name: name || "",
         email: email || "",
+        currentPassword: "",
         password: "",
         confirmPassword: "",
     });
 
     const [passwordStrength, setPasswordStrength] = useState<string | null>(null);
     const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -60,6 +64,15 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                     `/Account/GetUserById/${id}`
                 );
 
+                if (formData.currentPassword != null) {
+                    await baseService.Put("/Account/ChangePassword", {
+                        id: id,
+                        currentPassword: formData.currentPassword,
+                        newPassword: formData.password,
+                        confirmPassword: formData.confirmPassword
+                    });
+                }
+
                 const name = user.data!.name;
                 const email = user.data!.email;
                 const status = "authenticated";
@@ -72,7 +85,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                         email,
                         status,
                         rol
-                        );
+                    );
                     NotificationService.showSuccess("¡Su perfil se actualizó con éxito!");
                     onClose();
                 }
@@ -82,6 +95,20 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
         } catch (error) {
             console.error("Error al actualizar el usuario:", error);
             NotificationService.showError("Ocurrió un error inesperado.");
+        }
+    };
+
+    const toggleShowPassword = (field: string) => {
+        switch (field) {
+            case "currentPassword":
+                setShowCurrentPassword(!showCurrentPassword);
+                break;
+            case "password":
+                setShowNewPassword(!showNewPassword);
+                break;
+            case "confirmPassword":
+                setShowConfirmPassword(!showConfirmPassword);
+                break;
         }
     };
 
@@ -135,35 +162,90 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">
-                                Contraseña
+                            <label htmlFor="currentPassword" className="block mb-2 text-sm font-medium text-gray-900">
+                                Contraseña actual
                             </label>
-                            <input
-                                type="password"
-                                name="password"
-                                id="password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                                placeholder="Ingresa una nueva contraseña"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showCurrentPassword ? "text" : "password"}
+                                    name="currentPassword"
+                                    id="currentPassword"
+                                    value={formData.currentPassword}
+                                    onChange={handleInputChange}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                    placeholder="Ingresa tu contraseña actual"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => toggleShowPassword("currentPassword")}
+                                    className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                                >
+                                    {showCurrentPassword ? (
+                                        <FiEyeOff className="text-gray-600" />
+                                    ) : (
+                                        <FiEye className="text-gray-600" />
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">
+                                Nueva contraseña
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showNewPassword ? "text" : "password"}
+                                    name="password"
+                                    id="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                    placeholder="Ingresa una nueva contraseña"
+                                    disabled={!formData.currentPassword}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => toggleShowPassword("password")}
+                                    className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                                >
+                                    {showNewPassword ? (
+                                        <FiEyeOff className="text-gray-600" />
+                                    ) : (
+                                        <FiEye className="text-gray-600" />
+                                    )}
+                                </button>
+                            </div>
                             {passwordStrength && (
                                 <p className="mt-1 text-sm text-gray-600">Seguridad: {passwordStrength}</p>
                             )}
                         </div>
                         <div>
                             <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900">
-                                Confirmar Contraseña
+                                Confirmar nueva contraseña
                             </label>
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                id="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleInputChange}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                                placeholder="Confirma tu contraseña"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    name="confirmPassword"
+                                    id="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleInputChange}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                    placeholder="Confirma tu nueva contraseña"
+                                    disabled={!formData.currentPassword}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => toggleShowPassword("confirmPassword")}
+                                    className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                                >
+                                    {showConfirmPassword ? (
+                                        <FiEyeOff className="text-gray-600" />
+                                    ) : (
+                                        <FiEye className="text-gray-600" />
+                                    )}
+                                </button>
+                            </div>
                             {!passwordsMatch && (
                                 <p className="mt-1 text-sm text-red-600">Las contraseñas no coinciden</p>
                             )}
@@ -180,7 +262,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
                         <button
                             type="submit"
                             className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5"
-                            onClick={() => {UpdateUser(formData)}}
                         >
                             Guardar
                         </button>
