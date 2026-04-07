@@ -15,10 +15,8 @@ import {
   FaClipboardList,
 } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
-import UserIcon from "../../assets/icons/IUser.svg";
 import ProfileModal from "../profile/detailsprofile";
 import { UserStore } from "../../security/store/userStore";
-import logotipo from "../../assets/images/LOGO.svg";
 import { DemoBadge } from "../DemoBadge";
 
 interface SubItem {
@@ -248,7 +246,7 @@ export default function Layout({ children }: LayoutProps) {
           >
             <a href="/dashboard">
               <img
-                src={logotipo}
+                src="/LOGO.svg"
                 alt="Logotipo"
                 className={`${isSidebarFull || isMobileMenuOpen ? "w-10 h-10" : "hidden"}`}
               />{" "}
@@ -386,7 +384,7 @@ export default function Layout({ children }: LayoutProps) {
             >
               <img
                 className="w-8 h-8 rounded-full"
-                src={UserIcon}
+                src="/IUser.svg"
                 alt="User Icon"
               />
             </button>
