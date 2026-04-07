@@ -99,12 +99,7 @@ const ProductEditModal: React.FC<ProductModalProps> = ({
   }, []);
 
   useEffect(() => {
-    const isFormValid =
-      producto.nombre.trim() !== "" &&
-      producto.precio > 0 &&
-      producto.stock > 0 &&
-      producto.categoriaId > 0 &&
-      producto.proveedorId > 0;
+    // Form validation - unused variable removed
   }, [producto]);
 
   // Función para crear el producto

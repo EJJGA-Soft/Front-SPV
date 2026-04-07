@@ -6,7 +6,7 @@ import { StatusUser } from "../../enum/enum";
 import { UsuariosModalProps } from "../../interfaces/Users/UsersModalProps";
 import { validatePassword } from "../../modules/services/profile/passwordValidationService";
 import { useSnackbar } from "notistack";
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import NotificationService from "../../modules/services/mensajes/notification_service";
 
@@ -31,10 +31,12 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
-  const { enqueueSnackbar } = useSnackbar();
+  const {} = useSnackbar();
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-  const [showCurrentPassword, setShowCurrentPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+  const [showCurrentPassword, setShowCurrentPassword] =
+    useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -67,7 +69,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
   }, [isOpen, user]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -125,19 +127,21 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
       let response;
       if (user) {
         response = await baseService.Put("/Account/UpdateUserData", newUsuario);
-        if(newUsuario.currentPassword != null){
+        if (newUsuario.currentPassword != null) {
           await baseService.Put("/Account/ChangePassword", {
             id: newUsuario.id,
             currentPassword: newUsuario.currentPassword,
             newPassword: newUsuario.password,
-            confirmPassword: newUsuario.confirmPassword
+            confirmPassword: newUsuario.confirmPassword,
           });
 
-          NotificationService.showSuccess("¡Se ha actualizado con exito al usuario!")
+          NotificationService.showSuccess(
+            "¡Se ha actualizado con exito al usuario!",
+          );
         }
       } else {
         response = await baseService.Post("/Account/register", newUsuario);
-        NotificationService.showSuccess("¡Se ha creado con exito al usuario!")
+        NotificationService.showSuccess("¡Se ha creado con exito al usuario!");
       }
 
       if (response.success) {
@@ -186,7 +190,9 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Correo Electrónico</label>
+            <label className="block text-sm font-medium">
+              Correo Electrónico
+            </label>
             <input
               type="email"
               name="correo"
@@ -212,7 +218,9 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
           </div>
           {user && (
             <div>
-              <label className="block text-sm font-medium">Contraseña actual</label>
+              <label className="block text-sm font-medium">
+                Contraseña actual
+              </label>
               <div className="relative">
                 <input
                   type={showCurrentPassword ? "text" : "password"}
@@ -248,10 +256,14 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-            <p className="text-sm text-gray-500">Seguridad: {passwordStrength}</p>
+            <p className="text-sm text-gray-500">
+              Seguridad: {passwordStrength}
+            </p>
           </div>
           <div>
-            <label className="block text-sm font-medium">Confirmar Contraseña</label>
+            <label className="block text-sm font-medium">
+              Confirmar Contraseña
+            </label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
@@ -269,7 +281,9 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
               </span>
             </div>
             {passwordMatch === false && (
-              <p className="text-sm text-red-500">Las contraseñas no coinciden</p>
+              <p className="text-sm text-red-500">
+                Las contraseñas no coinciden
+              </p>
             )}
           </div>
           <div>
@@ -284,9 +298,7 @@ const UsuarioModal: React.FC<UsuariosModalProps> = ({
               <option value={StatusUser.INACTIVO}>Inactivo</option>
             </select>
           </div>
-          {error && (
-            <p className="text-red-500 text-sm mt-2">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:bg-gray-300"

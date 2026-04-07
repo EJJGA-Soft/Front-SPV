@@ -4,25 +4,37 @@ import { Producto } from "../../interfaces/Inventario/producto_interface";
 import axios from "axios";
 import { Api_Connection } from "../../modules/services/API/api_connection";
 import { UserStore } from "../../security/store/userStore";
-import { enqueueSnackbar, useSnackbar } from 'notistack';
+import { useSnackbar } from "notistack";
 import { FiX } from "react-icons/fi";
 
+interface CarritoItem {
+  producto: Producto;
+  cantidad: number;
+}
 
 interface CobroModalProps {
   isOpen: boolean;
   onClose: () => void;
-  totalCuenta:number;
-  productos: Producto[];
+  totalCuenta: number;
+  productos: CarritoItem[];
+  resetCarrito: () => void;
+  actualizarNumeroVenta: (fn: (prev: number) => number) => void;
 }
 
-const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose, totalCuenta, productos, resetCarrito, actualizarNumeroVenta   }) => {
+const CobroModal: React.FC<CobroModalProps> = ({
+  isOpen,
+  onClose,
+  totalCuenta,
+  productos,
+  resetCarrito,
+  actualizarNumeroVenta,
+}) => {
   const [amountEfectivo, setAmountEfectivo] = useState<string>("0");
   const [amountTarjeta, setAmountTarjeta] = useState<string>("0");
   const [paymentType, setPaymentType] = useState<string>("efectivo");
-  const [carrito, setCarrito] = useState<Producto[]>([]);
 
-  const {id} = UserStore();
-  const {enqueueSnackbar} = useSnackbar();
+  const { id } = UserStore();
+  const { enqueueSnackbar } = useSnackbar();
 
   if (!isOpen) return null;
 
@@ -38,66 +50,71 @@ const CobroModal: React.FC<CobroModalProps> = ({ isOpen, onClose, totalCuenta, p
     e.stopPropagation();
     setPaymentType(type);
 
-    if(type === "efectivo"){
+    if (type === "efectivo") {
       setAmountTarjeta("0");
-    } else{
+    } else {
       setAmountTarjeta(totalCuenta.toString());
       setAmountEfectivo("0");
     }
   };
 
-  const totalIngresado = parseFloat(amountEfectivo || "0") + parseFloat(amountTarjeta || "0");
-const cambio = totalIngresado - totalCuenta;
+  const totalIngresado =
+    parseFloat(amountEfectivo || "0") + parseFloat(amountTarjeta || "0");
+  const cambio = totalIngresado - totalCuenta;
 
-
-const handleConfirmar = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!productos || productos.length === 0) {
-    enqueueSnackbar("No hay productos para registrar la venta.", { variant: "error" });
-    return;
-  }
-  if (totalIngresado < totalCuenta) {
-    enqueueSnackbar("El monto ingresado es insuficiente.", { variant: "error" });
-    return;
-  }
-
-  const productosVendidos = productos.map((item) => ({
-    id: item.producto.id,
-    esBorrado: false,
-    nombre: item.producto.nombre,
-    precio: item.producto.precio,
-    stock: item.cantidad, 
-    urlImagen: item.producto.urlImagen,
-    categoriaId: item.producto.categoriaId,
-    proveedorId: item.producto.proveedorId,
-  }));
-
-  const url = `${Api_Connection()}VentaProducto/ShoppingCartProducts?tipoPago=${paymentType}&uid=${id}`;
-
-  try {
-    const response = await axios.post(url, productosVendidos, {
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (response.status === 200) {
-      enqueueSnackbar("Venta registrada con éxito!", { variant: "success" });
-      actualizarNumeroVenta((prevNumeroVenta) => prevNumeroVenta + 1);
-      resetCarrito();
-      onClose();
-    } else {
-      enqueueSnackbar("Hubo un error al registrar la venta. Intenta nuevamente.", { variant: "error" });
+  const handleConfirmar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!productos || productos.length === 0) {
+      enqueueSnackbar("No hay productos para registrar la venta.", {
+        variant: "error",
+      });
+      return;
     }
-  } catch (error) {
-    console.error("Error en la solicitud:", error.response || error.message);
-    enqueueSnackbar(
-      error.response?.data?.message || "Error en la conexión. Intenta nuevamente.",
-      { variant: "error" }
-    );
-  }
-};
+    if (totalIngresado < totalCuenta) {
+      enqueueSnackbar("El monto ingresado es insuficiente.", {
+        variant: "error",
+      });
+      return;
+    }
 
+    const productosVendidos = productos.map((item) => ({
+      id: item.producto.id,
+      esBorrado: false,
+      nombre: item.producto.nombre,
+      precio: item.producto.precio,
+      stock: item.cantidad,
+      urlImagen: item.producto.urlImagen,
+      categoriaId: item.producto.categoriaId,
+      proveedorId: item.producto.proveedorId,
+    }));
 
+    const url = `${Api_Connection()}VentaProducto/ShoppingCartProducts?tipoPago=${paymentType}&uid=${id}`;
 
+    try {
+      const response = await axios.post(url, productosVendidos, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.status === 200) {
+        enqueueSnackbar("Venta registrada con éxito!", { variant: "success" });
+        actualizarNumeroVenta((prevNumeroVenta: number) => prevNumeroVenta + 1);
+        resetCarrito();
+        onClose();
+      } else {
+        enqueueSnackbar(
+          "Hubo un error al registrar la venta. Intenta nuevamente.",
+          { variant: "error" },
+        );
+      }
+    } catch (error: any) {
+      console.error("Error en la solicitud:", error.response || error.message);
+      enqueueSnackbar(
+        error.response?.data?.message ||
+          "Error en la conexión. Intenta nuevamente.",
+        { variant: "error" },
+      );
+    }
+  };
 
   return (
     <div
@@ -114,7 +131,7 @@ const handleConfirmar = async (e: React.FormEvent) => {
             onClick={onClose}
             className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
           >
-          <FiX className="text-2xl" />
+            <FiX className="text-2xl" />
             <span className="sr-only">Cerrar modal</span>
           </button>
         </div>
@@ -179,27 +196,27 @@ const handleConfirmar = async (e: React.FormEvent) => {
                   placeholder="Monto con tarjeta"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3 mt-2"
                   disabled={paymentType === "efectivo"}
-                /> 
+                />
               </div>
             </div>
           </div>
 
           <div className="p-4 bg-gray-100 rounded mb-4">
-            <p> 
-             Total de la cuenta:{" "}
-            <span className="font-semibold">${totalCuenta.toFixed(2)}</span>
+            <p>
+              Total de la cuenta:{" "}
+              <span className="font-semibold">${totalCuenta.toFixed(2)}</span>
             </p>
             <p>
               Total ingresado:{" "}
               <span className="font-semibold">
-              ${totalIngresado.toFixed(2)}
-            </span>
+                ${totalIngresado.toFixed(2)}
+              </span>
             </p>
             <p>
               Cambio:{" "}
               <span className="font-semibold">
-              {cambio >= 0 ? `$${cambio.toFixed(2)}` : "$0.00"}
-            </span>
+                {cambio >= 0 ? `$${cambio.toFixed(2)}` : "$0.00"}
+              </span>
             </p>
           </div>
 

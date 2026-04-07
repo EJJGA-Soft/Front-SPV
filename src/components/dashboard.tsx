@@ -9,10 +9,10 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import IBebidas from "../assets/icons/IAccess.svg";
+
 import IProductos from "../assets/icons/IProductos.svg";
 import IAccess from "../assets/icons/IAccess.svg";
-import ICancel from "../assets/icons/ICancel.svg";
+
 import ITotal from "../assets/icons/ITotal.svg";
 import IVentas from "../assets/icons/IVentas.svg";
 import IconCategory from "../assets/icons/ICategoria.svg";

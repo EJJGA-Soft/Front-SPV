@@ -4,7 +4,6 @@ import {
   RiMenu3Fill,
   RiCloseLine,
 } from "react-icons/ri";
-import Login from "../../modules/views/login";
 import { useNavigate } from "react-router-dom";
 
 const Header: React.FC = () => {
@@ -16,9 +15,9 @@ const Header: React.FC = () => {
     if (section) {
       section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-    setShowMenu(false); 
+    setShowMenu(false);
   };
-  const enviaralLogin = () =>{
+  const enviaralLogin = () => {
     navigate("/login");
   };
 
@@ -36,17 +35,16 @@ const Header: React.FC = () => {
           showMenu ? "left-0" : "-left-full"
         } top-0 xl:static flex-1 flex flex-col xl:flex-row items-center justify-center gap-10 transition-all duration-500 z-50`}
       >
-        
         <button
           onClick={() => handleScroll("works")}
           className="text-lg font-normal text-gray-800 hover:font-bold hover:text-primary transition-all duration-300 ease-in-out"
         >
           Servicios
         </button>
-       
+
         <button
-        onClick={enviaralLogin}
-        className="text-lg font-normal text-gray-800 hover:font-bold hover:text-primary transition-all duration-300 ease-in-out"
+          onClick={enviaralLogin}
+          className="text-lg font-normal text-gray-800 hover:font-bold hover:text-primary transition-all duration-300 ease-in-out"
         >
           Iniciar sesión
         </button>

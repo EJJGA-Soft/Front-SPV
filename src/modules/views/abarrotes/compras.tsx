@@ -7,7 +7,7 @@ import { Api_Connection } from "../../services/API/api_connection";
 import CarritoService from "../../services/carrito/CarritoService";
 import { FaPlus } from "react-icons/fa";
 import BaseService from "../../services/base_service";
-import { ICategoria } from "../../../interfaces/Categorias/categories_interface";
+import { ICategoria } from "../../../interfaces/Inventario/categoria_interface";
 import { UserStore } from "../../../security/store/userStore";
 import { useSnackbar } from "notistack";
 import axios from "axios";
@@ -18,7 +18,7 @@ const Compras: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategories] = useState<ICategoria[]>([]);
-  const [ventasDelDia, setVentasDelDia] = useState([]);
+
   const [numeroVenta, setNumeroVenta] = useState(0);
   const [carrito, setCarrito] = useState<
     { producto: Producto; cantidad: number }[]
@@ -42,12 +42,11 @@ const Compras: React.FC = () => {
       try {
         const response = await axios.get(`${url}Venta`);
         if (response.data.success) {
-          const ventasHoy = response.data.data.filter((venta) => {
+          const ventasHoy = response.data.data.filter((venta: any) => {
             const fechaVenta = new Date(venta.fechaRegistro);
             const hoy = new Date();
             return fechaVenta.toDateString() === hoy.toDateString();
           });
-          setVentasDelDia(ventasHoy);
           setNumeroVenta(ventasHoy.length + 1);
         } else {
           console.error(response.data.message);
@@ -64,7 +63,7 @@ const Compras: React.FC = () => {
       const service = new inventoryService();
       try {
         const response = await service.getProducts();
-        if (response.success) {
+        if (response.success && response.data) {
           setProductos(response.data);
         } else {
           console.error(response.message);
@@ -86,17 +85,20 @@ const Compras: React.FC = () => {
     setTotal(0);
   };
 
-  const agregarAlCarrito = useCallback((producto: Producto) => {
-    if (producto.stock === 0) {
-      enqueueSnackbar("El producto no tiene stock disponible.", {
-        variant: "error",
-      });
-      return;
-    }
-    setCarrito((prevCarrito) =>
-      CarritoService.agregarProducto(prevCarrito, producto),
-    );
-  }, []);
+  const agregarAlCarrito = useCallback(
+    (producto: Producto) => {
+      if (producto.stock === 0) {
+        enqueueSnackbar("El producto no tiene stock disponible.", {
+          variant: "error",
+        });
+        return;
+      }
+      setCarrito((prevCarrito) =>
+        CarritoService.agregarProducto(prevCarrito, producto),
+      );
+    },
+    [enqueueSnackbar],
+  );
 
   const eliminarDelCarrito = useCallback((productoId: number) => {
     setCarrito((prevCarrito) =>
@@ -121,9 +123,7 @@ const Compras: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const actualizarNumeroVenta = (nuevoNumeroVenta: number) => {
-    setNumeroVenta(nuevoNumeroVenta);
-  };
+  const actualizarNumeroVenta = setNumeroVenta;
 
   const handleSeleccionarCategoria = (
     e: React.ChangeEvent<HTMLSelectElement>,
@@ -183,7 +183,7 @@ const Compras: React.FC = () => {
                       </td>
                     </tr>
                   ) : (
-                    carrito.map((item, index) => (
+                    carrito.map((item) => (
                       <tr
                         key={item.producto.id}
                         className={
@@ -326,7 +326,7 @@ const Compras: React.FC = () => {
             totalCuenta={total}
             productos={carrito}
             resetCarrito={resetCarrito}
-            actualizarNumeroVenta={actualizarNumeroVenta}
+            actualizarNumeroVenta={setNumeroVenta}
           />
         </div>
       </Layout>

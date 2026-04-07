@@ -1,26 +1,24 @@
 import { useEffect, useState } from "react";
 import Layout from "../../../components/layout/layout";
 import UsersTable from "../../../components/usuarios/UsuariosTable";
-import UsuarioModal from '../../../components/usuarios/UsuariosModal';
-import BaseService from '../../services/base_service';
+import UsuarioModal from "../../../components/usuarios/UsuariosModal";
+import BaseService from "../../services/base_service";
 import { IAccount } from "../../../interfaces/newAccount._interface";
-import { UserStore } from "../../../security/store/userStore";
 const baseService = new BaseService();
 
 export default function UsuariosHome() {
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState<IAccount[]>([]);
   const [usersPerPage] = useState(7);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
-
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
   };
 
   const handleSaveUser = (newUser: IAccount) => {
@@ -40,11 +38,13 @@ export default function UsuariosHome() {
     }
   };
 
-  const GetUsers = async() => {
+  const GetUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await baseService.Get<IAccount>("/Account/AllUsersWithRole")
-      if(response.success){
+      const response = await baseService.Get<IAccount>(
+        "/Account/AllUsersWithRole",
+      );
+      if (response.success) {
         setIsLoading(false);
         setUsers(response.data as IAccount[]);
       } else {
@@ -53,11 +53,11 @@ export default function UsuariosHome() {
     } catch (error) {
       console.error("Error al obtener usuarios:", error);
     }
-  }
+  };
 
-  const handleUsersUpdate = async() => {
+  const handleUsersUpdate = async () => {
     await GetUsers();
-  }
+  };
 
   useEffect(() => {
     GetUsers();
@@ -67,19 +67,16 @@ export default function UsuariosHome() {
     <Layout>
       <div className="bg-gray-100 sm:py-10 px-4 sm:px-6 lg:px-8 pb-[95px] lg:mt-[-90px]">
         <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
-        Usuarios</h1>
+          <h1 className="text-2xl sm:text-3xl font-semibold">Usuarios</h1>
           <button
-          className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
+            className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
             onClick={handleOpenModal}
           >
             Agregar usuario
           </button>
         </div>
 
-        
         <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
-       
           <UsersTable
             users={users}
             currentPage={currentPage}
@@ -89,7 +86,6 @@ export default function UsuariosHome() {
             isLoading={isLoading}
             onUsersUpdate={handleUsersUpdate}
           />
-        
         </div>
         <div className="flex justify-between items-center mt-4 flex-wrap">
           <button
@@ -113,8 +109,13 @@ export default function UsuariosHome() {
           </button>
         </div>
 
-        {isModalOpen && <UsuarioModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveUser} />}
-
+        {isModalOpen && (
+          <UsuarioModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onSave={handleSaveUser}
+          />
+        )}
       </div>
     </Layout>
   );
