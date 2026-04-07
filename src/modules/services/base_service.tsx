@@ -141,7 +141,10 @@ export default class BaseService {
     endpoint: string,
   ): ResponseHelperModelSimple<T> | null {
     // Manejar GET /Productos/:id
-    if (endpoint.includes("/Productos/") && !endpoint.includes("ProductsWithProveedor")) {
+    if (
+      endpoint.includes("/Productos/") &&
+      !endpoint.includes("ProductsWithProveedor")
+    ) {
       const idMatch = endpoint.match(/\/(\d+)$/);
       if (idMatch) {
         const productId = parseInt(idMatch[1]);

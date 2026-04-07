@@ -17,25 +17,29 @@ const VentasHome: React.FC = () => {
 
   const handlePageChange = (direction: "next" | "prev") => {
     setCurrentPage((prevPage) =>
-      direction === "next" ? prevPage + 1 : prevPage - 1
+      direction === "next" ? prevPage + 1 : prevPage - 1,
     );
   };
 
   const obtenerVentas = async () => {
     try {
       setIsLoading(true);
-      const { success, data } = await baseService.Get<IVenta[]>(`${Api_Connection()}Venta`);
+      const { success, data } = await baseService.Get<IVenta[]>(
+        `${Api_Connection()}Venta`,
+      );
       if (success) setVentas(data);
       setIsLoading(false);
     } catch (error) {
       console.error("Error al obtener las ventas:", error);
     }
   };
-  
 
   const getUserById = async (uid: string) => {
     try {
-      const { success, data } = await baseService.Get<{ success: boolean; data: { name: string } }>(`${Api_Connection()}Account/GetUserById/${uid}`);
+      const { success, data } = await baseService.Get<{
+        success: boolean;
+        data: { name: string };
+      }>(`${Api_Connection()}Account/GetUserById/${uid}`);
       success && setUsuarioNombre(data.name);
     } catch (error) {
       console.error("Error al obtener el usuario:", error);
@@ -54,18 +58,18 @@ const VentasHome: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto max-h-[500px]">
-        <VentasTable
-          ventas={ventas}
-          currentPage={currentPage}
-          ventasPerPage={ventasPerPage}
-          handleNextPage={() => handlePageChange("next")}
-          handlePrevPage={() => handlePageChange("prev")}
-          isLoading={isLoading}
-          getUserById={getUserById}
-          setProductos={setProductos}
-          setUsuarioNombre={setUsuarioNombre}
-          usuarioNombre={usuarioNombre} 
-      />
+          <VentasTable
+            ventas={ventas}
+            currentPage={currentPage}
+            ventasPerPage={ventasPerPage}
+            handleNextPage={() => handlePageChange("next")}
+            handlePrevPage={() => handlePageChange("prev")}
+            isLoading={isLoading}
+            getUserById={getUserById}
+            setProductos={setProductos}
+            setUsuarioNombre={setUsuarioNombre}
+            usuarioNombre={usuarioNombre}
+          />
         </div>
 
         <div className="flex justify-between items-center mt-4">

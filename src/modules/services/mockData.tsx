@@ -408,6 +408,10 @@ export const getMockVentaById = (id: number): IVenta | undefined => {
   return MOCK_VENTAS.find((v) => v.id === id);
 };
 
-export const getMockVentaProductosByVentaId = (ventaId: number): IVentaProducto[] => {
-  return MOCK_VENTA_PRODUCTOS.filter((vp) => vp.ventaId === ventaId && !vp.esBorrado);
+export const getMockVentaProductosByVentaId = (
+  ventaId: number,
+): IVentaProducto[] => {
+  return MOCK_VENTA_PRODUCTOS.filter(
+    (vp) => vp.ventaId === ventaId && !vp.esBorrado,
+  );
 };
