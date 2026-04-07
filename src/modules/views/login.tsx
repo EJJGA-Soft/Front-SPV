@@ -56,7 +56,7 @@ export default function Login() {
       className="relative flex items-center justify-center min-h-screen p-4"
       style={{
         backgroundImage:
-          "linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/src/assets/images/login/background.svg')",
+          "linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('/background.svg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -66,7 +66,7 @@ export default function Login() {
       <div className="bg-white/90 rounded-[30px] shadow-lg w-full max-w-[95%] sm:max-w-[400px] md:max-w-[500px] min-h-[500px] flex flex-col justify-center p-6 sm:p-8 md:p-10">
         <img
           className="mx-auto w-20 h-auto sm:w-24 mb-6 sm:mb-10"
-          src="/src/assets/images/LOGO.svg"
+          src="/LOGO.svg"
           alt="LOGO"
         />
 
