@@ -12,7 +12,6 @@ import {
   MOCK_CATEGORIES,
   MOCK_VENTAS,
   MOCK_VENTA_PRODUCTOS,
-  getMockVentaById,
   getMockVentaProductosByVentaId,
 } from "./mockData";
 

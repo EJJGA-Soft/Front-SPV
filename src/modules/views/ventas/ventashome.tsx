@@ -12,8 +12,9 @@ const VentasHome: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const ventasPerPage = 7;
   const [isLoading, setIsLoading] = useState(false);
-  const [usuarioNombre, setUsuarioNombre] = useState<string | null>(null);
-  const [productos, setProductos] = useState<any[]>([]);
+  const [usuarioNombre, setUsuarioNombre] = useState<string | undefined>(
+    undefined,
+  );
 
   const handlePageChange = (direction: "next" | "prev") => {
     setCurrentPage((prevPage) =>
@@ -24,10 +25,10 @@ const VentasHome: React.FC = () => {
   const obtenerVentas = async () => {
     try {
       setIsLoading(true);
-      const { success, data } = await baseService.Get<IVenta[]>(
+      const { success, data } = await baseService.Get<IVenta>(
         `${Api_Connection()}Venta`,
       );
-      if (success) setVentas(data);
+      if (success && Array.isArray(data)) setVentas(data as IVenta[]);
       setIsLoading(false);
     } catch (error) {
       console.error("Error al obtener las ventas:", error);
@@ -36,11 +37,10 @@ const VentasHome: React.FC = () => {
 
   const getUserById = async (uid: string) => {
     try {
-      const { success, data } = await baseService.Get<{
-        success: boolean;
-        data: { name: string };
-      }>(`${Api_Connection()}Account/GetUserById/${uid}`);
-      success && setUsuarioNombre(data.name);
+      const { success, data } = await baseService.GetSimple<{ name: string }>(
+        `${Api_Connection()}Account/GetUserById/${uid}`,
+      );
+      if (success && data) setUsuarioNombre(data.name);
     } catch (error) {
       console.error("Error al obtener el usuario:", error);
     }
@@ -66,8 +66,6 @@ const VentasHome: React.FC = () => {
             handlePrevPage={() => handlePageChange("prev")}
             isLoading={isLoading}
             getUserById={getUserById}
-            setProductos={setProductos}
-            setUsuarioNombre={setUsuarioNombre}
             usuarioNombre={usuarioNombre}
           />
         </div>

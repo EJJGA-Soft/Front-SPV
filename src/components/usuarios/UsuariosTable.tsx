@@ -4,7 +4,7 @@ import UsuarioModal from "./UsuariosModal";
 import { HiPencil, HiTrash } from "react-icons/hi";
 import ConfirmDeleteModal from "../ModalDelete";
 import LoadingTables from "../loading/loadingtables";
-import { IAccount } from '../../interfaces/newAccount._interface';
+import { IAccount } from "../../interfaces/newAccount._interface";
 
 const UserTable: React.FC<UsersTableProps> = ({
   users,
@@ -13,12 +13,15 @@ const UserTable: React.FC<UsersTableProps> = ({
   handleNextPage,
   handlePrevPage,
   isLoading,
-  onUsersUpdate 
+  onUsersUpdate,
 }) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState<IAccount | null>(null);
+  const [usuarioSeleccionado, setUsuarioSeleccionado] =
+    useState<IAccount | null>(null);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [usuarioAEliminar, setUsuarioAEliminar] = useState<IAccount | null>(null);
+  const [usuarioAEliminar, setUsuarioAEliminar] = useState<IAccount | null>(
+    null,
+  );
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -45,13 +48,17 @@ const UserTable: React.FC<UsersTableProps> = ({
     setUsuarioAEliminar(null);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (usuarioAEliminar && usuarioAEliminar.id) {
-      onUsersUpdate();
-      setDeleteModalOpen(false);
-      setUsuarioAEliminar(null);
-    } else {
-      console.error("Error: Usuario no encontrado o no tiene un ID válido.");
+      try {
+        if (onUsersUpdate) {
+          await onUsersUpdate();
+        }
+        setDeleteModalOpen(false);
+        setUsuarioAEliminar(null);
+      } catch (error) {
+        console.log("Error al eliminar usuario:", error);
+      }
     }
   };
 
@@ -59,13 +66,13 @@ const UserTable: React.FC<UsersTableProps> = ({
     <div className="w-full h-auto">
       <div className="overflow-x-auto">
         {isLoading ? (
-          <LoadingTables /> 
+          <LoadingTables />
         ) : users.length <= 0 ? (
           <div className="flex bg-white justify-center items-center h-80">
-          <span className="text-gray-500 text-sm md:text-base lg:text-lg">
-            No hay usuarios disponibles.
-          </span>
-        </div>
+            <span className="text-gray-500 text-sm md:text-base lg:text-lg">
+              No hay usuarios disponibles.
+            </span>
+          </div>
         ) : (
           <table className="min-w-full bg-white shadow-md rounded-lg">
             <thead>
@@ -74,7 +81,9 @@ const UserTable: React.FC<UsersTableProps> = ({
                 <th className="p-4 text-xs md:text-sm lg:text-base">Rol</th>
                 <th className="p-4 text-xs md:text-sm lg:text-base">Email</th>
                 <th className="p-4 text-xs md:text-sm lg:text-base">Estado</th>
-                <th className="p-4 text-xs md:text-sm lg:text-base">Acciones</th>
+                <th className="p-4 text-xs md:text-sm lg:text-base">
+                  Acciones
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -115,13 +124,17 @@ const UserTable: React.FC<UsersTableProps> = ({
                   </td>
                 </tr>
               ))}
-              {emptyRows > 0 && 
+              {emptyRows > 0 &&
                 [...Array(emptyRows)].map((_, index) => (
-                <tr key={`empty-${index}`} className="border-t border-gray-200 text-center">
-                <td colSpan="4" className="p-4 text-center">&nbsp;</td>
-          
-                </tr>
-              ))}
+                  <tr
+                    key={`empty-${index}`}
+                    className="border-t border-gray-200 text-center"
+                  >
+                    <td colSpan={4} className="p-4 text-center">
+                      &nbsp;
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         )}
@@ -138,14 +151,14 @@ const UserTable: React.FC<UsersTableProps> = ({
 
       {usuarioAEliminar && isDeleteModalOpen && (
         <ConfirmDeleteModal<IAccount>
-        isOpen={isDeleteModalOpen}
-        onClose={handleCloseDeleteModal}
-        onConfirmDelete={(id:string) => {
-          handleConfirmDelete();
-        }}
-        entity="usuario"
-        itemEntity={usuarioAEliminar}
-        deleteRoute={`/Account/DeleteUser/${usuarioAEliminar.id}`}
+          isOpen={isDeleteModalOpen}
+          onClose={handleCloseDeleteModal}
+          onConfirmDelete={(id: string) => {
+            handleConfirmDelete();
+          }}
+          entity="usuario"
+          itemEntity={usuarioAEliminar}
+          deleteRoute={`/Account/DeleteUser/${usuarioAEliminar.id}`}
         />
       )}
     </div>

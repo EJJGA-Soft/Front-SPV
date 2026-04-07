@@ -1,20 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { HiEye } from "react-icons/hi";
 import ModalVentasDetalle from "./ModalVentasDetalle";
 import { VentasTableProps } from "../../interfaces/Abarrotes/Ventas/VentasTableProps";
-import { IVentas } from "../../interfaces/Abarrotes/Ventas/ventas_interface";
+import { IVenta } from "../../interfaces/Abarrotes/Ventas/ventas_interface";
 import LoadingTables from "../loading/loadingtables";
 
-const VentasTable: React.FC<VentasTableProps> = ({ventas,currentPage,ventasPerPage,handleNextPage,handlePrevPage, isLoading,getUserById,usuarioNombre}) => {
+const VentasTable: React.FC<VentasTableProps> = ({
+  ventas,
+  currentPage,
+  ventasPerPage,
+  handlePrevPage,
+  isLoading,
+  getUserById,
+  usuarioNombre,
+}) => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const [ventaSeleccionada, setVentaSeleccionada] = useState<IVentas | null>( null );
+  const [ventaSeleccionada, setVentaSeleccionada] = useState<IVenta | null>(
+    null,
+  );
 
   const indexOfLastVenta = currentPage * ventasPerPage;
   const indexOfFirstVenta = indexOfLastVenta - ventasPerPage;
   const currentVentas = ventas.slice(indexOfFirstVenta, indexOfLastVenta);
   const emptyRows = ventasPerPage - currentVentas.length;
 
-  const handleOpenModal = async (venta: IVentas) => {
+  const handleOpenModal = async (venta: IVenta) => {
     setVentaSeleccionada(venta);
     setModalOpen(true);
     await getUserById(venta.usuarioId);

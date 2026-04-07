@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Layout from "../../../components/layout/layout";
 import ProveedoresTable from "../../../components/proveedores/ProveedoresTable";
 import ProveedoresModal from "../../../components/proveedores/ModalProveedores";
@@ -12,17 +12,17 @@ export default function ProveedoresHome() {
   const [currentPage, setCurrentPage] = useState(1);
   const [proveedores, setProveedores] = useState<IProveedores[]>([]);
   const [proveedoresPerPage] = useState(7);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const {rol} =UserStore();
- 
+  const { rol } = UserStore();
+
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
   };
 
   const handleSaveProveedor = (newProveedor: IProveedores) => {
@@ -43,92 +43,89 @@ export default function ProveedoresHome() {
     }
   };
 
-  const GetProveedores = async() =>{
-    try{
+  const GetProveedores = async () => {
+    try {
       setIsLoading(true);
-      const response = await baseService.Get<IProveedores>("/Productos/ProductsWithProveedor")
-      if(response.success){
+      const response = await baseService.Get<IProveedores>(
+        "/Productos/ProductsWithProveedor",
+      );
+      if (response.success) {
         setIsLoading(false);
         setProveedores(response.data as IProveedores[]);
       } else {
         setIsLoading(false);
-      } 
-    } catch(error){
+      }
+    } catch (error) {
       console.error("Error al obtener proveedores: ", error);
     }
-  }
+  };
 
-  const handleProveedoresUpdate = async()=>{
+  const handleProveedoresUpdate = async () => {
     await GetProveedores();
-  }
+  };
 
-  useEffect(()=> {
+  useEffect(() => {
     GetProveedores();
   }, []);
 
   return (
     <Layout>
-    <div className=" bg-gray-100 sm:py-6 px-4 sm:px-4 lg:px-8 pt-6 pb-[95px] lg:mt-[-70px]">
-      <div className="flex justify-between items-center mb-4">
-      <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
-          Proveedores</h1>
-          {rol !== 'Empleado' &&(
-            <button 
-            className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
-            onClick={handleOpenModal} 
+      <div className=" bg-gray-100 sm:py-6 px-4 sm:px-4 lg:px-8 pt-6 pb-[95px] lg:mt-[-70px]">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl sm:text-3xl font-semibold">Proveedores</h1>
+          {rol !== "Empleado" && (
+            <button
+              className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
+              onClick={handleOpenModal}
             >
               Agregar proveedor
             </button>
           )}
-         
         </div>
-        
-        <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
-     
-          <ProveedoresTable
-          proveedores={proveedores}
-          currentPage={currentPage}
-          proveedoresPerPage={proveedoresPerPage}
-          handleNextPage={handleNextPage}
-          handlePrevPage={handlePrevPage}
-          isLoading={isLoading}
-          onProveedoresUpdate={handleProveedoresUpdate}
 
-        />
-        
+        <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
+          <ProveedoresTable
+            proveedores={proveedores}
+            currentPage={currentPage}
+            proveedoresPerPage={proveedoresPerPage}
+            handleNextPage={handleNextPage}
+            handlePrevPage={handlePrevPage}
+            isLoading={isLoading}
+            onProveedoresUpdate={handleProveedoresUpdate}
+          />
         </div>
 
         <div className="flex justify-between items-center mt-4 flex-wrap">
-        <button
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
-        >
-          Antes
-        </button>
-      
-        <span className="text-gray-700 text-xs sm:text-sm md:text-base my-2 sm:my-0">
-          Página {currentPage} de {Math.ceil(proveedores.length / proveedoresPerPage)}
-        </span>
-      
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage * proveedoresPerPage >= proveedores.length}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
-        >
-          Siguiente
-        </button>
-      </div>
-      
+          <button
+            onClick={handlePrevPage}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
+          >
+            Antes
+          </button>
 
-        
-        {isModalOpen &&
-           <ProveedoresModal 
-          isOpen={isModalOpen} 
-          onClose={handleCloseModal} 
-          onSave={handleSaveProveedor} />}
+          <span className="text-gray-700 text-xs sm:text-sm md:text-base my-2 sm:my-0">
+            Página {currentPage} de{" "}
+            {Math.ceil(proveedores.length / proveedoresPerPage)}
+          </span>
+
+          <button
+            onClick={handleNextPage}
+            disabled={currentPage * proveedoresPerPage >= proveedores.length}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50 text-xs sm:text-sm md:text-base"
+          >
+            Siguiente
+          </button>
+        </div>
+
+        {isModalOpen && (
+          <ProveedoresModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onSave={handleSaveProveedor}
+          />
+        )}
       </div>
     </Layout>
   );
-};
-
+}
