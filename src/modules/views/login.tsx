@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FiHome, FiEye, FiEyeOff } from "react-icons/fi";
 import AccountService from "../services/login/account_services";
+import { MOCK_MODE, MOCK_USERS } from "../services/mockData";
 import { useNavigate } from "react-router-dom";
 import { ResponseHelper } from "../../interfaces/responseHelper_interface";
 import LoadingView from "../../components/loading/loading";
@@ -18,6 +19,14 @@ export default function Login() {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
+  const handleSelectMockUser = (selectedEmail: string): void => {
+    const mockUser = MOCK_USERS.find((user) => user.email === selectedEmail);
+    if (mockUser) {
+      setEmail(mockUser.email);
+      setPassword(mockUser.password);
+    }
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -28,10 +37,15 @@ export default function Login() {
       if (results.success) {
         navigate("/dashboard");
       } else {
-        alert("El usuario no existe, o la contraseña es incorrecta. Comprueba tu cuenta.");
+        alert(
+          "El usuario no existe, o la contraseña es incorrecta. Comprueba tu cuenta.",
+        );
       }
     } catch (error) {
-      alert("Ocurrió un error al procesar tu solicitud. Inténtalo de nuevo más tarde: " + error);
+      alert(
+        "Ocurrió un error al procesar tu solicitud. Inténtalo de nuevo más tarde: " +
+          error,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +77,32 @@ export default function Login() {
           Bienvenido al sistema de abarrotes
         </p>
 
-        <form onSubmit={handleLoginSubmit} className="space-y-4 pb-[60px] sm:pb-[80px]">
+        <form
+          onSubmit={handleLoginSubmit}
+          className="space-y-4 pb-[60px] sm:pb-[80px]"
+        >
+          {MOCK_MODE && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Selecciona un usuario de demo
+              </label>
+              <select
+                onChange={(e) => handleSelectMockUser(e.target.value)}
+                className="w-full px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                defaultValue=""
+              >
+                <option value="">-- Selecciona un usuario --</option>
+                {MOCK_USERS.map((user) => (
+                  <option key={user.id} value={user.email}>
+                    {user.name} ({user.rol})
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                Contraseña de demo: demo123
+              </p>
+            </div>
+          )}
           <div>
             <input
               type="email"

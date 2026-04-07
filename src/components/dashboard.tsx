@@ -30,7 +30,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const baseService = new BaseService();
@@ -49,10 +49,13 @@ const Dashboard: React.FC = () => {
     try {
       const result = await baseService.GetSimple("/Venta/SummarySalesByDay");
       if (result.success) {
-        const categories = result.data as { nombreCategoria: string; total: number }[];
-  
+        const categories = result.data as {
+          nombreCategoria: string;
+          total: number;
+        }[];
+
         const colors = categories.map(() => getRandomColor());
-  
+
         setChartData({
           labels: ["Categorías"], // Etiqueta genérica única
           datasets: categories.map((item, index) => ({
@@ -68,7 +71,7 @@ const Dashboard: React.FC = () => {
       console.error("Error al obtener datos para la gráfica:", error);
     }
   };
-  
+
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
     let color = "#";
@@ -77,7 +80,7 @@ const Dashboard: React.FC = () => {
     }
     return color;
   };
-  
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -95,18 +98,13 @@ const Dashboard: React.FC = () => {
       },
     },
   };
-  
-  
-  
-  
-   
 
   const [productsRunOut, setProductsRunOut] = useState<Producto[]>([]);
   const [message, setMessage] = useState<string>("");
   const ProductsRunOut = async () => {
     setLoadingRunOut(true);
     const results = await baseService.Get<Producto>(
-      "/Productos/ProductsByRunOut"
+      "/Productos/ProductsByRunOut",
     );
 
     const response = results.data as Producto[];
@@ -114,7 +112,9 @@ const Dashboard: React.FC = () => {
     const headurl = url.join("");
 
     response.forEach((element) => {
-      element.urlImagen = `${headurl}${element.urlImagen}`;
+      if (!element.urlImagen?.startsWith("http")) {
+        element.urlImagen = `${headurl}${element.urlImagen}`;
+      }
     });
 
     if (results.success) {
@@ -154,7 +154,7 @@ const Dashboard: React.FC = () => {
   const [countTotalProduct, setCountTotalProduct] = useState<number>(0);
   const APITotalProducts = async () => {
     const results = await baseService.GetSimple(
-      "/VentaProducto/GetTotalProducts"
+      "/VentaProducto/GetTotalProducts",
     );
 
     if (results.success) {
@@ -170,7 +170,9 @@ const Dashboard: React.FC = () => {
   const [dbCategories, setCategories] = useState<Sumarry[]>([]);
 
   const APICategories = async () => {
-    const results = await baseService.GetSimple<Sumarry[]>("/Venta/SummarySalesByDay");
+    const results = await baseService.GetSimple<Sumarry[]>(
+      "/Venta/SummarySalesByDay",
+    );
 
     if (results.success) {
       const response = results.data as Sumarry[];
@@ -216,7 +218,6 @@ const Dashboard: React.FC = () => {
                       <div className="border-l border-gray-300 h-12 mx-4"></div>
                     )}
                   </div>
-                  
                 ))}
 
                 <div className="border-l border-gray-300 mt-[15px] h-12 mx-4"></div>
@@ -306,26 +307,31 @@ const Dashboard: React.FC = () => {
                     </ul>
                   </div>
                 ) : (
-                  <ul>
-                    {productsRunOut.map((product) => (
-                      <li
-                        key={product.id}
-                        className="flex justify-between items-center my-2"
-                      >
-                        <div className="flex items-center">
-                          <img
-                            src={product.urlImagen}
-                            alt={product.nombre}
-                            className="h-8 mr-2"
-                          />
-                          <span className="ml-4">{product.nombre}</span>
-                        </div>
-                        <span className="text-red-500">
-                          Cantidad restante: {product.stock}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                  <div
+                    className="overflow-y-auto"
+                    style={{ maxHeight: "400px" }}
+                  >
+                    <ul>
+                      {productsRunOut.map((product) => (
+                        <li
+                          key={product.id}
+                          className="flex justify-between items-center my-2"
+                        >
+                          <div className="flex items-center">
+                            <img
+                              src={product.urlImagen}
+                              alt={product.nombre}
+                              className="h-8 mr-2"
+                            />
+                            <span className="ml-4">{product.nombre}</span>
+                          </div>
+                          <span className="text-red-500">
+                            Cantidad restante: {product.stock}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
             )}

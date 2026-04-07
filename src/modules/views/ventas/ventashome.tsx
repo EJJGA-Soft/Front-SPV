@@ -24,7 +24,7 @@ const VentasHome: React.FC = () => {
   const obtenerVentas = async () => {
     try {
       setIsLoading(true);
-      const { success, data } = await baseService.Get<{ success: boolean; data: IVentas[] }>(`${Api_Connection()}Venta`);
+      const { success, data } = await baseService.Get<IVenta[]>(`${Api_Connection()}Venta`);
       if (success) setVentas(data);
       setIsLoading(false);
     } catch (error) {

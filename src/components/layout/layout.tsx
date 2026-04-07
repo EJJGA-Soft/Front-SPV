@@ -19,6 +19,7 @@ import UserIcon from "../../assets/icons/IUser.svg";
 import ProfileModal from "../profile/detailsprofile";
 import { UserStore } from "../../security/store/userStore";
 import logotipo from "../../assets/images/LOGO.svg";
+import { DemoBadge } from "../DemoBadge";
 
 interface SubItem {
   label: string;
@@ -63,8 +64,6 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-
-
 const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
   const location = useLocation();
   const { pathname } = location;
@@ -77,7 +76,7 @@ const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
       setCurrentDateTime(new Date());
     }, 1000);
 
-    return () => clearInterval(interval); 
+    return () => clearInterval(interval);
   }, []);
 
   const capitalize = (str: string) =>
@@ -113,13 +112,10 @@ const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
           );
         })}
       </div>
-      <div className="text-gray-500">
-        {currentDateTime.toLocaleString()}
-      </div>
+      <div className="text-gray-500">{currentDateTime.toLocaleString()}</div>
     </nav>
   );
 };
-
 
 export default function Layout({ children }: LayoutProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -139,8 +135,8 @@ export default function Layout({ children }: LayoutProps) {
 
   const [OpenSubItems, setOpenSubItems] = useState(false);
   const toggleAbarrotesMenu = () => {
-  setOpenSubItems((prev)=> !prev);
-};
+    setOpenSubItems((prev) => !prev);
+  };
 
   //Usuario Store.
   const username = UserStore((state) => state.name);
@@ -240,87 +236,98 @@ export default function Layout({ children }: LayoutProps) {
               aria-label="Cerrar menú móvil"
               title="Cerrar menú móvil"
             >
-            <FiX className="text-2xl" />
+              <FiX className="text-2xl" />
             </button>
           </div>
-          <div className={`absolute flex flex-col items-center mt-2 mb-4 transition-transform duration-300 ${
-            isSidebarFull || isMobileMenuOpen ? "translate-x-4" : "translate-x-0"
-          }`}
-        >
-        <a href="/dashboard">
-          <img 
-          src={logotipo}
-          alt="Logotipo"
-          
-          className={`${(isSidebarFull || isMobileMenuOpen) ? "w-10 h-10" : "hidden"}`}
-          /> </a>
-          {(isSidebarFull || isMobileMenuOpen) && (
-            <span className="mt-2 text-gray-800 text-sm font-semibold text-center"
-            >SISTEMA DE ABARROTES</span>
-          )}
+          <div
+            className={`absolute flex flex-col items-center mt-2 mb-4 transition-transform duration-300 ${
+              isSidebarFull || isMobileMenuOpen
+                ? "translate-x-4"
+                : "translate-x-0"
+            }`}
+          >
+            <a href="/dashboard">
+              <img
+                src={logotipo}
+                alt="Logotipo"
+                className={`${isSidebarFull || isMobileMenuOpen ? "w-10 h-10" : "hidden"}`}
+              />{" "}
+            </a>
+            {(isSidebarFull || isMobileMenuOpen) && (
+              <span className="mt-2 text-gray-800 text-sm font-semibold text-center">
+                SISTEMA DE ABARROTES
+              </span>
+            )}
           </div>
 
           <div className="justify-between w-full lg:flex hidden">
-  <span className="flex-1"></span>
-  <button
-    type="button"
-    onClick={toggleSidebar}
-    className="flex items-center justify-center w-12 h-12 text-gray-700 text-2xl focus:outline-none"
-  >
-    {isSidebarFull ? <FiX /> : <FiMenu />}
-  </button>
-</div>
+            <span className="flex-1"></span>
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              className="flex items-center justify-center w-12 h-12 text-gray-700 text-2xl focus:outline-none"
+            >
+              {isSidebarFull ? <FiX /> : <FiMenu />}
+            </button>
+          </div>
 
-
-  <ul className={`space-y-4 flex-grow ${isSidebarFull ? 'pt-16' : (isMobileMenuOpen ? 'pt-24' : 'pt-26')}`}>
+          <ul
+            className={`space-y-4 flex-grow ${isSidebarFull ? "pt-16" : isMobileMenuOpen ? "pt-24" : "pt-26"}`}
+          >
             {menuItems
-              .filter(item => !(role === 'Empleado' && item.label === 'Usuarios'))
+              .filter(
+                (item) => !(role === "Empleado" && item.label === "Usuarios"),
+              )
               .map((item, index) => (
-              <li key={index}>
-                <Link
-                  to={item.link}
-                  className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
-                    isSidebarFull ? "justify-start" : "justify-center"
-                  }`}
-                  onClick={item.label === "Abarrotes" ? toggleAbarrotesMenu : undefined}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  {(isSidebarFull || isMobileMenuOpen) && (
-                    <div className="flex justify-between w-full ml-3">
-                    <span className="ml-3">{item.label}</span>
-                    {item.label === "Abarrotes" && (
-                      <span className="text-xl group-hover">
-                      {OpenSubItems ? <FiChevronDown /> : ""}
-                      </span>
+                <li key={index}>
+                  <Link
+                    to={item.link}
+                    className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
+                      isSidebarFull ? "justify-start" : "justify-center"
+                    }`}
+                    onClick={
+                      item.label === "Abarrotes"
+                        ? toggleAbarrotesMenu
+                        : undefined
+                    }
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    {(isSidebarFull || isMobileMenuOpen) && (
+                      <div className="flex justify-between w-full ml-3">
+                        <span className="ml-3">{item.label}</span>
+                        {item.label === "Abarrotes" && (
+                          <span className="text-xl group-hover">
+                            {OpenSubItems ? <FiChevronDown /> : ""}
+                          </span>
+                        )}
+                      </div>
                     )}
-                    </div>                  
-                  )}
-                </Link>
+                  </Link>
 
-                {/* Mapeo de subitems */}
-                {(isSidebarFull || isMobileMenuOpen) &&
-                  item.label === "Abarrotes" &&
-                  OpenSubItems &&
-                  item.subItems &&
-                  item.subItems.length > 0 && (
-                    <ul className="ml-6 space-y-2 mt-2">
-                      {item.subItems.map((subItem, subIndex) => (
-                        <li key={subIndex}>
-                          <Link
-                            to={subItem.link}
-                            className="flex items-center w-full p-2 text-gray-600 rounded-lg hover:bg-gray-200"
-                          >
-                            <span className="text-xl">{subItem.icon}</span>
-                            {(isSidebarFull || isMobileMenuOpen) && (
-                              <span className="ml-3">{subItem.label}</span>
-                            )}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-              </li>
-            ))}
+                  {/* Mapeo de subitems */}
+                  {(isSidebarFull || isMobileMenuOpen) &&
+                    item.label === "Abarrotes" &&
+                    OpenSubItems &&
+                    item.subItems &&
+                    item.subItems.length > 0 && (
+                      <ul className="ml-6 space-y-2 mt-2">
+                        {item.subItems.map((subItem, subIndex) => (
+                          <li key={subIndex}>
+                            <Link
+                              to={subItem.link}
+                              className="flex items-center w-full p-2 text-gray-600 rounded-lg hover:bg-gray-200"
+                            >
+                              <span className="text-xl">{subItem.icon}</span>
+                              {(isSidebarFull || isMobileMenuOpen) && (
+                                <span className="ml-3">{subItem.label}</span>
+                              )}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                </li>
+              ))}
           </ul>
 
           <div className="mb-4 ml-[13px]">
@@ -346,9 +353,11 @@ export default function Layout({ children }: LayoutProps) {
         } scrollbar-thin scrollbar-thumb-rounded-lg scrollbar-thumb-gray-300 ${
           isSidebarFull ? "ml-44" : ""
         }`}
-        style={{ marginLeft: isSidebarFull ? "13rem" : "", 
-                overflowX: "auto", overflowY: "hidden"
-              }}
+        style={{
+          marginLeft: isSidebarFull ? "13rem" : "",
+          overflowX: "auto",
+          overflowY: "hidden",
+        }}
       >
         <nav className="bg-white border-b border-gray-300 p-4 flex items-center justify-between">
           {/* Botón de menú para dispositivos móviles */}
@@ -416,7 +425,7 @@ export default function Layout({ children }: LayoutProps) {
         <div className="min-h-screen flex flex-col h-full">
           <Breadcrumb isSidebarFull={isSidebarFull} />
           <main
-          className="
+            className="
            bg-gray-100 
            w-full 
            mx-auto 
@@ -427,11 +436,13 @@ export default function Layout({ children }: LayoutProps) {
            2xl:p-16 
            overflow-y-auto 
            custom-scrollbar 
-          " >
+          "
+          >
             {children}
           </main>
         </div>
       </div>
+      <DemoBadge />
     </div>
   );
 }
