@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Layout from '../../../components/layout/layout';
-import Logotipo from '../../../assets/images/LOGO.svg';
 import { Link } from 'react-router-dom';
 import ModalCorte from '../../../components/abarrotes/ModalCorte';
 import { AiOutlineShoppingCart, AiOutlineLineChart, AiOutlineCheckCircle } from 'react-icons/ai';
@@ -64,7 +63,7 @@ const AbarrotesHome: React.FC = () => {
     <Layout>
       <div className="flex flex-col items-center bg-gray-100 md:mt-[-30px] sm:py-10 px-6 pt-10 pb-[140px]">
         <div className="mb-8 sm:mb-12">
-          <img src={Logotipo} alt="Logotipo" className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40" />
+          <img src="/LOGO.svg" alt="Logotipo" className="w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40" />
         </div>
 
         <div className="flex flex-wrap justify-center gap-6 w-full max-w-5xl mt-10 sm:mt-16">
