@@ -1,8 +1,8 @@
-import { Proveedores } from "./proveedores_interface";
+import { IProveedores } from "./proveedor_interface";
 
 export interface ProveedoresModalProps{
     isOpen:  boolean;
     onClose: () => void;
-    proveedor?: Proveedores;
+    proveedor?: IProveedores;
     onSave: (proveedor: Proveedores) => void;
 }

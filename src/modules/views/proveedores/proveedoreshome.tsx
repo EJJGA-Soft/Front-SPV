@@ -2,44 +2,34 @@ import React, { useEffect, useState } from "react";
 import Layout from "../../../components/layout/layout";
 import ProveedoresTable from "../../../components/proveedores/ProveedoresTable";
 import ProveedoresModal from "../../../components/proveedores/ModalProveedores";
-import ProveedorService from "../../services/proveedor/proveedores_service";
-import { IProveedores } from "../../../interfaces/proveedor_interface";
-import LoadingView from "../../../components/loading/loading";
+import { IProveedores } from "../../../interfaces/Proveedores/proveedor_interface";
+import BaseService from "../../services/base_service";
+import { UserStore } from "../../../security/store/userStore";
 
-const Proveedores = new ProveedorService();
+const baseService = new BaseService();
 
-const ProveedoresHome: React.FC = () => {
+export default function ProveedoresHome() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
-  const proveedoresPerPage = 7;
   const [proveedores, setProveedores] = useState<IProveedores[]>([]);
-  const [IsLoading, setIsLoading] = useState<boolean>(false);
+  const [proveedoresPerPage] = useState(7);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
-  async function GetProveedores(): Promise<IProveedores[]> {
-    setIsLoading(true);
-  
-    try {
-      const response = await Proveedores.getProveedores();
+  const {rol} =UserStore();
+ 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
 
-      if(response.success){
-      const convert = response.data as IProveedores[];
-      setProveedores(convert);
-      setIsLoading(false);
-      return convert;
-      }
-      return [];
-    } catch (error) {
-      console.error("Error al obtener proveedores:", error);
-      throw error;
-    }
-  }
-  
+  const handleCloseModal = () => {
+    setIsModalOpen(false); 
+  };
 
-  useEffect(() => {
-    GetProveedores()
-  }, [])
-
-
+  const handleSaveProveedor = (newProveedor: IProveedores) => {
+    setProveedores((prevProveedores) => [...prevProveedores, newProveedor]);
+    GetProveedores();
+    handleCloseModal();
+  };
 
   const handleNextPage = () => {
     if (currentPage * proveedoresPerPage < proveedores.length) {
@@ -53,45 +43,59 @@ const ProveedoresHome: React.FC = () => {
     }
   };
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+  const GetProveedores = async() =>{
+    try{
+      setIsLoading(true);
+      const response = await baseService.Get<IProveedores>("/Productos/ProductsWithProveedor")
+      if(response.success){
+        setIsLoading(false);
+        setProveedores(response.data as IProveedores[]);
+      } else {
+        setIsLoading(false);
+      } 
+    } catch(error){
+      console.error("Error al obtener proveedores: ", error);
+    }
+  }
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false); 
-  };
+  const handleProveedoresUpdate = async()=>{
+    await GetProveedores();
+  }
 
-  const handleSaveProveedor = (nuevoProveedor: Proveedores) => {
-    console.log("Proveedor guardado:", nuevoProveedor);
-    handleCloseModal();
-  };
+  useEffect(()=> {
+    GetProveedores();
+  }, []);
 
   return (
     <Layout>
-    <div className=" bg-gray-100 sm:py-10 px-4 sm:px-6 lg:px-8 pt-6 pb-[95px] lg:mt-[-70px]">
+    <div className=" bg-gray-100 sm:py-6 px-4 sm:px-4 lg:px-8 pt-6 pb-[95px] lg:mt-[-70px]">
       <div className="flex justify-between items-center mb-4">
       <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
           Proveedores</h1>
-          <button 
-          className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
-          onClick={handleOpenModal} 
-          >
-            Agregar proveedor
-          </button>
+          {rol !== 'Empleado' &&(
+            <button 
+            className="font-semibold px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-xs sm:text-base"
+            onClick={handleOpenModal} 
+            >
+              Agregar proveedor
+            </button>
+          )}
+         
         </div>
         
         <div className="overflow-x-auto max-h-[500px] sm:max-h-full">
-      { IsLoading ? (
-          <LoadingView/>
-        ) : (
+     
           <ProveedoresTable
           proveedores={proveedores}
           currentPage={currentPage}
           proveedoresPerPage={proveedoresPerPage}
           handleNextPage={handleNextPage}
           handlePrevPage={handlePrevPage}
+          isLoading={isLoading}
+          onProveedoresUpdate={handleProveedoresUpdate}
+
         />
-        )}
+        
         </div>
 
         <div className="flex justify-between items-center mt-4 flex-wrap">
@@ -118,10 +122,13 @@ const ProveedoresHome: React.FC = () => {
       
 
         
-        {isModalOpen && <ProveedoresModal isOpen={isModalOpen} onClose={handleCloseModal} onSave={handleSaveProveedor} />}
+        {isModalOpen &&
+           <ProveedoresModal 
+          isOpen={isModalOpen} 
+          onClose={handleCloseModal} 
+          onSave={handleSaveProveedor} />}
       </div>
     </Layout>
   );
 };
 
-export default ProveedoresHome;

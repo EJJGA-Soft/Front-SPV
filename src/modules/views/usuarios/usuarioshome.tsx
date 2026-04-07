@@ -4,6 +4,7 @@ import UsersTable from "../../../components/usuarios/UsuariosTable";
 import UsuarioModal from '../../../components/usuarios/UsuariosModal';
 import BaseService from '../../services/base_service';
 import { IAccount } from "../../../interfaces/newAccount._interface";
+import { UserStore } from "../../../security/store/userStore";
 const baseService = new BaseService();
 
 export default function UsuariosHome() {
@@ -12,7 +13,6 @@ export default function UsuariosHome() {
   const [usersPerPage] = useState(7);
   const [isModalOpen, setIsModalOpen] = useState(false); 
   const [isLoading, setIsLoading] = useState(false);
-
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -65,7 +65,7 @@ export default function UsuariosHome() {
 
   return (
     <Layout>
-      <div className="bg-gray-100 sm:py-10 px-4 sm:px-6 lg:px-8 pt-6 pb-[95px] lg:mt-[-70px]">
+      <div className="bg-gray-100 sm:py-10 px-4 sm:px-6 lg:px-8 pb-[95px] lg:mt-[-90px]">
         <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl sm:text-3xl font-semibold text-base sm:text-lg">
         Usuarios</h1>

@@ -1,114 +1,263 @@
 import React, { useState } from "react";
 import { evaluatePassword } from "../../modules/services/profile/password_evaluate";
-import { IoMdClose } from 'react-icons/io';
-
+import { FiX, FiEye, FiEyeOff } from "react-icons/fi";
+import { UserStore } from "../../security/store/userStore";
+import BaseService from '../../modules/services/base_service';
+import NotificationService from "../../modules/services/mensajes/notification_service";
+import { IUserObligatory } from '../../interfaces/user_interface';
 
 interface ProfileModalProps {
     isOpen?: boolean;
     onClose: () => void;
 }
 
-const ProfileModal: React.FC<ProfileModalProps> = ({onClose }) => {
-    const [name, setName] = useState<string>("");
-    const [correo, setCorreo] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [confirmPassword, setConfirmPassword] = useState<string>("");
-    const [passwordStrength, setPasswordStrength] = useState<string>("");
-    const [passwordMatch, setPasswordMatch] = useState<boolean | null>(null);
+const baseService = new BaseService();
+
+const ProfileModal: React.FC<ProfileModalProps> = ({ onClose }) => {
+    const { id, name, email } = UserStore.getState();
+
+    const [formData, setFormData] = useState({
+        id: id,
+        name: name || "",
+        email: email || "",
+        currentPassword: "",
+        password: "",
+        confirmPassword: "",
+    });
+
+    const [passwordStrength, setPasswordStrength] = useState<string | null>(null);
+    const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
 
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newPassword = e.target.value;
-        setPassword(newPassword);
-        setPasswordStrength(evaluatePassword(newPassword));
-        setPasswordMatch(confirmPassword === newPassword);
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+        if (name === "password") {
+            setPasswordStrength(evaluatePassword(value));
+        }
+
+        if (name === "confirmPassword") {
+            setPasswordsMatch(value === formData.password);
+        }
+
+        if (name === "password" && formData.confirmPassword) {
+            setPasswordsMatch(value === formData.confirmPassword);
+        }
     };
 
-    const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newConfirmPassword = e.target.value;
-        setConfirmPassword(newConfirmPassword);
-        setPasswordMatch(password === newConfirmPassword);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!passwordsMatch) {
+            return;
+        }
+
+        try {
+            const updateUser = await baseService.Put("/Account/UpdateUserData/", formData);
+
+            if (updateUser.success) {
+                const user = await baseService.GetSimple<IUserObligatory>(
+                    `/Account/GetUserById/${id}`
+                );
+
+                if (formData.currentPassword != null) {
+                    await baseService.Put("/Account/ChangePassword", {
+                        id: id,
+                        currentPassword: formData.currentPassword,
+                        newPassword: formData.password,
+                        confirmPassword: formData.confirmPassword
+                    });
+                }
+
+                const name = user.data!.name;
+                const email = user.data!.email;
+                const status = "authenticated";
+                const rol = user.data!.rol;
+
+                if (user.success) {
+                    UserStore.getState().setUser(
+                        id,
+                        name,
+                        email,
+                        status,
+                        rol
+                    );
+                    NotificationService.showSuccess("¡Su perfil se actualizó con éxito!");
+                    onClose();
+                }
+            } else {
+                NotificationService.showError("Error al actualizar el perfil.");
+            }
+        } catch (error) {
+            console.error("Error al actualizar el usuario:", error);
+            NotificationService.showError("Ocurrió un error inesperado.");
+        }
+    };
+
+    const toggleShowPassword = (field: string) => {
+        switch (field) {
+            case "currentPassword":
+                setShowCurrentPassword(!showCurrentPassword);
+                break;
+            case "password":
+                setShowNewPassword(!showNewPassword);
+                break;
+            case "confirmPassword":
+                setShowConfirmPassword(!showConfirmPassword);
+                break;
+        }
     };
 
     return (
-        <div id="profile-modal" tabIndex={-1} aria-hidden="true"
+        <div
+            id="profile-modal"
+            tabIndex={-1}
+            aria-hidden="true"
             className="fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-gray-500 bg-opacity-50"
         >
-      
-
             <div className="relative p-4 w-full max-w-md bg-white max-h-full rounded-lg shadow-lg">
                 <div className="flex items-center justify-between p-4 border-b rounded-t">
                     <h3 className="text-lg font-semibold text-gray-900">Editar Perfil</h3>
                     <button
-                    type="button"
-                    onClick={onClose}
-                    className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
-                >
-                    <IoMdClose className="w-3 h-3" />
-                    <span className="sr-only">Close modal</span>
-                </button>
+                        type="button"
+                        onClick={onClose}
+                        className="text-gray-400 hover:bg-gray-200 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
+                    >
+                        <FiX className="text-2xl" />
+                        <span className="sr-only">Close modal</span>
+                    </button>
                 </div>
-                <form className="p-4">
+                <form className="p-4" onSubmit={handleSubmit}>
                     <div className="grid gap-4 mb-4">
                         <div>
-                            <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Nombre</label>
+                            <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
+                                Nombre
+                            </label>
                             <input
                                 type="text"
                                 name="name"
                                 id="name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                value={formData.name}
+                                onChange={handleInputChange}
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                                placeholder=""
                                 required
                             />
                         </div>
                         <div>
-                            <label htmlFor="correo" className="block mb-2 text-sm font-medium text-gray-900">Correo electrónico</label>
+                            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
+                                Correo electrónico
+                            </label>
                             <input
                                 type="email"
-                                name="correo"
-                                id="correo"
-                                value={correo}
-                                onChange={(e) => setCorreo(e.target.value)}
+                                name="email"
+                                id="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                                placeholder=""
                                 required
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">Contraseña</label>
-                            <input
-                                type="password"
-                                name="password"
-                                id="password"
-                                value={password}
-                                onChange={handlePasswordChange}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                                placeholder="Ingresa una nueva contraseña"
-                                required
-                            />
-                            <p className="mt-1 text-sm text-gray-600">
-                                Seguridad: {passwordStrength}
-                            </p>
+                            <label htmlFor="currentPassword" className="block mb-2 text-sm font-medium text-gray-900">
+                                Contraseña actual
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showCurrentPassword ? "text" : "password"}
+                                    name="currentPassword"
+                                    id="currentPassword"
+                                    value={formData.currentPassword}
+                                    onChange={handleInputChange}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                    placeholder="Ingresa tu contraseña actual"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => toggleShowPassword("currentPassword")}
+                                    className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                                >
+                                    {showCurrentPassword ? (
+                                        <FiEyeOff className="text-gray-600" />
+                                    ) : (
+                                        <FiEye className="text-gray-600" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
                         <div>
-                            <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900">Confirmar Contraseña</label>
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                id="confirmPassword"
-                                value={confirmPassword}
-                                onChange={handleConfirmPasswordChange}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                                placeholder="Confirma tu contraseña"
-                                required
-                            />
-                            {passwordMatch === false && (
-                                <p className="mt-1 text-sm text-red-600">Las contraseñas no coinciden</p>
+                            <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900">
+                                Nueva contraseña
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showNewPassword ? "text" : "password"}
+                                    name="password"
+                                    id="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                    placeholder="Ingresa una nueva contraseña"
+                                    disabled={!formData.currentPassword}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => toggleShowPassword("password")}
+                                    className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                                >
+                                    {showNewPassword ? (
+                                        <FiEyeOff className="text-gray-600" />
+                                    ) : (
+                                        <FiEye className="text-gray-600" />
+                                    )}
+                                </button>
+                            </div>
+                            {passwordStrength && (
+                                <p className="mt-1 text-sm text-gray-600">Seguridad: {passwordStrength}</p>
+                            )}
+                        </div>
+                        <div>
+                            <label htmlFor="confirmPassword" className="block mb-2 text-sm font-medium text-gray-900">
+                                Confirmar nueva contraseña
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    name="confirmPassword"
+                                    id="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleInputChange}
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                                    placeholder="Confirma tu nueva contraseña"
+                                    disabled={!formData.currentPassword}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => toggleShowPassword("confirmPassword")}
+                                    className="absolute top-1/2 right-3 transform -translate-y-1/2"
+                                >
+                                    {showConfirmPassword ? (
+                                        <FiEyeOff className="text-gray-600" />
+                                    ) : (
+                                        <FiEye className="text-gray-600" />
+                                    )}
+                                </button>
+                            </div>
+                            {!passwordsMatch && (
+                                <p className="mt-1 text-sm text-red-600">Las contraseñas no coinciden y tiene que tener 8 dígitos, 1 mayuscula y un caracter. </p>
                             )}
                         </div>
                     </div>
+                    {error && (
+                        <p
+                          className="text-sm text-red-500"
+                          dangerouslySetInnerHTML={{ __html: error }}
+                        />
+                      )}
                     <div className="flex justify-center space-x-2">
                         <button
                             type="button"

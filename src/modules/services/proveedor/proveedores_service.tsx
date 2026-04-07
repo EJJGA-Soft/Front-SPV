@@ -1,50 +1,60 @@
 import axios from "axios";
-import { Proveedores } from "../../../interfaces/proveedores_interface";
 import { Api_Connection } from "../API/api_connection";
-import { IProveedores } from "../../../interfaces/proveedor_interface";
-import { ResponseHelperModel } from "../../../interfaces/responseHelper_T_interface";
+import {
+  ResponseHelperModel,
+  ResponseHelperModelSimple,
+} from "../../../interfaces/responseHelper_T_interface";
+import { IProveedores } from "../../../interfaces/Proveedores/proveedor_interface";
+import { MOCK_MODE, MOCK_PROVIDERS } from "../mockData";
 
-const url = `${Api_Connection()}Proveedor/`;
+const url = `${Api_Connection()}Proveedores/`;
 
 export default class ProveedorService {
-
-  async getProveedores(): Promise<ResponseHelperModel<IProveedores>>{
+  // Obtener todos los proveedores
+  async getProveedores(): Promise<ResponseHelperModel<IProveedores>> {
     try {
-        const response = await axios.get(`${url}`);
-        return response.data as ResponseHelperModel<IProveedores>;
-    } catch(error: unknown){
-      return {
-        success: false,
-        message: "Ha ocurrido un error",
-      }
-    }
-  }
-
-  async AddProvService(proveedor: Proveedores): Promise<ResponseHelper> {
-    try {
-      const sendData = await axios.post(`${url}`, proveedor);
-      const response = sendData.data as ResponseHelper;
-
-      if (
-        response.message === "Proveedor no encontrado" ||
-        response.message === "Datos incorrectos"
-      ) {
+      if (MOCK_MODE) {
         return {
-          success: false,
-          message: response.message,
+          success: true,
+          message: "Proveedores cargados desde demo",
+          data: MOCK_PROVIDERS.filter((p) => !p.esBorrado),
         };
       }
 
-      return {
-        success: true,
-        message: "Proveedor agregado correctamente",
-        data: response.data,
-      };
-    } catch (error: any) {
+      const response = await axios.get(`${url}`);
+      return response.data as ResponseHelperModel<IProveedores>;
+    } catch (error) {
       return {
         success: false,
-        message:
-          error.response?.data?.message || "Ocurrió un error al agregar el proveedor.",
+        message: `Ha ocurrido un error al obtener los proveedores: ${error}`,
+      };
+    }
+  }
+
+  // Obtener proveedor por ID
+  async getProveedorById(
+    id: string,
+  ): Promise<ResponseHelperModelSimple<IProveedores>> {
+    try {
+      if (MOCK_MODE) {
+        const proveedor = MOCK_PROVIDERS.find(
+          (p) => p.id === id && !p.esBorrado,
+        );
+        return {
+          success: !!proveedor,
+          message: proveedor
+            ? "Proveedor encontrado"
+            : "Proveedor no encontrado",
+          data: proveedor,
+        };
+      }
+
+      const response = await axios.get(`${url}${id}`);
+      return response.data as ResponseHelperModelSimple<IProveedores>;
+    } catch (error) {
+      return {
+        success: false,
+        message: `Ha ocurrido un error al obtener el proveedor: ${error}`,
       };
     }
   }

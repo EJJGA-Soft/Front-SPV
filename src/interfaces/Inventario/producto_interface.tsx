@@ -1,10 +1,15 @@
 export interface Producto {
+    id: number;
     nombre: string;
     precio: number;
     stock: number;
     urlImagen: string;
-    categoriaId: number;
-    id: number;
+    Imagen: Blob;
+    categoriaId?: number;
+    proveedorId?: number;
     esBorrado: boolean;
+    nombreCategoria?: string;
+    nombreProveedor?: string;
+    cantidad?: number;
   }
   
