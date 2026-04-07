@@ -1,6 +1,5 @@
 import React from "react";
 import { RiCheckboxBlankCircleFill } from "react-icons/ri";
-import logotipo from "../../assets/images/LOGO.svg";
 import icon1 from "../../assets/landing/1.png";
 import icon2 from "../../assets/landing/2.png";
 import icon3 from "../../assets/landing/3.png";
@@ -30,9 +29,9 @@ const Hero: React.FC = () => {
       <div className="md:col-span-3 flex items-center justify-center relative">
         <div>
           <img
-            src={logotipo}
+            src="/LOGO.svg"
             alt="Hero"
-            className="w-[250px] h-[250px] md:w-[380px] md:h-[380px] object-cover xl:-mt-28"
+            className="w-[250px] h-[250px] md:w-[380px] md:h-[380px] object-contain xl:-mt-28"
           />
           <div className="relative bg-white shadow-xl rounded-lg p-4 flex flex-col justify-center gap-2 max-w-[250px] mx-auto -mt-12">
             <h2 className="text-xl font-bold tracking-[1px] text-gray-800">

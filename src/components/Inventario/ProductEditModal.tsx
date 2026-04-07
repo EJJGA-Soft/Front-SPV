@@ -257,7 +257,7 @@ const ProductEditModal: React.FC<ProductModalProps> = ({
                   <div className="flex flex-col justify-center items-center h-full">
                     <div className="flex justify-center my-2">
                       <img
-                        src="src/assets/icons/cloud-upload-svgrepo-com.png"
+                        src="/cloud-upload.svg"
                         alt="Icono de subida"
                         className="w-10 h-10 sm:w-14 sm:h-14"
                       />
