@@ -1,6 +1,6 @@
-import React from "react";
+﻿import React from "react";
 import { DeleteModalProps } from "../interfaces/DeleteModalProps";
-import BaseService from "../modules/services/base_service";
+import BaseService from "../services/base_service";
 import { FiX } from "react-icons/fi";
 
 const baseService = new BaseService();
@@ -39,7 +39,7 @@ const ConfirmDeleteModal = <T,>({
       <div className="bg-white p-6 rounded-lg max-w-sm w-full">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">
-            Confirmar Eliminación
+            Confirmar EliminaciÃ³n
           </h2>
           <button onClick={onClose}>
             <FiX className="text-2xl" />
@@ -47,7 +47,7 @@ const ConfirmDeleteModal = <T,>({
         </div>
 
         <p className="text-gray-700 mb-4">
-          ¿Estás seguro de que deseas eliminar {entity}{" "}
+          Â¿EstÃ¡s seguro de que deseas eliminar {entity}{" "}
           <strong> {getItemName(itemEntity)}</strong>?
         </p>
         <div className="flex justify-center space-x-4">

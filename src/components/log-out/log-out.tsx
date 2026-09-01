@@ -1,12 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { UserStore } from "../../security/store/userStore";
+﻿'use client'
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { UserStore } from "@/global/userStore";
 
 export const ClearSession = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
+  const clearUser = UserStore((state) => state.clearUser);
 
-  UserStore().clearUser();
-
-  navigate("/login");
+  useEffect(() => {
+    clearUser();
+    router.replace("/login");
+  }, [clearUser, router]);
 
   return null;
 };

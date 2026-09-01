@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+﻿import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   HiOutlineShoppingCart,
   HiOutlineUserGroup,
@@ -16,8 +17,7 @@ import {
 } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import ProfileModal from "../profile/detailsprofile";
-import { UserStore } from "../../security/store/userStore";
-import { DemoBadge } from "../DemoBadge";
+import { UserStore } from "@/global/userStore";
 
 interface SubItem {
   label: string;
@@ -63,8 +63,7 @@ interface LayoutProps {
 }
 
 const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
-  const location = useLocation();
-  const { pathname } = location;
+  const pathname = usePathname();
   const pathSegments = pathname.split("/").filter((segment) => segment);
 
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
@@ -88,7 +87,7 @@ const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
       aria-label="Breadcrumb"
     >
       <div className="flex items-center">
-        <Link to="/dashboard" className="hover:text-gray-800">
+        <Link href="/dashboard" className="hover:text-gray-800">
           Dashboard
         </Link>
 
@@ -102,7 +101,7 @@ const Breadcrumb = ({ isSidebarFull }: { isSidebarFull: boolean }) => {
               {isLast ? (
                 <span className="text-gray-500">{capitalize(segment)}</span>
               ) : (
-                <Link to={fullPath} className="hover:text-gray-800">
+                <Link href={fullPath} className="hover:text-gray-800">
                   {capitalize(segment)}
                 </Link>
               )}
@@ -253,7 +252,7 @@ export default function Layout({ children }: LayoutProps) {
             </a>
             {(isSidebarFull || isMobileMenuOpen) && (
               <span className="mt-2 text-gray-800 text-sm font-semibold text-center">
-                SISTEMA DE ABARROTES
+                PUNTO DE VENTA
               </span>
             )}
           </div>
@@ -279,7 +278,7 @@ export default function Layout({ children }: LayoutProps) {
               .map((item, index) => (
                 <li key={index}>
                   <Link
-                    to={item.link}
+                    href={item.link}
                     className={`flex items-center w-full p-3 text-gray-700 rounded-lg hover:bg-gray-100 ${
                       isSidebarFull ? "justify-start" : "justify-center"
                     }`}
@@ -312,7 +311,7 @@ export default function Layout({ children }: LayoutProps) {
                         {item.subItems.map((subItem, subIndex) => (
                           <li key={subIndex}>
                             <Link
-                              to={subItem.link}
+                              href={subItem.link}
                               className="flex items-center w-full p-2 text-gray-600 rounded-lg hover:bg-gray-200"
                             >
                               <span className="text-xl">{subItem.icon}</span>
@@ -330,7 +329,7 @@ export default function Layout({ children }: LayoutProps) {
 
           <div className="mb-4 ml-[13px]">
             <Link
-              to="/cerrar-sesion"
+              href="/cerrar-sesion"
               className={`flex items-center w-full text-gray-700 rounded-lg hover:bg-gray-100 ${
                 isSidebarFull ? "justify-start" : "justify-start"
               }`}
@@ -407,7 +406,7 @@ export default function Layout({ children }: LayoutProps) {
 
                   <li>
                     <Link
-                      to="/cerrar-sesion"
+                      href="/cerrar-sesion"
                       className="block px-4 py-2 text-sm hover:bg-gray-100"
                     >
                       Cerrar sesión
@@ -440,7 +439,6 @@ export default function Layout({ children }: LayoutProps) {
           </main>
         </div>
       </div>
-      <DemoBadge />
     </div>
   );
 }

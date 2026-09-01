@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+﻿import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../../modules/views/login";
 import Dashboard from "../../components/dashboard";
 import AbarrotesHome from "../../modules/views/abarrotes/abarrotes";
@@ -6,7 +6,7 @@ import Compras from "../../modules/views/abarrotes/compras";
 import UsuariosHome from "../../modules/views/usuarios/usuarioshome";
 import VentasHome from "../../modules/views/ventas/ventashome";
 import ProveedoresHome from "../../modules/views/proveedores/proveedoreshome";
-import { UserStore } from "../../security/store/userStore";
+import { UserStore } from "@/global/userStore";
 import ProtectedRoute from "../../security/strategy/ProtectedRoutes";
 import Page404 from "../../errors/views/page404";
 import { ClearSession } from "../../components/log-out/log-out";

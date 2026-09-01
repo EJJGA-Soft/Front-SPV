@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { evaluatePassword } from "../../modules/services/profile/password_evaluate";
+﻿import React, { useState } from "react";
+import { evaluatePassword } from "../../services/profile/password_evaluate";
 import { FiX, FiEye, FiEyeOff } from "react-icons/fi";
-import { UserStore } from "../../security/store/userStore";
-import BaseService from "../../modules/services/base_service";
-import NotificationService from "../../modules/services/mensajes/notification_service";
+import { UserStore } from "@/global/userStore";
+import BaseService from "../../services/base_service";
+import NotificationService from "../../services/mensajes/notification_service";
 import { IUserObligatory } from "../../interfaces/user_interface";
 
 interface ProfileModalProps {
